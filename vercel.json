@@ -7,7 +7,7 @@
   ],
   "headers": [
     {
-      "source": "/.+\\.[jt]sx?$",
+      "source": "/(.*\\.tsx|.*\\.ts)$",
       "headers": [
         {
           "key": "Content-Type",
