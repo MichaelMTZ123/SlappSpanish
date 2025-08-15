@@ -1,0 +1,11 @@
+{
+  "name": "slapp-v0.3-secure",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@google/genai": "^1.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

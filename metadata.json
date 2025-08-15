@@ -1,0 +1,9 @@
+{
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "name": "Slapp - v0.3",
+  "description": "",
+  "prompt": ""
+}

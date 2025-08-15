@@ -1,0 +1,386 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+import React, { useState, useEffect, createContext, useContext, ReactNode, FC } from 'react';
+
+const translations = {
+    en: {
+        // General
+        'appName': 'Slapp',
+        'welcomeTo': 'Welcome to',
+        'tagline': 'The slow and steady way to learn Spanish.',
+        'or': 'OR',
+        'signInWithGoogle': 'Sign in with Google',
+        'alreadyHaveAccount': 'Already have an account?',
+        'dontHaveAccount': "Don't have an account?",
+        'signIn': 'Sign In',
+        'signUp': 'Sign Up',
+        'email': 'Email',
+        'password': 'Password',
+        'welcomeBack': 'Welcome back!',
+        'accountCreated': 'Account created successfully! Welcome to Slapp.',
+        'googleSignInSuccess': 'Signed in with Google successfully!',
+        'profileUpdated': 'Profile updated successfully!',
+        'error': 'Error',
+        'loading': 'Loading...',
+        'send': 'Send',
+        'saveChanges': 'Save Changes',
+        'signOut': 'Sign Out',
+        'deleteAccount': 'Delete Account',
+        'confirmDelete': 'Are you sure you want to delete your account? This action is irreversible.',
+        'cancel': 'Cancel',
+        'confirm': 'Confirm',
+        'accountDeleted': 'Your account has been successfully deleted.',
+        'allCorrect': 'Excellent! All answers are correct.',
+        'tryAgain': 'Try Again',
+        'results': 'Results',
+        'notQuite': 'Not quite! Review your answers and try again.',
+
+        // Home
+        'goodMorning': 'Good morning',
+        'goodAfternoon': 'Good afternoon',
+        'goodEvening': 'Good evening',
+        'readyToLearn': 'Ready to learn some Spanish today?',
+        'continueLearning': 'Continue Learning',
+        'nextStep': 'Your next step is to master',
+        'startLesson': 'Start Lesson',
+        'dailyStreak': 'Daily Streak',
+        'daysInARow': 'days in a row! Keep it up!',
+        'points': 'Points',
+        'pointsEarned': 'points earned so far.',
+        'chatWithSlappy': 'Chat with Slappy!',
+        'slappyEncouragement': 'Our friendly AI mascot is here to help you practice.',
+        'myFriends': 'My Friends',
+        'connectAndChat': 'Connect and chat with friends.',
+        'communityHub': 'Community Hub',
+        'createAndPlayQuizzes': 'Create and play community quizzes.',
+
+        // Navigation
+        'home': 'Home',
+        'lessons': 'Lessons',
+        'aiPractice': 'AI Practice',
+        'leaderboard': 'Leaderboard',
+        'profile': 'Profile',
+        'minigames': 'Minigames',
+        'friends': 'Friends',
+        'community': 'Community',
+        'welcomeUser': 'Welcome,',
+        'teachingRequests': 'Teaching Requests',
+
+        // Lessons & Learning Hub
+        'spanishLessons': 'Spanish Lessons',
+        'backToLessons': 'Back to Lessons',
+        'vocabulary': 'Vocabulary',
+        'quiz': 'Quiz',
+        'submitQuiz': 'Submit Quiz',
+        'quizCompleted': 'Quiz completed! You can go back or try another lesson.',
+        'youEarnedPoints': 'You earned',
+        'onlineLearning': 'Online Learning',
+        'selfPacedLessons': 'Self-Paced Lessons',
+        'learnFromPeers': 'Connect with a live teacher for a 1-on-1 video session.',
+        'browseLessons': 'Work through our curriculum of lessons and quizzes at your own pace.',
+        'findATeacher': 'Find a Teacher',
+        'availableTeachers': 'Available Teachers',
+        'noTeachersAvailable': 'No teachers are available right now. Check back later!',
+        'startCall': 'Start Call',
+        'endCall': 'End Call',
+        'incomingCallFrom': 'Incoming call from',
+        'waitingForTeacher': 'Connecting... Waiting for teacher to join.',
+        'callEnded': 'Call Ended',
+        'mute': 'Mute',
+        'unmute': 'Unmute',
+        'videoOn': 'Video On',
+        'videoOff': 'Video Off',
+        'teachingRequestsDescription': 'Here is a list of learners currently waiting to connect with you.',
+        'noTeachingRequests': 'No one is calling right now. Great job keeping up!',
+        'acceptCall': 'Accept Call',
+        'refresh': 'Refresh',
+
+
+        // AI Chat
+        'aiPracticeChat': 'AI Practice Chat',
+        'typeYourMessage': 'Type your message...',
+        'aiInitialMessage': '¡Hola! I am your AI tutor. Ask me anything in Spanish or English.',
+        'oopsError': 'Oops! Something went wrong. Please try again.',
+        'slappyIsThinking': 'Slappy is thinking...',
+        'mascotDefault': 'Just remember, slow and steady wins the race!',
+        'gotIt': 'Got it!',
+        'clearChat': 'Clear Chat',
+        'confirmClearChat': 'Are you sure you want to clear the entire chat history? This cannot be undone.',
+        'chatCleared': 'Chat history cleared.',
+
+        // Leaderboard
+        'anonymousUser': 'Anonymous User',
+
+        // Profile
+        'myProfile': 'My Profile',
+        'displayName': 'Display Name',
+        'yourRank': 'Your Rank',
+        'changeLanguage': 'Change Language',
+        'setYourRole': 'Set Your Role',
+        'teacher': 'Teacher',
+        'learner': 'Learner',
+        'availability': 'Availability',
+        'availableForCalls': 'Available for calls',
+
+        // Ranks
+        'novato': 'Novato',
+        'aprendiz': 'Aprendiz',
+        'maestro': 'Maestro',
+        'leyenda': 'Leyenda',
+
+        // Friends
+        'findFriends': 'Find Friends',
+        'searchUsers': 'Search for users...',
+        'friendRequests': 'Friend Requests',
+        'noPendingRequests': 'No pending requests.',
+        'myFriendsList': 'My Friends',
+        'noFriendsYet': 'You have no friends yet. Add some!',
+        'chatWith': 'Chat with',
+        'voiceMessage': 'Voice Message',
+        'startTyping': 'Start typing to chat...',
+        'addFriend': 'Add Friend',
+        'requestSent': 'Request Sent',
+        'requestReceived': 'Request Received',
+        'alreadyFriends': 'Already Friends',
+        'accept': 'Accept',
+        'decline': 'Decline',
+
+
+        // Community
+        'communityQuizzes': 'Community Quizzes',
+        'noQuizzesYet': 'No community quizzes yet. Why not create one?',
+        'createQuiz': 'Create a New Quiz',
+        'quizTitle': 'Quiz Title',
+        'question': 'Question',
+        'addQuestion': 'Add Question',
+        'publishQuiz': 'Publish Quiz',
+        'atLeast3Questions': 'You need at least 3 questions to publish a quiz.',
+        'generatingAnswers': 'AI is generating answers...',
+        'checkingContent': 'AI is checking content for appropriateness...',
+        'quizPublished': 'Quiz published successfully!',
+        'quizRejected': 'AI moderation failed: The content may be inappropriate. Please revise.',
+        'createdBy': 'Created by',
+        'playQuiz': 'Play Quiz',
+
+        // Minigames
+        'selectAGame': 'Select a Minigame',
+        'flashcardFrenzy': 'Flashcard Frenzy',
+        'flashcardDesc': 'Match vocabulary against the clock.',
+        'sentenceScramble': 'Sentence Scramble',
+        'sentenceDesc': 'Unscramble words to form correct sentences.',
+        'score': 'Score',
+        'time': 'Time',
+        'finalScore': 'Final Score',
+        'playAgain': 'Play Again',
+        'start': 'Start',
+        'dragAndDrop': 'Drag the words to form a correct sentence.',
+    },
+    he: {
+        // General
+        'appName': 'Slapp',
+        'welcomeTo': 'ברוכים הבאים ל-',
+        'tagline': 'הדרך האיטית והבטוחה ללמוד ספרדית.',
+        'or': 'או',
+        'signInWithGoogle': 'התחבר עם גוגל',
+        'alreadyHaveAccount': 'כבר יש לך חשבון?',
+        'dontHaveAccount': 'אין לך חשבון?',
+        'signIn': 'התחבר',
+        'signUp': 'הירשם',
+        'email': 'אימייל',
+        'password': 'סיסמה',
+        'welcomeBack': 'ברוך שובך!',
+        'accountCreated': 'החשבון נוצר בהצלחה! ברוכים הבאים ל-Slapp.',
+        'googleSignInSuccess': 'התחברת בהצלחה עם גוגל!',
+        'profileUpdated': 'הפרופיל עודכן בהצלחה!',
+        'error': 'שגיאה',
+        'loading': 'טוען...',
+        'send': 'שלח',
+        'saveChanges': 'שמור שינויים',
+        'signOut': 'התנתק',
+        'deleteAccount': 'מחק חשבון',
+        'confirmDelete': 'האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו אינה הפיכה.',
+        'cancel': 'ביטול',
+        'confirm': 'אישור',
+        'accountDeleted': 'החשבון שלך נמחק בהצלחה.',
+        'allCorrect': 'מעולה! כל התשובות נכונות.',
+        'tryAgain': 'נסה שוב',
+        'results': 'תוצאות',
+        'notQuite': 'כמעט! בדוק את תשובותיך ונסה שוב.',
+
+        // Home
+        'goodMorning': 'בוקר טוב',
+        'goodAfternoon': 'צהריים טובים',
+        'goodEvening': 'ערב טוב',
+        'readyToLearn': 'מוכן ללמוד קצת ספרדית היום?',
+        'continueLearning': 'המשך ללמוד',
+        'nextStep': 'הצעד הבא שלך הוא',
+        'startLesson': 'התחל שיעור',
+        'dailyStreak': 'רצף יומי',
+        'daysInARow': 'ימים ברציפות! כל הכבוד!',
+        'points': 'נקודות',
+        'pointsEarned': 'נקודות שנצברו עד כה.',
+        'chatWithSlappy': 'צ\'אט עם סלאפי!',
+        'slappyEncouragement': 'הקמע הידידותי שלנו כאן כדי לעזור לך להתאמן.',
+        'myFriends': 'החברים שלי',
+        'connectAndChat': 'התחבר ושוחח עם חברים.',
+        'communityHub': 'מרכז הקהילה',
+        'createAndPlayQuizzes': 'צור ושחק במבחני קהילה.',
+
+        // Navigation
+        'home': 'בית',
+        'lessons': 'שיעורים',
+        'aiPractice': 'אימון AI',
+        'leaderboard': 'טבלת מובילים',
+        'profile': 'פרופיל',
+        'minigames': 'מיני-משחקים',
+        'friends': 'חברים',
+        'community': 'קהילה',
+        'welcomeUser': 'ברוך הבא,',
+        'teachingRequests': 'בקשות לשיעור',
+
+        // Lessons & Learning Hub
+        'spanishLessons': 'שיעורי ספרדית',
+        'backToLessons': 'חזרה לשיעורים',
+        'vocabulary': 'אוצר מילים',
+        'quiz': 'בחן',
+        'submitQuiz': 'שלח בחן',
+        'quizCompleted': 'הבחן הושלם! תוכל לחזור או לנסות שיעור אחר.',
+        'youEarnedPoints': 'צברת',
+        'onlineLearning': 'למידה אונליין',
+        'selfPacedLessons': 'שיעורים בקצב אישי',
+        'learnFromPeers': 'התחבר עם מורה לשיעור וידאו 1-על-1.',
+        'browseLessons': 'עבור על תוכנית הלימודים שלנו הכוללת שיעורים ומבחנים בקצב שלך.',
+        'findATeacher': 'מצא מורה',
+        'availableTeachers': 'מורים זמינים',
+        'noTeachersAvailable': 'אין מורים זמינים כרגע. נסה שוב מאוחר יותר!',
+        'startCall': 'התחל שיחה',
+        'endCall': 'סיים שיחה',
+        'incomingCallFrom': 'שיחה נכנסת מ-',
+        'waitingForTeacher': 'מתחבר... ממתין למורה שיצטרף.',
+        'callEnded': 'השיחה הסתיימה',
+        'mute': 'השתק',
+        'unmute': 'בטל השתקה',
+        'videoOn': 'הפעל וידאו',
+        'videoOff': 'כבה וידאו',
+        'teachingRequestsDescription': 'הנה רשימה של תלמידים שממתינים להתחבר איתך.',
+        'noTeachingRequests': 'אף אחד לא מתקשר כרגע. כל הכבוד על העבודה!',
+        'acceptCall': 'קבל שיחה',
+        'refresh': 'רענן',
+
+        // AI Chat
+        'aiPracticeChat': 'צ\'אט אימון עם AI',
+        'typeYourMessage': 'הקלד את הודעתך...',
+        'aiInitialMessage': '¡Hola! אני המורה ה-AI שלך. שאל אותי כל דבר בספרדית או באנגלית.',
+        'oopsError': 'אופס! משהו השתבש. אנא נסה שוב.',
+        'slappyIsThinking': 'סלאפי חושב...',
+        'mascotDefault': 'רק זכור, לאט ובטוח מנצחים במירוץ!',
+        'gotIt': 'הבנתי!',
+        'clearChat': 'נקה צ\'אט',
+        'confirmClearChat': 'האם אתה בטוח שברצונך למחוק את כל היסטוריית הצ\'אט? לא ניתן לשחזר פעולה זו.',
+        'chatCleared': 'היסטוריית הצ\'אט נוקתה.',
+
+        // Leaderboard
+        'anonymousUser': 'משתמש אנונימי',
+
+        // Profile
+        'myProfile': 'הפרופיל שלי',
+        'displayName': 'שם תצוגה',
+        'yourRank': 'הדרגה שלך',
+        'changeLanguage': 'שנה שפה',
+        'setYourRole': 'קבע את תפקידך',
+        'teacher': 'מורה',
+        'learner': 'תלמיד',
+        'availability': 'זמינות',
+        'availableForCalls': 'זמין/ה לשיחות',
+
+        // Ranks
+        'novato': 'טירון',
+        'aprendiz': 'שוליה',
+        'maestro': 'מאסטר',
+        'leyenda': 'אגדה',
+
+        // Friends
+        'findFriends': 'מצא חברים',
+        'searchUsers': 'חפש משתמשים...',
+        'friendRequests': 'בקשות חברות',
+        'noPendingRequests': 'אין בקשות ממתינות.',
+        'myFriendsList': 'רשימת החברים שלי',
+        'noFriendsYet': 'אין לך חברים עדיין. הוסף כמה!',
+        'chatWith': 'צ\'אט עם',
+        'voiceMessage': 'הודעה קולית',
+        'startTyping': 'התחל להקליד כדי לשוחח...',
+        'addFriend': 'הוסף חבר',
+        'requestSent': 'הבקשה נשלחה',
+        'requestReceived': 'בקשה התקבלה',
+        'alreadyFriends': 'כבר חברים',
+        'accept': 'אשר',
+        'decline': 'דחה',
+
+        // Community
+        'communityQuizzes': 'בחני קהילה',
+        'noQuizzesYet': 'אין עדיין בחני קהילה. למה שלא תיצור אחד?',
+        'createQuiz': 'צור בחן חדש',
+        'quizTitle': 'כותרת הבוחן',
+        'question': 'שאלה',
+        'addQuestion': 'הוסף שאלה',
+        'publishQuiz': 'פרסם בחן',
+        'atLeast3Questions': 'צריך לפחות 3 שאלות כדי לפרסם בחן.',
+        'generatingAnswers': 'AI יוצר תשובות...',
+        'checkingContent': 'AI בודק את התוכן להתאמה...',
+        'quizPublished': 'הבחן פורסם בהצלחה!',
+        'quizRejected': 'בדיקת ה-AI נכשלה: התוכן עלול להיות לא הולם. אנא שנה אותו.',
+        'createdBy': 'נוצר על ידי',
+        'playQuiz': 'שחק בבחן',
+
+        // Minigames
+        'selectAGame': 'בחר מיני-משחק',
+        'flashcardFrenzy': 'שיגעון כרטיסיות',
+        'flashcardDesc': 'התאם אוצר מילים נגד השעון.',
+        'sentenceScramble': 'ערבול משפטים',
+        'sentenceDesc': 'סדר את המילים ליצירת משפטים נכונים.',
+        'score': 'ניקוד',
+        'time': 'זמן',
+        'finalScore': 'ניקוד סופי',
+        'playAgain': 'שחק שוב',
+        'start': 'התחל',
+        'dragAndDrop': 'גרור את המילים כדי ליצור משפט נכון.',
+    },
+};
+
+interface LanguageContextType {
+    language: string;
+    setLanguage: (lang: string) => void;
+    t: (key: string) => string;
+    dir: 'ltr' | 'rtl';
+}
+
+const LanguageContext = createContext<LanguageContextType>({
+    language: 'en',
+    setLanguage: (lang: string) => {},
+    t: (key: string) => key,
+    dir: 'ltr',
+});
+
+export const useTranslation = () => useContext(LanguageContext);
+
+interface LanguageProviderProps {
+    children: ReactNode;
+}
+
+export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
+    const [language, setLanguage] = useState('en');
+    
+    const t = (key: string) => translations[language]?.[key] || key;
+    const dir = language === 'he' ? 'rtl' : 'ltr';
+
+    useEffect(() => {
+        document.documentElement.lang = language;
+        document.documentElement.dir = dir;
+    }, [language, dir]);
+
+    return React.createElement(LanguageContext.Provider, {
+        value: { language, setLanguage, t, dir }
+    }, children);
+};
