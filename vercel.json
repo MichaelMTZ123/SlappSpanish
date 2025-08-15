@@ -1,9 +1,19 @@
-
 {
   "rewrites": [
     {
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.[jt]s)x?",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/javascript"
+        }
+      ]
     }
   ]
 }

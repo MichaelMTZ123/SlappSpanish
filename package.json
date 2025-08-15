@@ -6,6 +6,8 @@
     "@google/genai": "^1.13.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/node": "^20.11.24",
+    "@vercel/node": "^3.0.25"
   }
 }
