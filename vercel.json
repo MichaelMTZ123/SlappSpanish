@@ -1,19 +1,5 @@
 
 {
-  "headers": [
-    {
-      "source": "/(.*\\.tsx)",
-      "headers": [
-        { "key": "Content-Type", "value": "text/babel; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/(.*\\.ts)",
-      "headers": [
-        { "key": "Content-Type", "value": "text/babel; charset=utf-8" }
-      ]
-    }
-  ],
   "rewrites": [
     {
       "source": "/((?!api/|.*\\.).*)",
