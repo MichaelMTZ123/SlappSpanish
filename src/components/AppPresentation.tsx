@@ -124,8 +124,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             const element = document.getElementById(currentStep.targetId);
             
             if (element) {
-                // Scroll logic: 
-                // If we are in the top half of the list (index < length/2), prefer top scrolling
+                // Scroll logic: Center the element
                 element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
                 
                 setTimeout(() => {
@@ -142,13 +141,16 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                         position: 'fixed' 
                     });
 
-                    // Smart Docking Logic
-                    // If element is in the lower 60% of the screen, move UI to top.
-                    // Otherwise move UI to bottom.
+                    // Robust Smart Docking Logic
                     const screenHeight = window.innerHeight;
-                    const elementCenterY = rect.top + (rect.height / 2);
+                    const spaceAbove = rect.top;
+                    const spaceBelow = screenHeight - rect.bottom;
+
+                    // If there is more space above, put UI at top (wait, if space above is big, element is low. So UI Top is correct).
+                    // If there is more space below, put UI at bottom (element is high).
                     
-                    if (elementCenterY > screenHeight * 0.55) {
+                    // We want to place the UI in the LARGER space to avoid covering the element.
+                    if (spaceAbove > spaceBelow) {
                         setUiPosition('top');
                     } else {
                         setUiPosition('bottom');
@@ -240,8 +242,10 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             >
                 <div className="w-full max-w-2xl pointer-events-auto animate-fade-in-up">
                     
-                    {/* Mascot positioning: Sits on the LEFT side of the card for RTL layout */}
-                    <div className={`flex justify-start ml-4 relative z-10 ${isTop ? '-mb-6 top-6' : '-mb-6'}`}>
+                    {/* Mascot positioning */}
+                    {/* KEY FIX: justify-end places the mascot on the LEFT side in an RTL layout. */}
+                    {/* This prevents it from overlapping the start of the text (Right side). */}
+                    <div className={`flex justify-end ml-4 relative z-10 ${isTop ? '-mb-6 top-6' : '-mb-6'}`}>
                         <SlothMascot className="w-28 h-28 drop-shadow-2xl animate-bounce-subtle transform scale-x-[-1]" outfit={currentStep.id === 'shop' ? 'glasses' : undefined} />
                     </div>
 
@@ -267,7 +271,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                                 {currentStep.id === 'qa' ? 'יש שאלות?' : 'Slothy אומר:'}
                             </h3>
                             
-                            {/* Text Content with Left Padding to clear mascot */}
+                            {/* Text Content with Left Padding to clear mascot (Mascot is on Left) */}
                             <div className="pl-24">
                                 {currentStep.id === 'qa' ? (
                                     <div className="space-y-4">
