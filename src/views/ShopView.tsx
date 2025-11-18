@@ -6,8 +6,9 @@
 import React from 'react';
 import { useTranslation } from '../lib/i18n';
 import { shopItems } from '../lib/data';
-import { ShoppingBag, Check } from 'lucide-react';
+import { ShoppingBag, Check, Zap } from 'lucide-react';
 import type { UserProfile } from '../types';
+import { SlothMascot } from '../components/SlothMascot';
 
 export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile: UserProfile, onBuy: (cost: number, id: string) => void, onEquip: (id: string) => void }) {
     const { t } = useTranslation();
@@ -18,13 +19,13 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 dark:text-white drop-shadow-sm flex items-center gap-3">
                     <ShoppingBag className="text-indigo-500" size={40}/> {t('slothShop')}
                 </h1>
-                <div className="glass-panel px-6 py-2 rounded-full flex items-center gap-2 shadow-md">
+                <div className="glass-panel px-6 py-2 rounded-full flex items-center gap-2 shadow-md bg-yellow-50 border-yellow-200">
                     <span className="text-2xl">🪙</span>
-                    <span className="text-xl font-bold text-yellow-600 dark:text-yellow-400">{userProfile.coins}</span>
+                    <span className="text-xl font-bold text-yellow-600">{userProfile.coins}</span>
                 </div>
             </div>
 
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 font-medium">{t('spendCoins')}</p>
+            <p className="text-lg text-gray-700 dark:text-gray-200 mb-8 font-medium bg-white/40 dark:bg-gray-800/40 p-4 rounded-xl inline-block">{t('spendCoins')}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {shopItems.map(item => {
@@ -33,8 +34,18 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                     const canAfford = userProfile.coins >= item.price;
 
                     return (
-                        <div key={item.id} className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center relative overflow-hidden transition-transform hover:scale-105">
-                            <div className="text-6xl mb-4 drop-shadow-lg">{item.icon}</div>
+                        <div key={item.id} className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center relative overflow-hidden transition-transform hover:scale-[1.02] border-2 border-white/50">
+                            {/* Preview Area */}
+                            <div className="w-32 h-32 mb-4 relative">
+                                {item.type === 'outfit' ? (
+                                    <SlothMascot className="w-full h-full drop-shadow-xl" outfit={item.id} />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-6xl bg-blue-100 rounded-full">
+                                        {item.icon}
+                                    </div>
+                                )}
+                            </div>
+
                             <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">{item.name}</h3>
                             <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4 bg-white/50 dark:bg-gray-700/50 px-2 py-1 rounded-md">{item.type}</span>
                             
@@ -57,7 +68,7 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                                     <button 
                                         onClick={() => onBuy(item.price, item.id)}
                                         disabled={!canAfford}
-                                        className={`w-full py-3 rounded-xl font-bold shadow-md transition-all ${canAfford ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'}`}
+                                        className={`w-full py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 ${canAfford ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'}`}
                                     >
                                         {t('buy')} - {item.price} 🪙
                                     </button>

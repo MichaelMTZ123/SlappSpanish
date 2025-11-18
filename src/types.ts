@@ -9,7 +9,7 @@ export interface UserProfile {
     name: string;
     pfp: string;
     points: number;
-    coins: number; // New currency
+    coins: number;
     streak: number;
     completedLessons: string[];
     lastLogin: string | null;
@@ -18,7 +18,7 @@ export interface UserProfile {
     role?: 'learner' | 'teacher';
     isAvailableForCalls?: boolean;
     currentCourseId?: string;
-    inventory?: string[]; // IDs of items owned
+    inventory?: string[];
     equippedOutfit?: string;
     dailyQuests?: DailyQuest[];
     questDate?: string;
@@ -61,6 +61,7 @@ export interface QuizQuestion {
     q_he?: string;
     o: string[];
     a: string;
+    explanation?: string; // AI feedback
 }
 
 export interface Friend {
@@ -68,6 +69,7 @@ export interface Friend {
     name: string;
     pfp: string;
     rankName: string;
+    equippedOutfit?: string;
 }
 
 export interface CommunityQuiz {

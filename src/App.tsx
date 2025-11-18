@@ -8,7 +8,6 @@ import AppContent from './views/AppContent';
 import LoginPage from './views/LoginPage';
 import { SlothMascot } from './components/SlothMascot';
 import { Notification } from './components/Notification';
-import { Tutorial } from './components/Tutorial';
 
 export default function App() {
     const [user, setUser] = useState(null);
@@ -39,16 +38,26 @@ export default function App() {
         );
     }
 
-    const handleTutorialComplete = () => {
-      // This will be passed down and called from AppContent to update the profile
-      setShowTutorial(false);
-    }
-
     return (
-        <div className="relative h-full">
+        <div className="relative h-full w-full overflow-hidden">
+             {/* Lively Background */}
+             <ul className="circles">
+                <li></li><li></li><li></li><li></li><li></li>
+                <li></li><li></li><li></li><li></li><li></li>
+            </ul>
+
             <Notification message={notification} />
             
-            {user ? <AppContent user={user} setNotification={setNotification} showTutorial={showTutorial} setShowTutorial={setShowTutorial} /> : <LoginPage setNotification={setNotification} />}
+            {user ? (
+                <AppContent 
+                    user={user} 
+                    setNotification={setNotification} 
+                    showTutorial={showTutorial} 
+                    setShowTutorial={setShowTutorial} 
+                />
+            ) : (
+                <LoginPage setNotification={setNotification} />
+            )}
 
              <style>{`
               @keyframes fade-in-down {

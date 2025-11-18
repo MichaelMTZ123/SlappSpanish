@@ -1,5 +1,4 @@
 
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -10,6 +9,7 @@ import { db, appId } from '../../lib/firebase';
 import { useTranslation } from '../../lib/i18n';
 import type { UserProfile } from '../../types';
 import { Search, Send, Mic, UserPlus, Check, X } from 'lucide-react';
+import { SlothMascot } from '../../components/SlothMascot';
 
 const ChatWindow = ({ currentUser, friend, onBack }) => {
     const { t } = useTranslation();
@@ -58,8 +58,6 @@ const ChatWindow = ({ currentUser, friend, onBack }) => {
                 mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
                 mediaRecorder.onstop = async () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    // In a real app, upload to Firebase Storage and save URL.
-                    // Here, we'll convert to base64 and store in Firestore (not recommended for production).
                     const reader = new FileReader();
                     reader.readAsDataURL(audioBlob);
                     reader.onloadend = async () => {
@@ -83,13 +81,19 @@ const ChatWindow = ({ currentUser, friend, onBack }) => {
         <div className="h-full flex flex-col bg-white dark:bg-gray-800">
              <div className="p-4 border-b dark:border-gray-700 flex items-center gap-4">
                 <button onClick={onBack} className="md:hidden dark:text-gray-200">&larr;</button>
-                <img src={friend.pfp} alt={friend.name} className="w-10 h-10 rounded-full" />
+                <div className="w-10 h-10 rounded-full bg-blue-100 overflow-hidden relative border border-gray-200">
+                     {friend.equippedOutfit ? <SlothMascot className="w-full h-full scale-125 translate-y-1" outfit={friend.equippedOutfit}/> : <img src={friend.pfp} className="w-full h-full object-cover"/>}
+                </div>
                 <h3 className="font-bold text-gray-900 dark:text-gray-100">{friend.name}</h3>
             </div>
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
                  {messages.map(msg => (
                     <div key={msg.id} className={`flex items-end gap-2 ${msg.senderId === currentUser.uid ? 'justify-end' : 'justify-start'}`}>
-                        {msg.senderId !== currentUser.uid && <img src={friend.pfp} className="w-8 h-8 rounded-full"/>}
+                        {msg.senderId !== currentUser.uid && (
+                            <div className="w-8 h-8 rounded-full bg-blue-100 overflow-hidden flex-shrink-0">
+                                {friend.equippedOutfit ? <SlothMascot className="w-full h-full scale-125 translate-y-1" outfit={friend.equippedOutfit}/> : <img src={friend.pfp} className="w-full h-full object-cover"/>}
+                            </div>
+                        )}
                         <div className={`max-w-xs md:max-w-md p-3 rounded-2xl ${msg.senderId === currentUser.uid ? 'bg-blue-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none'}`}>
                             {msg.type === 'audio' ? <audio src={msg.audioURL} controls /> : <p>{msg.text}</p>}
                         </div>
@@ -128,8 +132,18 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
             setFriendUids(uids);
 
             const friendList = await Promise.all(snapshot.docs.map(async (d) => {
-                const userDoc = await getDoc(doc(db, `artifacts/${appId}/users/${d.id}/profile`, 'data'));
-                return { id: d.id, ...userDoc.data() };
+                // Try to get public leaderboard data first for the outfit, fallback to profile
+                let friendData;
+                const publicRef = doc(db, `artifacts/${appId}/public/data/leaderboard`, d.id);
+                const publicSnap = await getDoc(publicRef);
+                
+                if (publicSnap.exists()) {
+                    friendData = publicSnap.data();
+                } else {
+                     const userDoc = await getDoc(doc(db, `artifacts/${appId}/users/${d.id}/profile`, 'data'));
+                     friendData = userDoc.data();
+                }
+                return { id: d.id, uid: d.id, ...friendData };
             }));
             setFriends(friendList);
         });
@@ -225,17 +239,17 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
     }
 
     return (
-        <div className="p-4 sm:p-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('friends')}</h1>
+        <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md mb-6">{t('friends')}</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column */}
                 <div>
                     {/* Search */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-8">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('findFriends')}</h2>
+                    <div className="glass-panel p-6 rounded-3xl shadow-lg mb-8">
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">{t('findFriends')}</h2>
                         <div className="flex gap-2">
-                            <input type="text" value={search} onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSearch()} placeholder={t('searchUsers')} className="flex-grow p-2 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" />
-                            <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded-lg"><Search/></button>
+                            <input type="text" value={search} onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSearch()} placeholder={t('searchUsers')} className="flex-grow p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 outline-none" />
+                            <button onClick={handleSearch} className="bg-teal-500 text-white p-3 rounded-xl hover:bg-teal-600 transition shadow-md"><Search/></button>
                         </div>
                         <div className="mt-4 space-y-2">
                              {searchResults.map(user => {
@@ -255,10 +269,12 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
                                         button = <button onClick={() => sendRequest(user)} className="bg-teal-500 text-white px-3 py-1 text-sm rounded-lg flex items-center gap-1 hover:bg-teal-600"><UserPlus size={16}/> {t('addFriend')}</button>;
                                 }
                                 return (
-                                    <div key={user.uid} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                        <div className="flex items-center gap-2">
-                                            <img src={user.pfp || `https://placehold.co/32x32`} alt={user.name} className="w-8 h-8 rounded-full" />
-                                            <span className="text-gray-900 dark:text-gray-200">{user.name}</span>
+                                    <div key={user.uid} className="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700/50 rounded-xl border border-white/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                                                {user.equippedOutfit ? <SlothMascot className="w-full h-full scale-125 translate-y-1" outfit={user.equippedOutfit}/> : <img src={user.pfp || `https://placehold.co/40x40`} className="w-full h-full object-cover"/>}
+                                            </div>
+                                            <span className="text-gray-900 dark:text-gray-200 font-semibold">{user.name}</span>
                                         </div>
                                         {button}
                                     </div>
@@ -267,12 +283,12 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
                         </div>
                     </div>
                     {/* Friend Requests */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-                         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('friendRequests')}</h2>
+                    <div className="glass-panel p-6 rounded-3xl shadow-lg">
+                         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">{t('friendRequests')}</h2>
                          {incomingRequests.length === 0 ? <p className="text-gray-500 dark:text-gray-400">{t('noPendingRequests')}</p> : (
                             <div className="space-y-2">
                                 {incomingRequests.map(req => (
-                                    <div key={req.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div key={req.id} className="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700/50 rounded-xl">
                                         <div className="flex items-center gap-2">
                                             <img src={req.pfp || `https://placehold.co/32x32`} alt={req.name} className="w-8 h-8 rounded-full" />
                                             <span className="font-semibold text-gray-900 dark:text-gray-200">{req.name}</span>
@@ -288,13 +304,19 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
                     </div>
                 </div>
                 {/* Right Column: Friends List */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('myFriendsList')}</h2>
+                <div className="glass-panel p-6 rounded-3xl shadow-lg">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">{t('myFriendsList')}</h2>
                     {friends.length === 0 ? <p className="text-gray-500 dark:text-gray-400">{t('noFriendsYet')}</p> : (
                         <ul className="space-y-3">
                             {friends.map(friend => (
-                                <li key={friend.id} onClick={() => setActiveChatFriend(friend)} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                    <img src={friend.pfp || `https://placehold.co/48x48`} alt={friend.name} className="w-12 h-12 rounded-full" />
+                                <li key={friend.id} onClick={() => setActiveChatFriend(friend)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/60 dark:hover:bg-gray-700/60 cursor-pointer transition border border-transparent hover:border-teal-200">
+                                    <div className="w-12 h-12 rounded-full bg-blue-100 overflow-hidden border border-blue-200 flex-shrink-0 relative">
+                                         {friend.equippedOutfit ? (
+                                             <SlothMascot className="w-full h-full transform scale-125 translate-y-1" outfit={friend.equippedOutfit} />
+                                         ) : (
+                                             <img src={friend.pfp || `https://placehold.co/48x48`} alt={friend.name} className="w-full h-full object-cover" />
+                                         )}
+                                    </div>
                                     <div>
                                         <h3 className="font-bold text-gray-900 dark:text-gray-100">{friend.name}</h3>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">{t('startTyping')}</p>

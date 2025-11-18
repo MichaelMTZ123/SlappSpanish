@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -57,7 +58,7 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
     if (lives <= 0 && isFinished) {
         return (
             <div className="p-4 sm:p-8 flex items-center justify-center h-full">
-                <div className="text-center bg-red-50 dark:bg-red-900/20 p-8 rounded-2xl shadow-lg">
+                <div className="text-center bg-red-50 dark:bg-red-900/20 p-8 rounded-2xl shadow-lg border border-red-200">
                     <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-red-700 dark:text-red-300">Out of Lives!</h2>
                     <p className="text-red-600 dark:text-red-400 mt-2 mb-6">Tough quiz! Go back to the community hub to try another.</p>
@@ -72,7 +73,7 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
     if (isFinished) {
          return (
              <div className="p-4 sm:p-8 flex items-center justify-center h-full">
-                <div className="text-center bg-green-50 dark:bg-green-900/20 p-8 rounded-2xl shadow-lg">
+                <div className="text-center bg-green-50 dark:bg-green-900/20 p-8 rounded-2xl shadow-lg border border-green-200">
                     <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-green-700 dark:text-green-300">Quiz Complete!</h2>
                     <p className="text-green-600 dark:text-green-400 mt-2 mb-6">You earned {score} points!</p>
@@ -88,38 +89,38 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
     const progress = ((currentQuestionIndex) / quiz.questions.length) * 100;
     
     return (
-        <div className="p-4 sm:p-8">
+        <div className="p-4 sm:p-8 max-w-3xl mx-auto">
             <div className="flex justify-between items-center mb-4">
-                 <button onClick={onBack} className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition text-sm">
-                    &larr; Back to Community
+                 <button onClick={onBack} className="bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition text-sm font-bold">
+                    &larr; Back
                 </button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full">
                     {Array.from({ length: 3 }).map((_, i) => (
                         <Heart key={i} className={`w-6 h-6 ${i < lives ? 'text-red-500 fill-current' : 'text-gray-300 dark:text-gray-600'}`} />
                     ))}
                 </div>
             </div>
             
-            <h1 className="text-xl font-bold mb-1 dark:text-gray-100">{quiz.title}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">by {quiz.creatorName}</p>
+            <h1 className="text-xl font-bold mb-1 dark:text-white drop-shadow-sm">{quiz.title}</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 font-medium">by {quiz.creatorName}</p>
             
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-6">
-                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-3 mb-6 border border-white/30">
+                <div className="bg-blue-500 h-full rounded-full transition-all" style={{ width: `${progress}%` }}></div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-                <h2 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">{currentQuestion.question}</h2>
-                <div className="flex flex-col space-y-3 mt-4">
+            <div className="glass-panel p-8 rounded-3xl shadow-xl">
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">{currentQuestion.question}</h2>
+                <div className="flex flex-col space-y-3">
                     {currentQuestion.options.map(option => {
-                        let bgColor = 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600';
+                        let bgColor = 'bg-white/70 dark:bg-gray-700/70 hover:bg-white dark:hover:bg-gray-600';
                         if (isAnswered) {
-                            if (option === currentQuestion.correctAnswer) bgColor = 'bg-green-200 dark:bg-green-500/50';
-                            else if (option === selectedAnswer) bgColor = 'bg-red-200 dark:bg-red-500/50';
+                            if (option === currentQuestion.correctAnswer) bgColor = 'bg-green-200 dark:bg-green-500/50 border-green-500';
+                            else if (option === selectedAnswer) bgColor = 'bg-red-200 dark:bg-red-500/50 border-red-500';
                         }
                         return (
                             <button key={option} onClick={() => handleAnswerSelect(option)}
                                 disabled={isAnswered}
-                                className={`p-4 rounded-lg text-left text-lg font-semibold transition ${bgColor} dark:text-gray-100 ${!isAnswered ? 'cursor-pointer' : 'cursor-default'}`}>
+                                className={`p-4 rounded-xl text-left text-lg font-semibold transition border-2 border-transparent ${bgColor} dark:text-gray-100 shadow-sm`}>
                                 {option}
                             </button>
                         );
@@ -127,12 +128,12 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
                 </div>
                 
                 {isAnswered && (
-                     <div className="mt-6 text-center">
-                        <div className={`p-4 rounded-lg ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'}`}>
+                     <div className="mt-6 text-center animate-fade-in-up">
+                        <div className={`p-4 rounded-xl mb-4 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
                            <h3 className="text-xl font-bold">{selectedAnswer === currentQuestion.correctAnswer ? "Correct!" : "Incorrect"}</h3>
                            {selectedAnswer !== currentQuestion.correctAnswer && <p>The correct answer is: <strong>{currentQuestion.correctAnswer}</strong></p>}
                         </div>
-                        <button onClick={handleNextQuestion} className="w-full mt-4 bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition">
+                        <button onClick={handleNextQuestion} className="w-full mt-2 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">
                             Continue
                         </button>
                     </div>
@@ -243,29 +244,29 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
         <div className="dark:text-gray-200">
             <div className="mb-4">
                 <label className="block font-bold mb-1">{t('quizTitle')}</label>
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600" />
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 border rounded-xl dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none" />
             </div>
             {questions.map((q, index) => (
-                <div key={index} className="mb-4 p-4 border dark:border-gray-600 rounded-lg">
+                <div key={index} className="mb-4 p-4 border dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50">
                     <label className="block font-bold mb-1">{t('question')} {index + 1}</label>
-                    <textarea value={q.question} onChange={(e) => handleQuestionChange(index, e.target.value)} className="w-full p-2 border rounded-lg mb-2 dark:bg-gray-700 dark:border-gray-600" rows={2}></textarea>
+                    <textarea value={q.question} onChange={(e) => handleQuestionChange(index, e.target.value)} className="w-full p-3 border rounded-xl mb-2 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none" rows={2}></textarea>
                     {q.options.length === 0 ? (
-                        <button onClick={() => generateAnswers(index)} disabled={!q.question || isLoading} className="text-sm bg-blue-500 text-white px-3 py-1 rounded-lg disabled:bg-gray-400">
-                            {isLoading ? t('loading') : "Generate Answers with AI"}
+                        <button onClick={() => generateAnswers(index)} disabled={!q.question || isLoading} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-lg disabled:bg-gray-200 disabled:text-gray-500 font-bold">
+                            {isLoading ? t('loading') : "✨ Generate Answers with AI"}
                         </button>
                     ) : (
                         <div className="grid grid-cols-2 gap-2 mt-2">
                            {q.options.map(opt => (
-                               <div key={opt} className={`p-2 rounded-lg text-sm ${opt === q.correctAnswer ? 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-100' : 'bg-gray-200 dark:bg-gray-600'}`}>{opt}</div>
+                               <div key={opt} className={`p-2 rounded-lg text-sm font-medium ${opt === q.correctAnswer ? 'bg-green-200 text-green-800' : 'bg-gray-200 dark:bg-gray-600'}`}>{opt}</div>
                            ))}
                         </div>
                     )}
                 </div>
             ))}
-            <button onClick={addQuestionField} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold mb-4">
+            <button onClick={addQuestionField} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold mb-4 hover:underline">
                 <PlusCircle size={20} /> {t('addQuestion')}
             </button>
-            <button onClick={handlePublish} disabled={isLoading} className="w-full bg-teal-500 text-white font-bold py-3 rounded-lg hover:bg-teal-600 transition disabled:bg-gray-400">
+            <button onClick={handlePublish} disabled={isLoading} className="w-full bg-teal-500 text-white font-bold py-3 rounded-xl hover:bg-teal-600 transition disabled:bg-gray-400 shadow-lg">
                 {isLoading ? t('loading') : t('publishQuiz')}
             </button>
         </div>
@@ -304,27 +305,27 @@ export default function CommunityView({ currentUser, onQuizComplete }: { current
         <div className="p-4 sm:p-8">
              {notification && <div className="mb-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">{notification}</div>}
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">{t('communityQuizzes')}</h1>
-                <button onClick={() => setCreateModalOpen(true)} className="bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition flex items-center gap-2">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md">{t('communityQuizzes')}</h1>
+                <button onClick={() => setCreateModalOpen(true)} className="bg-teal-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-teal-600 transition flex items-center gap-2 shadow-lg">
                     <PlusCircle size={20} /> {t('createQuiz')}
                 </button>
             </div>
 
             {quizzes.length === 0 ? (
-                <div className="text-center py-10 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
-                    <p className="text-gray-500 dark:text-gray-400">{t('noQuizzesYet')}</p>
+                <div className="text-center py-10 glass-panel rounded-3xl shadow-lg">
+                    <p className="text-gray-500 dark:text-gray-300 font-medium">{t('noQuizzesYet')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {quizzes.map(quiz => (
-                        <div key={quiz.id} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col">
-                            <h3 className="text-xl font-bold dark:text-gray-100">{quiz.title}</h3>
-                            <div className="flex items-center gap-2 my-2 text-sm text-gray-500 dark:text-gray-400">
-                                <img src={quiz.creatorPfp || `https://placehold.co/24x24`} alt={quiz.creatorName} className="w-6 h-6 rounded-full"/>
+                        <div key={quiz.id} className="glass-panel p-6 rounded-2xl shadow-lg flex flex-col hover:scale-[1.02] transition-transform cursor-default">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">{quiz.title}</h3>
+                            <div className="flex items-center gap-2 my-2 text-sm text-gray-600 dark:text-gray-300">
+                                <img src={quiz.creatorPfp || `https://placehold.co/24x24`} alt={quiz.creatorName} className="w-6 h-6 rounded-full object-cover"/>
                                 <span>{t('createdBy')} {quiz.creatorName}</span>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-300 flex-grow">{quiz.questions.length} Questions</p>
-                            <button onClick={() => setSelectedQuiz(quiz)} className="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition">{t('playQuiz')}</button>
+                            <p className="text-gray-500 dark:text-gray-400 flex-grow text-sm font-medium">{quiz.questions.length} Questions</p>
+                            <button onClick={() => setSelectedQuiz(quiz)} className="mt-4 w-full bg-blue-500 text-white font-bold py-2 rounded-xl hover:bg-blue-600 transition shadow-md">{t('playQuiz')}</button>
                         </div>
                     ))}
                 </div>

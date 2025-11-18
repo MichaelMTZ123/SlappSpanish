@@ -143,8 +143,16 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         const userDocRef = doc(db, `artifacts/${appId}/users/${user.uid}/profile`, 'data');
         await setDoc(userDocRef, profileData, { merge: true });
         
+        // Sync vital public info to leaderboard doc for easier access by other users
         const leaderboardDocRef = doc(db, `artifacts/${appId}/public/data/leaderboard`, user.uid);
-        await setDoc(leaderboardDocRef, { name: newProfileData.name, pfp: newProfileData.pfp, points: newProfileData.points, role: newProfileData.role, isAvailableForCalls: newProfileData.isAvailableForCalls }, { merge: true });
+        await setDoc(leaderboardDocRef, { 
+            name: newProfileData.name, 
+            pfp: newProfileData.pfp, 
+            points: newProfileData.points, 
+            role: newProfileData.role, 
+            isAvailableForCalls: newProfileData.isAvailableForCalls,
+            equippedOutfit: newProfileData.equippedOutfit || null
+        }, { merge: true });
         
         if (newProfileData.name !== userProfile?.name) {
             setNotification(t('profileUpdated'));
@@ -236,8 +244,9 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     
     const handleEquipItem = (itemId: string) => {
          if (!userProfile) return;
-         updateProfileOnDb({ ...userProfile, equippedOutfit: itemId });
-         setNotification("Item equipped!");
+         const newOutfit = userProfile.equippedOutfit === itemId ? undefined : itemId;
+         updateProfileOnDb({ ...userProfile, equippedOutfit: newOutfit });
+         setNotification(newOutfit ? "Item equipped!" : "Item unequipped!");
     }
 
     const handleDeleteAccount = async () => {
