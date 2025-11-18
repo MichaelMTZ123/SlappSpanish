@@ -310,7 +310,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
                 <div id="chat-input-area" className="mt-4 flex gap-2">
                     {isVoiceChatMode ? (
                         <div className="flex-grow p-4 rounded-xl flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200">
-                           {isListening ? "Listening..." : isSpeaking ? "Speaking..." : isGeneratingAudio ? "Thinking..." : "Auto-Voice Mode Active"}
+                           {isListening ? t('listening') : isSpeaking ? t('speaking') : isGeneratingAudio ? t('thinking') : t('autoVoiceActive')}
                            {isListening && <Mic className="w-5 h-5 ms-2 text-red-500 animate-pulse" />}
                         </div>
                     ) : (

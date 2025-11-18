@@ -68,7 +68,7 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                         </div>
 
                         <button onClick={nextStep} className="w-full py-4 bg-teal-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-teal-600 transition mt-4">
-                            Next
+                            {t('next')}
                         </button>
                     </div>
                 )}
@@ -91,7 +91,7 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                 {/* Step 2: Choose Course */}
                 {step === 2 && (
                     <div className="space-y-6 animate-fade-in-up">
-                        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">What to learn?</h2>
+                        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">{t('whatToLearn')}</h2>
                         <div className="grid grid-cols-1 gap-4">
                             <button 
                                 onClick={() => { setSelectedCourse('spanish'); setTargetCourse('spanish'); }}
@@ -119,7 +119,7 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                             </button>
                         </div>
                         <button onClick={nextStep} className="w-full py-4 bg-teal-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-teal-600 transition">
-                            Continue
+                            {t('continue')}
                         </button>
                     </div>
                 )}
@@ -130,18 +130,18 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                          <div className="w-24 h-24 mx-auto bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
                             <Target className="w-12 h-12 text-yellow-500" />
                          </div>
-                        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Daily Goal</h2>
-                        <p className="text-gray-600 dark:text-gray-300">Can you commit to 5 minutes a day?</p>
+                        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">{t('dailyGoal')}</h2>
+                        <p className="text-gray-600 dark:text-gray-300">{t('commitMessage')}</p>
                         
                         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                              <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">1</div>
-                                <p className="text-left text-sm text-gray-600 dark:text-gray-300">Slow is smooth.</p>
+                                <p className="text-left text-sm text-gray-600 dark:text-gray-300">{t('slowIsSmooth')}</p>
                              </div>
                              <div className="w-0.5 h-4 bg-gray-300 mx-5 my-1"></div>
                              <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">2</div>
-                                <p className="text-left text-sm text-gray-600 dark:text-gray-300">Smooth is fast.</p>
+                                <p className="text-left text-sm text-gray-600 dark:text-gray-300">{t('smoothIsFast')}</p>
                              </div>
                         </div>
 

@@ -34,7 +34,7 @@ const MobileNavItem: React.FC<NavItemProps> = ({ icon: Icon, label, pageName, cu
         <button
             onClick={() => { setPage(pageName); setCurrentLesson(null); }}
             className={`flex flex-col items-center justify-center flex-shrink-0 w-20 p-2 transition-all duration-200 rounded-xl ${
-                currentPage === pageName ? 'text-blue-600 bg-white/80 dark:bg-gray-800/80 shadow-sm transform -translate-y-2' : 'text-gray-800 dark:text-gray-300 hover:bg-white/30'
+                currentPage === pageName ? 'text-blue-600 bg-blue-50 dark:bg-gray-800/80 shadow-sm transform -translate-y-1' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100'
             }`}
         >
             <Icon className="w-6 h-6 mb-1" />
@@ -101,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, page, setPage, setCurr
                         <img src={userProfile.pfp || `https://placehold.co/40x40`} alt="User" className="w-10 h-10 rounded-full border-2 border-white shadow-sm"/>
                         <div>
                             <p className="font-bold text-sm text-gray-900 dark:text-white truncate">{userProfile.name}</p>
-                            <p className="text-xs text-gray-700 dark:text-gray-300">{userProfile.coins || 0} Coins</p>
+                            <p className="text-xs text-gray-700 dark:text-gray-300">{userProfile.coins || 0} {t('coins')}</p>
                         </div>
                     </div>
                 </div>
@@ -115,8 +115,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, page, setPage, setCurr
             </main>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-4 left-4 right-4 glass-panel rounded-2xl shadow-2xl z-20">
-                <div className="flex overflow-x-auto p-2 no-scrollbar justify-between items-center">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50 pb-safe pt-2 px-2">
+                <div className="flex overflow-x-auto no-scrollbar justify-between items-center">
                      {navItems.map(item => (
                         <MobileNavItem
                             key={item.page}

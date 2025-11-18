@@ -66,7 +66,7 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
     if (isFinished) return <div className="text-center"><h2 className="text-2xl font-bold mb-4 dark:text-gray-100">{t('finalScore')}: {score}</h2></div>;
     
     const currentCard = cards[currentCardIndex];
-    if(!currentCard) return <p className="dark:text-gray-300">{t('loading')}...</p>;
+    if(!currentCard) return <p className="dark:text-gray-300">{t('loading')}</p>;
 
     return (
         <div className="dark:text-gray-200">
@@ -145,7 +145,7 @@ const SentenceScramble = ({ onGameEnd }) => {
                     <button key={i} onClick={() => handleWordClick(word, true)} className="bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg font-medium shadow-md hover:scale-105 transition">{word}</button>
                 ))}
             </div>
-            <button onClick={checkSentence} className="w-full bg-teal-500 text-white font-bold py-3 rounded-xl hover:bg-teal-600 transition shadow-lg">Check</button>
+            <button onClick={checkSentence} className="w-full bg-teal-500 text-white font-bold py-3 rounded-xl hover:bg-teal-600 transition shadow-lg">{t('check')}</button>
         </div>
     );
 };
@@ -272,7 +272,7 @@ const SpeedListen = ({ onGameEnd }) => {
         }
     };
 
-    if (round >= 5) return <div>Finished</div>;
+    if (round >= 5) return <div>{t('finished')}</div>;
 
     return (
         <div className="text-center">
@@ -280,7 +280,7 @@ const SpeedListen = ({ onGameEnd }) => {
              <button onClick={() => playAudio(targetWord.es)} className="bg-indigo-500 hover:bg-indigo-600 text-white p-8 rounded-full shadow-lg mb-8 animate-pulse">
                 <Volume2 size={48} />
              </button>
-             <p className="mb-4 text-gray-800 dark:text-white font-medium">Listen and select the correct meaning:</p>
+             <p className="mb-4 text-gray-800 dark:text-white font-medium">{t('listenAndSelect')}</p>
              <div className="grid grid-cols-2 gap-4">
                  {options.map((opt, i) => (
                      <button key={i} onClick={() => handleOptionClick(opt)} className={`p-4 rounded-xl font-bold text-lg transition-all ${status === 'playing' ? 'bg-white text-gray-800 hover:bg-gray-100' : status === 'correct' && opt.es === targetWord.es ? 'bg-green-500 text-white' : 'bg-red-400 text-white opacity-50'}`}>
@@ -316,7 +316,7 @@ export default function MinigamesView({ onGameComplete }) {
                  <div className="glass-panel p-8 rounded-3xl shadow-2xl">
                     <GameComponent onGameEnd={handleGameEnd} />
                     <button onClick={() => setActiveGame(null)} className="w-full mt-8 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        Quit Game
+                        {t('quitGame')}
                     </button>
                 </div>
             </div>

@@ -71,7 +71,7 @@ export default function SelfPacedLessonsView({ onSelectLesson, completedLessons,
                         <div className={`bg-${unit.color}-500 text-white p-4 rounded-xl mb-8 shadow-lg flex justify-between items-center transform hover:scale-[1.02] transition`}>
                             <div>
                                 <h2 className="text-xl font-bold">{unit.title}</h2>
-                                <p className="text-sm opacity-80">Unit {unitIndex + 1}</p>
+                                <p className="text-sm opacity-80">{t('unit')} {unitIndex + 1}</p>
                             </div>
                             <Star className="text-yellow-300 fill-current" />
                         </div>

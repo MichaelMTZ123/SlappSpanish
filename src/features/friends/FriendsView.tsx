@@ -80,7 +80,7 @@ const ChatWindow = ({ currentUser, friend, onBack }) => {
     return (
         <div className="h-full flex flex-col bg-white dark:bg-gray-800">
              <div className="p-4 border-b dark:border-gray-700 flex items-center gap-4">
-                <button onClick={onBack} className="md:hidden dark:text-gray-200">&larr;</button>
+                <button onClick={onBack} className="md:hidden dark:text-gray-200 font-bold">&larr; {t('back')}</button>
                 <div className="w-10 h-10 rounded-full bg-blue-100 overflow-hidden relative border border-gray-200">
                      {friend.equippedOutfit ? <SlothMascot className="w-full h-full scale-125 translate-y-1" outfit={friend.equippedOutfit}/> : <img src={friend.pfp} className="w-full h-full object-cover"/>}
                 </div>

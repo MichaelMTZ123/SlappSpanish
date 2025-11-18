@@ -12,6 +12,7 @@ import { generateDailyQuests } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
 import { Onboarding } from '../components/Onboarding';
 import { IncomingCallModal } from '../components/IncomingCallModal';
+import { AppPresentation } from '../components/AppPresentation';
 
 import { Layout } from '../components/Layout';
 import HomeView from './HomeView';
@@ -35,6 +36,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const [activeCall, setActiveCall] = useState<Call | null>(null);
     const [incomingCall, setIncomingCall] = useState<Call | null>(null);
     const [currentCourseId, setCurrentCourseId] = useState('spanish');
+    const [showPresentation, setShowPresentation] = useState(false); // Tour state lifted up
     
     const fetchUserProfile = useCallback(() => {
         if (!user) return;
@@ -313,7 +315,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         }
         
         switch (page) {
-            case 'home': return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} />;
+            case 'home': return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} onStartTour={() => setShowPresentation(true)} />;
             case 'lessons': return <LearnHub currentUser={userProfile} completedLessons={userProfile.completedLessons || []} onSelectLesson={setCurrentLesson} onInitiateCall={handleInitiateCall} currentCourseId={currentCourseId} onCourseChange={handleCourseSelection} />;
             case 'chat': return <AiChatView userId={user.uid} setNotification={setNotification} onMessageSent={() => handlePointsUpdate(10, 'chat')} />;
             case 'leaderboard': return <LeaderboardView />;
@@ -323,7 +325,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
             case 'community': return <CommunityView currentUser={userProfile} onQuizComplete={(score) => handlePointsUpdate(score, 'minigame')} />;
             case 'shop': return <ShopView userProfile={userProfile} onBuy={handleBuyItem} onEquip={handleEquipItem} />;
             case 'teaching-requests': return <TeachingRequestsView currentUser={userProfile} onAcceptCall={handleAcceptCall} />;
-            default: return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} />;
+            default: return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} onStartTour={() => setShowPresentation(true)} />;
         }
     };
 
@@ -337,8 +339,12 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
 
     return (
         <React.Fragment>
+            {/* Global Overlay Components */}
             <IncomingCallModal call={incomingCall} onAccept={handleAcceptCall} onDecline={handleDeclineCall} />
             {showTutorial && <Onboarding onComplete={handleOnboardingComplete} setTargetCourse={setCurrentCourseId} setTheme={setTheme} />}
+            {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} setPage={setPage} />}
+            
+            {/* Main Layout */}
             <Layout page={page} setPage={setPage} setCurrentLesson={setCurrentLesson} userProfile={userProfile}>
                 {renderPage()}
             </Layout>

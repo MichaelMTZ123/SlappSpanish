@@ -3,17 +3,15 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from '../lib/i18n';
 import { allLessons } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
 import { Zap, Trophy, Users, Library, ShoppingBag, PlayCircle } from 'lucide-react';
 import { DailyQuests } from '../components/DailyQuests';
-import { AppPresentation } from '../components/AppPresentation';
 
-export default function HomeView({ userProfile, onSelectLesson, setPage }) {
+export default function HomeView({ userProfile, onSelectLesson, setPage, onStartTour }) {
     const { t } = useTranslation();
-    const [showPresentation, setShowPresentation] = useState(false);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -31,7 +29,6 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
 
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
-            {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} setPage={setPage} />}
             
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
@@ -45,7 +42,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
             {/* Presentation Button */}
             <div className="mb-8">
                 <button 
-                    onClick={() => setShowPresentation(true)}
+                    onClick={onStartTour}
                     className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 text-white p-4 rounded-2xl shadow-xl hover:scale-[1.01] transition-transform flex items-center justify-center gap-3 relative overflow-hidden group"
                 >
                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -74,8 +71,8 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                         </div>
                     ) : (
                         <div className="glass-panel p-8 rounded-3xl shadow-xl text-center">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">All lessons complete!</h2>
-                            <p className="text-gray-700 dark:text-gray-300 mt-2">You are a legend. Check back later for more content.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('allLessonsComplete')}</h2>
+                            <p className="text-gray-700 dark:text-gray-300 mt-2">{t('legendMessage')}</p>
                         </div>
                     )}
 
@@ -100,7 +97,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
 
                     {/* Quick Links */}
                     <div className="glass-panel p-6 rounded-3xl shadow-lg">
-                        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Quick Access</h3>
+                        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">{t('quickAccess')}</h3>
                         <div className="space-y-3">
                             <button onClick={() => setPage('chat')} className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md hover:scale-105 transition">
                                 <div className="bg-white/20 p-2 rounded-lg"><SlothMascot className="w-6 h-6"/></div>

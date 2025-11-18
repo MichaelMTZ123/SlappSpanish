@@ -60,10 +60,10 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
             <div className="p-4 sm:p-8 flex items-center justify-center h-full">
                 <div className="text-center bg-red-50 dark:bg-red-900/20 p-8 rounded-2xl shadow-lg border border-red-200">
                     <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-red-700 dark:text-red-300">Out of Lives!</h2>
-                    <p className="text-red-600 dark:text-red-400 mt-2 mb-6">Tough quiz! Go back to the community hub to try another.</p>
+                    <h2 className="text-2xl font-bold text-red-700 dark:text-red-300">{t('outOfLives')}</h2>
+                    <p className="text-red-600 dark:text-red-400 mt-2 mb-6">{t('toughQuiz')}</p>
                     <button onClick={onBack} className="w-full bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600 transition">
-                        Back to Community
+                        {t('backToCommunity')}
                     </button>
                 </div>
             </div>
@@ -75,10 +75,10 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
              <div className="p-4 sm:p-8 flex items-center justify-center h-full">
                 <div className="text-center bg-green-50 dark:bg-green-900/20 p-8 rounded-2xl shadow-lg border border-green-200">
                     <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-green-700 dark:text-green-300">Quiz Complete!</h2>
-                    <p className="text-green-600 dark:text-green-400 mt-2 mb-6">You earned {score} points!</p>
+                    <h2 className="text-2xl font-bold text-green-700 dark:text-green-300">{t('quizComplete')}</h2>
+                    <p className="text-green-600 dark:text-green-400 mt-2 mb-6">{t('youEarnedPoints')} {score} {t('points')}!</p>
                     <button onClick={onBack} className="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition">
-                        Back to Community
+                        {t('backToCommunity')}
                     </button>
                 </div>
             </div>
@@ -92,7 +92,7 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
         <div className="p-4 sm:p-8 max-w-3xl mx-auto">
             <div className="flex justify-between items-center mb-4">
                  <button onClick={onBack} className="bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition text-sm font-bold">
-                    &larr; Back
+                    &larr; {t('back')}
                 </button>
                 <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full">
                     {Array.from({ length: 3 }).map((_, i) => (
@@ -130,11 +130,11 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
                 {isAnswered && (
                      <div className="mt-6 text-center animate-fade-in-up">
                         <div className={`p-4 rounded-xl mb-4 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
-                           <h3 className="text-xl font-bold">{selectedAnswer === currentQuestion.correctAnswer ? "Correct!" : "Incorrect"}</h3>
-                           {selectedAnswer !== currentQuestion.correctAnswer && <p>The correct answer is: <strong>{currentQuestion.correctAnswer}</strong></p>}
+                           <h3 className="text-xl font-bold">{selectedAnswer === currentQuestion.correctAnswer ? t('correctExclamation') : t('incorrectExclamation')}</h3>
+                           {selectedAnswer !== currentQuestion.correctAnswer && <p>{t('correctAnswerIs')} <strong>{currentQuestion.correctAnswer}</strong></p>}
                         </div>
                         <button onClick={handleNextQuestion} className="w-full mt-2 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">
-                            Continue
+                            {t('continue')}
                         </button>
                     </div>
                 )}
@@ -252,7 +252,7 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
                     <textarea value={q.question} onChange={(e) => handleQuestionChange(index, e.target.value)} className="w-full p-3 border rounded-xl mb-2 bg-white dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none text-gray-900 dark:text-white" rows={2}></textarea>
                     {q.options.length === 0 ? (
                         <button onClick={() => generateAnswers(index)} disabled={!q.question || isLoading} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-lg disabled:bg-gray-200 disabled:text-gray-500 font-bold hover:bg-blue-200 transition">
-                            {isLoading ? t('loading') : "✨ Generate Answers with AI"}
+                            {isLoading ? t('loading') : t('generateAiAnswers')}
                         </button>
                     ) : (
                         <div className="grid grid-cols-2 gap-2 mt-2">
@@ -324,7 +324,7 @@ export default function CommunityView({ currentUser, onQuizComplete }: { current
                                 <img src={quiz.creatorPfp || `https://placehold.co/24x24`} alt={quiz.creatorName} className="w-6 h-6 rounded-full object-cover"/>
                                 <span>{t('createdBy')} {quiz.creatorName}</span>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 flex-grow text-sm font-medium">{quiz.questions.length} Questions</p>
+                            <p className="text-gray-600 dark:text-gray-400 flex-grow text-sm font-medium">{quiz.questions.length} {t('question')}(s)</p>
                             <button onClick={() => setSelectedQuiz(quiz)} className="mt-4 w-full bg-blue-500 text-white font-bold py-2 rounded-xl hover:bg-blue-600 transition shadow-md">{t('playQuiz')}</button>
                         </div>
                     ))}

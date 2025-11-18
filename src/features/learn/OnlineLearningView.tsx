@@ -40,13 +40,13 @@ export default function OnlineLearningView({ currentUser, onBack, onInitiateCall
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
             <button onClick={onBack} className="flex items-center gap-2 text-gray-800 dark:text-white hover:text-gray-600 mb-6 font-bold bg-white/40 dark:bg-black/20 p-2 rounded-lg inline-block transition backdrop-blur-sm">
-                <ArrowLeft size={20} /> Back to Learning Hub
+                <ArrowLeft size={20} /> {t('backToHub')}
             </button>
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-md">{t('findATeacher')}</h1>
             <p className="mt-2 text-lg text-gray-700 dark:text-gray-200 mb-8 font-medium">{t('availableTeachers')}</p>
             
             {isLoading ? (
-                <p className="text-gray-800 dark:text-white font-bold">{t('loading')}...</p>
+                <p className="text-gray-800 dark:text-white font-bold">{t('loading')}</p>
             ) : teachers.length === 0 ? (
                 <div className="text-center py-10 glass-panel rounded-3xl shadow-lg">
                     <p className="text-gray-600 dark:text-gray-300 font-medium">{t('noTeachersAvailable')}</p>
@@ -57,7 +57,7 @@ export default function OnlineLearningView({ currentUser, onBack, onInitiateCall
                         <div key={teacher.uid} className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center text-center border-2 border-white/50 transition hover:scale-[1.02]">
                             <img src={teacher.pfp || `https://placehold.co/96x96`} alt={teacher.name} className="w-24 h-24 rounded-full mb-4 border-4 border-green-400 object-cover shadow-md" />
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white">{teacher.name}</h3>
-                            <p className="text-green-600 font-extrabold text-sm mb-4 bg-green-100 px-3 py-1 rounded-full mt-2">Online</p>
+                            <p className="text-green-600 font-extrabold text-sm mb-4 bg-green-100 px-3 py-1 rounded-full mt-2">{t('online')}</p>
                             <button onClick={() => handleCallTeacher(teacher)} className="mt-auto w-full bg-teal-500 text-white font-bold py-3 rounded-xl hover:bg-teal-600 transition flex items-center justify-center gap-2 shadow-md">
                                 <Phone size={18} /> {t('startCall')}
                             </button>

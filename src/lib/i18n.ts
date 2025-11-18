@@ -42,6 +42,9 @@ const translations = {
         'selectTheme': 'Select App Theme',
         'lightMode': 'Light Mode',
         'darkMode': 'Dark Mode',
+        'next': 'Next',
+        'continue': 'Continue',
+        'back': 'Back',
 
         // Home
         'goodMorning': 'Good morning',
@@ -64,6 +67,9 @@ const translations = {
         'dailyQuests': 'Daily Quests',
         'questCompleted': 'Quest Completed',
         'welcomePresentation': 'Welcome to Sloth',
+        'allLessonsComplete': 'All lessons complete!',
+        'legendMessage': 'You are a legend. Check back later for more content.',
+        'quickAccess': 'Quick Access',
 
         // Navigation
         'home': 'Home',
@@ -107,6 +113,13 @@ const translations = {
         'acceptCall': 'Accept Call',
         'refresh': 'Refresh',
         'learning': 'Learning',
+        'hub': 'Hub',
+        'choosePath': 'Choose your path to fluency.',
+        'backToHub': 'Back to Learning Hub',
+        'online': 'Online',
+        'unit': 'Unit',
+        'outOfLives': 'Out of Lives!',
+        'dontWorry': "Don't worry, practice makes perfect. Try again.",
 
 
         // AI Chat
@@ -122,6 +135,10 @@ const translations = {
         'chatCleared': 'Chat history cleared.',
         'scenarios': 'Scenarios',
         'pickScenario': 'Pick a Roleplay Scenario',
+        'listening': 'Listening...',
+        'speaking': 'Speaking...',
+        'thinking': 'Thinking...',
+        'autoVoiceActive': 'Auto-Voice Mode Active',
 
         // Leaderboard
         'anonymousUser': 'Anonymous User',
@@ -185,6 +202,13 @@ const translations = {
         'quizRejected': 'AI moderation failed: The content may be inappropriate. Please revise.',
         'createdBy': 'Created by',
         'playQuiz': 'Play Quiz',
+        'backToCommunity': 'Back to Community',
+        'toughQuiz': 'Tough quiz! Go back to the community hub to try another.',
+        'correctExclamation': 'Correct!',
+        'incorrectExclamation': 'Incorrect',
+        'correctAnswerIs': 'The correct answer is:',
+        'generateAiAnswers': '✨ Generate Answers with AI',
+
 
         // Minigames
         'selectAGame': 'Select a Minigame',
@@ -202,6 +226,17 @@ const translations = {
         'playAgain': 'Play Again',
         'start': 'Start',
         'dragAndDrop': 'Drag the words to form a correct sentence.',
+        'quitGame': 'Quit Game',
+        'check': 'Check',
+        'listenAndSelect': 'Listen and select the correct meaning:',
+        'finished': 'Finished',
+        
+        // Onboarding
+        'whatToLearn': 'What to learn?',
+        'dailyGoal': 'Daily Goal',
+        'commitMessage': 'Can you commit to 5 minutes a day?',
+        'slowIsSmooth': 'Slow is smooth.',
+        'smoothIsFast': 'Smooth is fast.',
     },
     he: {
         // General
@@ -239,6 +274,9 @@ const translations = {
         'selectTheme': 'בחר ערכת נושא',
         'lightMode': 'מצב יום',
         'darkMode': 'מצב לילה',
+        'next': 'הבא',
+        'continue': 'המשך',
+        'back': 'חזרה',
 
         // Home
         'goodMorning': 'בוקר טוב',
@@ -261,6 +299,9 @@ const translations = {
         'dailyQuests': 'משימות יומיות',
         'questCompleted': 'משימה הושלמה',
         'welcomePresentation': 'ברוכים הבאים לSloth',
+        'allLessonsComplete': 'כל השיעורים הושלמו!',
+        'legendMessage': 'אתה אגדה. חזור מאוחר יותר לתוכן נוסף.',
+        'quickAccess': 'גישה מהירה',
 
         // Navigation
         'home': 'בית',
@@ -304,6 +345,13 @@ const translations = {
         'acceptCall': 'קבל שיחה',
         'refresh': 'רענן',
         'learning': 'לומד',
+        'hub': 'מרכז',
+        'choosePath': 'בחר את הדרך שלך לשליטה בשפה.',
+        'backToHub': 'חזרה למרכז הלמידה',
+        'online': 'מחובר',
+        'unit': 'יחידה',
+        'outOfLives': 'נגמרו החיים!',
+        'dontWorry': 'אל דאגה, תרגול מביא לשלמות. נסה שוב.',
 
         // AI Chat
         'aiPracticeChat': 'צ\'אט אימון עם AI',
@@ -318,6 +366,10 @@ const translations = {
         'chatCleared': 'היסטוריית הצ\'אט נוקתה.',
         'scenarios': 'תרחישים',
         'pickScenario': 'בחר תרחיש משחק תפקידים',
+        'listening': 'מקשיב...',
+        'speaking': 'מדבר...',
+        'thinking': 'חושב...',
+        'autoVoiceActive': 'מצב דיבור אוטומטי פעיל',
 
         // Leaderboard
         'anonymousUser': 'משתמש אנונימי',
@@ -380,6 +432,12 @@ const translations = {
         'quizRejected': 'בדיקת ה-AI נכשלה: התוכן עלול להיות לא הולם. אנא שנה אותו.',
         'createdBy': 'נוצר על ידי',
         'playQuiz': 'שחק בבחן',
+        'backToCommunity': 'חזרה לקהילה',
+        'toughQuiz': 'חידון קשה! חזור לקהילה כדי לנסות אחר.',
+        'correctExclamation': 'נכון!',
+        'incorrectExclamation': 'לא נכון',
+        'correctAnswerIs': 'התשובה הנכונה היא:',
+        'generateAiAnswers': '✨ צור תשובות עם AI',
 
         // Minigames
         'selectAGame': 'בחר מיני-משחק',
@@ -397,6 +455,17 @@ const translations = {
         'playAgain': 'שחק שוב',
         'start': 'התחל',
         'dragAndDrop': 'גרור את המילים כדי ליצור משפט נכון.',
+        'quitGame': 'צא מהמשחק',
+        'check': 'בדוק',
+        'listenAndSelect': 'הקשב ובחר את המשמעות הנכונה:',
+        'finished': 'סיום',
+
+        // Onboarding
+        'whatToLearn': 'מה תרצה ללמוד?',
+        'dailyGoal': 'מטרה יומית',
+        'commitMessage': 'האם תוכל להקדיש 5 דקות ביום?',
+        'slowIsSmooth': 'לאט זה חלק.',
+        'smoothIsFast': 'חלק זה מהיר.',
     },
 };
 

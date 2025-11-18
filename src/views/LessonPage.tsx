@@ -18,8 +18,8 @@ const FailedLessonView = ({ onBack }) => {
                 <div className="absolute inset-0 bg-red-200 rounded-full blur-xl opacity-50 animate-pulse"></div>
                 <SlothMascot className="w-32 h-32 drop-shadow-md grayscale opacity-80" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-white mt-4">Out of Lives!</h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-2 mb-6">Don't worry, practice makes perfect. Try again.</p>
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white mt-4">{t('outOfLives')}</h2>
+            <p className="text-gray-600 dark:text-gray-300 mt-2 mb-6">{t('dontWorry')}</p>
             <button onClick={onBack} className="w-full bg-red-500 text-white font-bold py-4 rounded-xl hover:bg-red-600 transition shadow-lg">
                 {t('tryAgain')}
             </button>
@@ -166,7 +166,7 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
                                
                                {!isCorrect && (
                                    <div className="text-sm text-red-600 dark:text-red-200 font-semibold mb-2">
-                                       Correct: {currentQuestion.correctAnswer}
+                                       {t('correctAnswerIs')} {currentQuestion.correctAnswer}
                                    </div>
                                )}
 

@@ -31,8 +31,9 @@ const steps = [
     {
         id: 'learn',
         page: 'lessons',
-        targetId: 'lesson-unit-1',
-        text: 'זה הלב של האפליקציה. מסלול הלמידה שלכם בנוי מיחידות. כל יחידה מכילה שיעורים קצרים וממוקדים. לחצו על הכוכב כדי להתחיל!',
+        // Updated target to the general "Path" card on the Learn Hub page
+        targetId: 'learn-path-card', 
+        text: 'זה הלב של האפליקציה. מסלול הלמידה שלכם בנוי מיחידות. כאן תוכלו להתחיל בשיעורים עצמיים בקצב שלכם.',
         position: 'bottom'
     },
     {
@@ -79,62 +80,94 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
     const [question, setQuestion] = useState('');
     const [aiAnswer, setAiAnswer] = useState('');
     const [isThinking, setIsThinking] = useState(false);
+    const [highlightVisible, setHighlightVisible] = useState(false);
 
     const currentStep = steps[currentStepIndex];
 
-    // Effect to handle page navigation and spotlight calculation
+    // Main Effect for Navigation and Targeting
     useEffect(() => {
-        // 1. Navigate to the correct page
+        setHighlightVisible(false); // Reset highlight immediately on step change
         setPage(currentStep.page);
 
-        // 2. Wait for DOM to update/render, then find target
-        const timer = setTimeout(() => {
-            if (currentStep.targetId) {
-                const element = document.getElementById(currentStep.targetId);
-                if (element) {
-                    const rect = element.getBoundingClientRect();
-                    const padding = 10;
-                    
-                    // Create a "hole" in the overlay using clip-path
-                    // Note: We are essentially just highlighting the box, actual clip-path overlay is complex
-                    // easier visual trick: position absolute box with box-shadow outline
-                    setSpotlightStyle({
-                        top: rect.top - padding,
-                        left: rect.left - padding,
-                        width: rect.width + (padding * 2),
-                        height: rect.height + (padding * 2),
-                        opacity: 1
-                    });
-
-                    // Position Mascot relative to target
-                    let mascotTop = rect.bottom + 20;
-                    let mascotLeft = rect.left + (rect.width / 2) - 100; // Center approx
-
-                    if (currentStep.position === 'top') {
-                        mascotTop = rect.top - 250; // Place above
-                    }
-                    
-                    // Boundary checks
-                    if (mascotLeft < 10) mascotLeft = 10;
-                    if (window.innerWidth - mascotLeft < 220) mascotLeft = window.innerWidth - 220;
-
-                    setMascotStyle({
-                        top: mascotTop,
-                        left: mascotLeft,
-                    });
-                }
-            } else {
-                // Center position for Intro/Q&A
-                setSpotlightStyle({ opacity: 0 }); // Hide spotlight box
+        let retryCount = 0;
+        const maxRetries = 20; // Retry for 2 seconds (20 * 100ms)
+        
+        const findTarget = () => {
+            if (!currentStep.targetId) {
+                // Center position for steps without target
+                setSpotlightStyle({ opacity: 0, display: 'none' });
                 setMascotStyle({
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)'
                 });
+                setHighlightVisible(true);
+                return;
             }
-        }, 600); // Delay to allow page transition/render
 
-        return () => clearTimeout(timer);
+            const element = document.getElementById(currentStep.targetId);
+            
+            if (element) {
+                // Scroll element into view first to ensure correct rect calculation
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Small delay to allow scroll to settle
+                setTimeout(() => {
+                    const rect = element.getBoundingClientRect();
+                    const padding = 10;
+                    
+                    setSpotlightStyle({
+                        top: rect.top - padding,
+                        left: rect.left - padding,
+                        width: rect.width + (padding * 2),
+                        height: rect.height + (padding * 2),
+                        opacity: 1,
+                        display: 'block',
+                        position: 'fixed' // Important: use fixed to align with viewport
+                    });
+
+                    // Position Mascot relative to target
+                    // Default: Below the element
+                    let mascotTop = rect.bottom + 20;
+                    let mascotLeft = rect.left + (rect.width / 2) - 160; // Center approx (320px width / 2)
+
+                    // Adjust if off-screen bottom
+                    if (mascotTop + 300 > window.innerHeight || currentStep.position === 'top') {
+                        mascotTop = rect.top - 320; // Place above
+                    }
+
+                    // Adjust horizontal boundaries
+                    if (mascotLeft < 10) mascotLeft = 10;
+                    if (mascotLeft + 320 > window.innerWidth) mascotLeft = window.innerWidth - 330;
+
+                    setMascotStyle({
+                        top: mascotTop,
+                        left: mascotLeft,
+                        transform: 'none'
+                    });
+                    setHighlightVisible(true);
+                }, 500);
+            } else {
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(findTarget, 100);
+                } else {
+                    console.warn(`Tour target ${currentStep.targetId} not found.`);
+                    // Fallback to center if element not found
+                    setSpotlightStyle({ opacity: 0, display: 'none' });
+                    setMascotStyle({
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)'
+                    });
+                    setHighlightVisible(true);
+                }
+            }
+        };
+
+        // Start searching
+        findTarget();
+
     }, [currentStepIndex, setPage, currentStep]);
 
     const handleNext = () => {
@@ -144,6 +177,12 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             onClose();
         }
     };
+    
+    const handlePrev = () => {
+         if (currentStepIndex > 0) {
+            setCurrentStepIndex(prev => prev - 1);
+        }
+    }
 
     const handleAskAI = async () => {
         if (!question.trim()) return;
@@ -155,15 +194,6 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             You are Slothy, the mascot of the language learning app "Sloth".
             The user is asking a question about the app during the onboarding tour.
             Answer briefly, friendly, and in Hebrew.
-            
-            App Features for context:
-            - Learn: Spanish, English, Arabic courses.
-            - AI Chat: Practice conversation.
-            - Minigames: Memory, Speed Listen, Flashcards.
-            - Shop: Buy outfits for Slothy with coins.
-            - Community: User generated quizzes.
-            - Friends: Leaderboards and chat.
-            
             User Question: "${question}"
             `;
 
@@ -180,30 +210,30 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
         }
     };
 
+    if (!highlightVisible && currentStepIndex !== 0) return null; // Hide flicker
+
     return (
-        <div className="fixed inset-0 z-[100] overflow-hidden" dir="rtl">
-            {/* Dark Backdrop with transition */}
+        <div className="fixed inset-0 z-[9999] overflow-hidden font-sans" dir="rtl">
+            {/* Dark Backdrop */}
             <div className="absolute inset-0 bg-black/70 transition-opacity duration-500" />
 
             {/* Spotlight Box (Highlighter) */}
-            <div 
-                className="absolute border-4 border-yellow-400 rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.7)] transition-all duration-500 pointer-events-none z-[101] animate-pulse"
-                style={{
-                    ...spotlightStyle,
-                    display: currentStep.targetId ? 'block' : 'none',
-                    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.75)' // This creates the cutout effect visually
-                }}
-            />
+            {currentStep.targetId && (
+                 <div 
+                    className="fixed border-4 border-yellow-400 rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.75)] transition-all duration-500 pointer-events-none z-[10000] animate-pulse"
+                    style={spotlightStyle}
+                />
+            )}
 
             {/* Interactive Container */}
             <div 
-                className="absolute transition-all duration-700 ease-in-out z-[102] flex flex-col items-center w-[320px] md:w-[400px]"
+                className="fixed transition-all duration-700 ease-in-out z-[10001] flex flex-col items-center w-[320px] md:w-[400px]"
                 style={mascotStyle}
             >
                 {/* Speech Bubble */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-2xl border-2 border-teal-100 relative mb-4 animate-fade-in-up">
                      {/* Triangle pointer */}
-                    <div className={`absolute w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[15px] border-t-white dark:border-t-gray-800 left-1/2 -translate-x-1/2 ${currentStep.position === 'top' ? '-bottom-3' : '-top-3 rotate-180'}`}></div>
+                    <div className={`absolute w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[15px] border-t-white dark:border-t-gray-800 left-1/2 -translate-x-1/2 ${currentStep.position === 'top' || (!currentStep.targetId) ? '-bottom-3' : '-top-3 rotate-180'}`}></div>
 
                     {/* Content */}
                     <h3 className="font-bold text-xl text-teal-600 mb-2">Slothy אומר:</h3>
@@ -219,7 +249,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                                     type="text" 
                                     value={question} 
                                     onChange={e => setQuestion(e.target.value)}
-                                    placeholder="שאל אותי משהו על האפליקציה..." 
+                                    placeholder="שאל אותי משהו..." 
                                     className="flex-grow p-2 border rounded-lg dark:bg-gray-700 dark:text-white"
                                 />
                                 <button onClick={handleAskAI} disabled={isThinking} className="bg-teal-500 text-white p-2 rounded-lg">
@@ -228,7 +258,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                             </div>
                         </div>
                     ) : (
-                        <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed typing-effect">
+                        <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">
                             {currentStep.text}
                         </p>
                     )}
@@ -241,6 +271,9 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                              ))}
                          </div>
                          <div className="flex gap-3">
+                             <button onClick={currentStepIndex === 0 ? onClose : handlePrev} className="text-gray-500 dark:text-gray-400 px-3 py-2 rounded-xl font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm">
+                                 {currentStepIndex === 0 ? 'דלג' : 'הקודם'}
+                             </button>
                              {currentStepIndex < steps.length - 1 ? (
                                  <button onClick={handleNext} className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-xl font-bold shadow-md transition flex items-center gap-2">
                                      הבא <ArrowLeft size={18} />
@@ -261,7 +294,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             </div>
 
             {/* Quit Button */}
-            <button onClick={onClose} className="absolute top-4 left-4 z-[103] bg-white/20 hover:bg-white/40 text-white p-2 rounded-full backdrop-blur-sm">
+            <button onClick={onClose} className="fixed top-4 left-4 z-[10002] bg-white/20 hover:bg-white/40 text-white p-2 rounded-full backdrop-blur-sm">
                 <X size={32} />
             </button>
         </div>
