@@ -10,7 +10,7 @@ import { generateContent } from '../lib/gemini';
 import { useTranslation } from '../lib/i18n';
 import { aiRoleplayScenarios } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
-import { Mic, Send, Volume2, Trash2, Sparkles } from 'lucide-react';
+import { Mic, Send, Volume2, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { Modal } from '../components/Modal';
 
 export default function AiChatView({ userId, setNotification, onMessageSent }) {
@@ -22,6 +22,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
     const recognitionRef = useRef(null);
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
     const [isVoiceChatMode, setIsVoiceChatMode] = useState(false);
     const lastSpokenMessageRef = useRef(null);
     const initialMessageSent = useRef(false);
@@ -31,7 +32,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
 
     const getSystemInstruction = () => {
         const langName = language === 'he' ? 'Hebrew' : 'English';
-        let baseInstruction = `You are Slappy, a friendly Spanish language tutor. The user's native language is ${langName}. 
+        let baseInstruction = `You are Slothy, a friendly Spanish language tutor. The user's native language is ${langName}. 
         IMPORTANT: When explaining concepts, defining words, or giving feedback, USE ${langName}. 
         However, encourage the user to practice Spanish.
         If the user speaks in ${langName}, answer in ${langName} but suggest the Spanish translation.
@@ -92,22 +93,74 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chatHistory]);
 
-    const speak = useCallback((text, onEndCallback) => {
+    // Real AI TTS using Gemini
+    const speak = useCallback(async (text, onEndCallback) => {
+        if (!text) return;
+        
+        // Stop browser speech if any
         speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voices = window.speechSynthesis.getVoices();
-        const spanishVoice = voices.find(v => v.lang.startsWith('es'));
-        
-        if (/[áéíóúñ¿¡]/.test(text) && spanishVoice) {
-            utterance.voice = spanishVoice;
-            utterance.lang = spanishVoice.lang;
+
+        setIsGeneratingAudio(true);
+
+        try {
+            // Generate Speech using Gemini 2.5 Flash TTS
+            const response = await generateContent({
+                model: "gemini-2.5-flash-preview-tts",
+                contents: [{ parts: [{ text: text }] }],
+                config: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
+                    }
+                }
+            });
+
+            const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+            
+            if (base64Audio) {
+                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({sampleRate: 24000});
+                const binaryString = atob(base64Audio);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const floatArray = new Int16Array(bytes.buffer);
+                
+                // Simple PCM decoding
+                const buffer = audioContext.createBuffer(1, floatArray.length, 24000);
+                const channelData = buffer.getChannelData(0);
+                for(let i=0; i<floatArray.length; i++){
+                    channelData[i] = floatArray[i] / 32768.0;
+                }
+
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                
+                source.onended = () => {
+                    setIsSpeaking(false);
+                    if (onEndCallback) onEndCallback();
+                };
+                
+                setIsGeneratingAudio(false);
+                setIsSpeaking(true);
+                source.start(0);
+            } else {
+                throw new Error("No audio data received");
+            }
+
+        } catch (error) {
+            console.error("Gemini TTS failed, falling back to browser TTS", error);
+            setIsGeneratingAudio(false);
+            
+            // Fallback to Browser TTS
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => { setIsSpeaking(false); if(onEndCallback) onEndCallback(); };
+            window.speechSynthesis.speak(utterance);
         }
-        
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => { setIsSpeaking(false); if (onEndCallback) onEndCallback(); };
-        utterance.onerror = () => { setIsSpeaking(false); if (onEndCallback) onEndCallback(); };
-        
-        window.speechSynthesis.speak(utterance);
     }, []);
 
     const startListening = useCallback(() => {
@@ -132,13 +185,14 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
     
     useEffect(() => {
         const lastMessage = chatHistory[chatHistory.length - 1];
-        if (isVoiceChatMode && !isLoading && !isSpeaking && !isListening && lastMessage?.role === 'ai' && lastMessage.id !== lastSpokenMessageRef.current) {
+        // Only auto-speak if we haven't spoken this exact message ID yet
+        if (isVoiceChatMode && !isLoading && !isSpeaking && !isGeneratingAudio && !isListening && lastMessage?.role === 'ai' && lastMessage.id !== lastSpokenMessageRef.current) {
             lastSpokenMessageRef.current = lastMessage.id;
             speak(lastMessage.text, () => {
                 if(isVoiceChatMode) startListening();
             });
         }
-    }, [chatHistory, isVoiceChatMode, isLoading, isSpeaking, isListening, speak, startListening]);
+    }, [chatHistory, isVoiceChatMode, isLoading, isSpeaking, isGeneratingAudio, isListening, speak, startListening]);
 
 
     const sendMessage = async (textToSend) => {
@@ -231,7 +285,11 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
                             {chat.role === 'ai' && <SlothMascot className="w-10 h-10 flex-shrink-0 drop-shadow-md" />}
                             <div className={`max-w-xs md:max-w-md p-4 rounded-2xl shadow-md ${chat.role === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'}`}>
                                 <p className="text-sm sm:text-base">{chat.text}</p>
-                                {chat.role === 'ai' && <button onClick={() => speak(chat.text, null)} className="text-gray-400 hover:text-gray-600 mt-2 block"><Volume2 size={16}/></button>}
+                                {chat.role === 'ai' && (
+                                    <button onClick={() => speak(chat.text, null)} disabled={isGeneratingAudio} className="text-teal-600 dark:text-teal-400 hover:text-teal-800 mt-2 block">
+                                        {isGeneratingAudio && chat.id === lastSpokenMessageRef.current ? <Loader2 className="animate-spin w-4 h-4"/> : <Volume2 size={16}/>}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -252,7 +310,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
                 <div className="mt-4 flex gap-2">
                     {isVoiceChatMode ? (
                         <div className="flex-grow p-4 rounded-xl flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200">
-                           {isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Auto-Voice Mode Active"}
+                           {isListening ? "Listening..." : isSpeaking ? "Speaking..." : isGeneratingAudio ? "Thinking..." : "Auto-Voice Mode Active"}
                            {isListening && <Mic className="w-5 h-5 ms-2 text-red-500 animate-pulse" />}
                         </div>
                     ) : (

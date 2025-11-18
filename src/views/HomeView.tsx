@@ -3,15 +3,18 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '../lib/i18n';
 import { allLessons } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
-import { Zap, Trophy, Users, Library, ShoppingBag } from 'lucide-react';
+import { Zap, Trophy, Users, Library, ShoppingBag, PlayCircle } from 'lucide-react';
 import { DailyQuests } from '../components/DailyQuests';
+import { AppPresentation } from '../components/AppPresentation';
 
 export default function HomeView({ userProfile, onSelectLesson, setPage }) {
     const { t } = useTranslation();
+    const [showPresentation, setShowPresentation] = useState(false);
+
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return t('goodMorning');
@@ -28,6 +31,8 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
 
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
+            {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} />}
+            
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div>
@@ -35,6 +40,21 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                     <p className="mt-2 text-lg text-gray-700 dark:text-gray-200 font-bold">{t('readyToLearn')}</p>
                 </div>
                 <SlothMascot className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-2xl animate-float" />
+            </div>
+            
+            {/* Presentation Button */}
+            <div className="mb-8">
+                <button 
+                    onClick={() => setShowPresentation(true)}
+                    className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 text-white p-4 rounded-2xl shadow-xl hover:scale-[1.01] transition-transform flex items-center justify-center gap-3 relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <PlayCircle size={32} className="animate-pulse" />
+                    <span className="text-xl sm:text-2xl font-extrabold tracking-wide drop-shadow-md">
+                        {t('welcomePresentation')}
+                    </span>
+                    <SlothMascot className="w-10 h-10 absolute right-4 top-1/2 -translate-y-1/2" outfit="crown"/>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

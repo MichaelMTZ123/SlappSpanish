@@ -8,7 +8,7 @@ import React, { useState, useEffect, createContext, useContext, ReactNode, FC } 
 const translations = {
     en: {
         // General
-        'appName': 'Slapp',
+        'appName': 'Sloth',
         'welcomeTo': 'Welcome to',
         'tagline': 'The slow and steady way to learn.',
         'or': 'OR',
@@ -20,7 +20,7 @@ const translations = {
         'email': 'Email',
         'password': 'Password',
         'welcomeBack': 'Welcome back!',
-        'accountCreated': 'Account created successfully! Welcome to Slapp.',
+        'accountCreated': 'Account created successfully! Welcome to Sloth.',
         'googleSignInSuccess': 'Signed in with Google successfully!',
         'profileUpdated': 'Profile updated successfully!',
         'error': 'Error',
@@ -55,7 +55,7 @@ const translations = {
         'daysInARow': 'days in a row! Keep it up!',
         'points': 'Points',
         'pointsEarned': 'points earned so far.',
-        'chatWithSlappy': 'Chat with Slappy!',
+        'chatWithSlappy': 'Chat with Slothy!',
         'slappyEncouragement': 'Our friendly AI mascot is here to help you practice.',
         'myFriends': 'My Friends',
         'connectAndChat': 'Connect and chat with friends.',
@@ -63,6 +63,7 @@ const translations = {
         'createAndPlayQuizzes': 'Create and play community quizzes.',
         'dailyQuests': 'Daily Quests',
         'questCompleted': 'Quest Completed',
+        'welcomePresentation': 'Welcome to Sloth',
 
         // Navigation
         'home': 'Home',
@@ -111,9 +112,9 @@ const translations = {
         // AI Chat
         'aiPracticeChat': 'AI Practice Chat',
         'typeYourMessage': 'Type your message...',
-        'aiInitialMessage': '¡Hola! I am your AI tutor. Ask me anything in Spanish or English.',
+        'aiInitialMessage': '¡Hola! I am Slothy. Ask me anything in Spanish or English.',
         'oopsError': 'Oops! Something went wrong. Please try again.',
-        'slappyIsThinking': 'Slappy is thinking...',
+        'slappyIsThinking': 'Slothy is thinking...',
         'mascotDefault': 'Just remember, slow and steady wins the race!',
         'gotIt': 'Got it!',
         'clearChat': 'Clear Chat',
@@ -204,7 +205,7 @@ const translations = {
     },
     he: {
         // General
-        'appName': 'Slapp',
+        'appName': 'Sloth',
         'welcomeTo': 'ברוכים הבאים ל-',
         'tagline': 'הדרך האיטית והבטוחה ללמוד.',
         'or': 'או',
@@ -216,7 +217,7 @@ const translations = {
         'email': 'אימייל',
         'password': 'סיסמה',
         'welcomeBack': 'ברוך שובך!',
-        'accountCreated': 'החשבון נוצר בהצלחה! ברוכים הבאים ל-Slapp.',
+        'accountCreated': 'החשבון נוצר בהצלחה! ברוכים הבאים ל-Sloth.',
         'googleSignInSuccess': 'התחברת בהצלחה עם גוגל!',
         'profileUpdated': 'הפרופיל עודכן בהצלחה!',
         'error': 'שגיאה',
@@ -259,6 +260,7 @@ const translations = {
         'createAndPlayQuizzes': 'צור ושחק במבחני קהילה.',
         'dailyQuests': 'משימות יומיות',
         'questCompleted': 'משימה הושלמה',
+        'welcomePresentation': 'ברוכים הבאים לSloth',
 
         // Navigation
         'home': 'בית',
@@ -306,7 +308,7 @@ const translations = {
         // AI Chat
         'aiPracticeChat': 'צ\'אט אימון עם AI',
         'typeYourMessage': 'הקלד את הודעתך...',
-        'aiInitialMessage': '¡Hola! אני המורה ה-AI שלך. שאל אותי כל דבר.',
+        'aiInitialMessage': '¡Hola! אני סלאפי (Slothy). שאל אותי כל דבר.',
         'oopsError': 'אופס! משהו השתבש. אנא נסה שוב.',
         'slappyIsThinking': 'סלאפי חושב...',
         'mascotDefault': 'רק זכור, לאט ובטוח מנצחים במירוץ!',

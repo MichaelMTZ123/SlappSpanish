@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -11,7 +12,7 @@ const tutorialSteps = [
     {
         icon: SlothMascot,
         title: 'welcomeTo',
-        text: 'This is Slapp, your personal Spanish learning assistant! Let\'s take a quick tour.',
+        text: 'This is Sloth, your personal Spanish learning assistant! Let\'s take a quick tour.',
     },
     {
         icon: Home,
@@ -26,7 +27,7 @@ const tutorialSteps = [
     {
         icon: MessageSquare,
         title: 'aiPractice',
-        text: 'Chat with our AI tutor, Slappy! You can practice your conversation skills with text or voice.',
+        text: 'Chat with our AI tutor, Slothy! You can practice your conversation skills with text or voice.',
     },
     {
         icon: Gamepad2,
