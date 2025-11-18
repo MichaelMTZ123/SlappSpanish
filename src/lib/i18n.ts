@@ -56,6 +56,8 @@ const translations = {
         'connectAndChat': 'Connect and chat with friends.',
         'communityHub': 'Community Hub',
         'createAndPlayQuizzes': 'Create and play community quizzes.',
+        'dailyQuests': 'Daily Quests',
+        'questCompleted': 'Quest Completed',
 
         // Navigation
         'home': 'Home',
@@ -66,6 +68,7 @@ const translations = {
         'minigames': 'Minigames',
         'friends': 'Friends',
         'community': 'Community',
+        'shop': 'Shop',
         'welcomeUser': 'Welcome,',
         'teachingRequests': 'Teaching Requests',
 
@@ -110,6 +113,8 @@ const translations = {
         'clearChat': 'Clear Chat',
         'confirmClearChat': 'Are you sure you want to clear the entire chat history? This cannot be undone.',
         'chatCleared': 'Chat history cleared.',
+        'scenarios': 'Scenarios',
+        'pickScenario': 'Pick a Roleplay Scenario',
 
         // Leaderboard
         'anonymousUser': 'Anonymous User',
@@ -130,6 +135,15 @@ const translations = {
         'aprendiz': 'Aprendiz',
         'maestro': 'Maestro',
         'leyenda': 'Leyenda',
+        
+        // Shop
+        'slothShop': 'Sloth Shop',
+        'spendCoins': 'Spend your hard-earned coins!',
+        'buy': 'Buy',
+        'equipped': 'Equipped',
+        'equip': 'Equip',
+        'owned': 'Owned',
+        'coins': 'Coins',
 
         // Friends
         'findFriends': 'Find Friends',
@@ -171,6 +185,10 @@ const translations = {
         'flashcardDesc': 'Match vocabulary against the clock.',
         'sentenceScramble': 'Sentence Scramble',
         'sentenceDesc': 'Unscramble words to form correct sentences.',
+        'memoryMatch': 'Memory Match',
+        'memoryDesc': 'Find matching pairs of cards.',
+        'speedListen': 'Speed Listen',
+        'speedListenDesc': 'Hear a word, click it fast!',
         'score': 'Score',
         'time': 'Time',
         'finalScore': 'Final Score',
@@ -228,6 +246,8 @@ const translations = {
         'connectAndChat': 'התחבר ושוחח עם חברים.',
         'communityHub': 'מרכז הקהילה',
         'createAndPlayQuizzes': 'צור ושחק במבחני קהילה.',
+        'dailyQuests': 'משימות יומיות',
+        'questCompleted': 'משימה הושלמה',
 
         // Navigation
         'home': 'בית',
@@ -238,6 +258,7 @@ const translations = {
         'minigames': 'מיני-משחקים',
         'friends': 'חברים',
         'community': 'קהילה',
+        'shop': 'חנות',
         'welcomeUser': 'ברוך הבא,',
         'teachingRequests': 'בקשות לשיעור',
 
@@ -281,6 +302,8 @@ const translations = {
         'clearChat': 'נקה צ\'אט',
         'confirmClearChat': 'האם אתה בטוח שברצונך למחוק את כל היסטוריית הצ\'אט? לא ניתן לשחזר פעולה זו.',
         'chatCleared': 'היסטוריית הצ\'אט נוקתה.',
+        'scenarios': 'תרחישים',
+        'pickScenario': 'בחר תרחיש משחק תפקידים',
 
         // Leaderboard
         'anonymousUser': 'משתמש אנונימי',
@@ -301,6 +324,15 @@ const translations = {
         'aprendiz': 'שוליה',
         'maestro': 'מאסטר',
         'leyenda': 'אגדה',
+
+        // Shop
+        'slothShop': 'חנות העצלן',
+        'spendCoins': 'בזבז את המטבעות שהרווחת!',
+        'buy': 'קנה',
+        'equipped': 'מצוייד',
+        'equip': 'צייד',
+        'owned': 'בבעלות',
+        'coins': 'מטבעות',
 
         // Friends
         'findFriends': 'מצא חברים',
@@ -341,6 +373,10 @@ const translations = {
         'flashcardDesc': 'התאם אוצר מילים נגד השעון.',
         'sentenceScramble': 'ערבול משפטים',
         'sentenceDesc': 'סדר את המילים ליצירת משפטים נכונים.',
+        'memoryMatch': 'התאמת זיכרון',
+        'memoryDesc': 'מצא זוגות תואמים של קלפים.',
+        'speedListen': 'שמיעה מהירה',
+        'speedListenDesc': 'שמע מילה, לחץ עליה מהר!',
         'score': 'ניקוד',
         'time': 'זמן',
         'finalScore': 'ניקוד סופי',

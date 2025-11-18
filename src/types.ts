@@ -9,6 +9,7 @@ export interface UserProfile {
     name: string;
     pfp: string;
     points: number;
+    coins: number; // New currency
     streak: number;
     completedLessons: string[];
     lastLogin: string | null;
@@ -17,6 +18,20 @@ export interface UserProfile {
     role?: 'learner' | 'teacher';
     isAvailableForCalls?: boolean;
     currentCourseId?: string;
+    inventory?: string[]; // IDs of items owned
+    equippedOutfit?: string;
+    dailyQuests?: DailyQuest[];
+    questDate?: string;
+}
+
+export interface DailyQuest {
+    id: string;
+    description: string;
+    target: number;
+    current: number;
+    completed: boolean;
+    reward: number;
+    type: 'lesson' | 'chat' | 'minigame';
 }
 
 export interface Call {
@@ -66,4 +81,12 @@ export interface CommunityQuiz {
     createdBy: string;
     creatorName: string;
     creatorPfp: string;
+}
+
+export interface ShopItem {
+    id: string;
+    name: string;
+    price: number;
+    type: 'outfit' | 'powerup';
+    icon: string;
 }

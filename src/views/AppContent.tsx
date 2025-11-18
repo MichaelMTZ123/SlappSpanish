@@ -7,7 +7,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { doc, setDoc, onSnapshot, writeBatch, collection, query, where, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db, appId, auth } from '../lib/firebase';
 import { useTranslation } from '../lib/i18n';
-import type { UserProfile, Lesson, Call } from '../types';
+import type { UserProfile, Lesson, Call, DailyQuest } from '../types';
+import { generateDailyQuests } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
 import { Onboarding } from '../components/Onboarding';
 import { IncomingCallModal } from '../components/IncomingCallModal';
@@ -24,6 +25,7 @@ import FriendsView from '../features/friends/FriendsView';
 import CommunityView from '../features/community/CommunityView';
 import VideoCallView from '../features/learn/VideoCallView';
 import TeachingRequestsView from '../features/learn/TeachingRequestsView';
+import ShopView from './ShopView';
 
 export default function AppContent({ user, setNotification, showTutorial, setShowTutorial }) {
     const { t, setLanguage } = useTranslation();
@@ -32,7 +34,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [activeCall, setActiveCall] = useState<Call | null>(null);
     const [incomingCall, setIncomingCall] = useState<Call | null>(null);
-    const [currentCourseId, setCurrentCourseId] = useState('spanish'); // Default
+    const [currentCourseId, setCurrentCourseId] = useState('spanish');
     
     const fetchUserProfile = useCallback(() => {
         if (!user) return;
@@ -43,20 +45,36 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                 const today = new Date().toISOString().split('T')[0];
                 const lastLogin = data.lastLogin;
                 let profileToSet: UserProfile = { ...data, uid: user.uid };
+                let updates: any = {};
 
+                // Streak Logic
                 if (lastLogin !== today) {
                     const yesterday = new Date();
                     yesterday.setDate(yesterday.getDate() - 1);
-                    const newStreak = lastLogin === yesterday.toISOString().split('T')[0] ? (data.streak || 0) + 1 : 1;
-                    profileToSet = { ...profileToSet, lastLogin: today, streak: newStreak };
-                    setDoc(userDocRef, { lastLogin: today, streak: newStreak }, { merge: true });
+                    const yesterdayStr = yesterday.toISOString().split('T')[0];
+                    const newStreak = lastLogin === yesterdayStr ? (data.streak || 0) + 1 : 1;
+                    updates.lastLogin = today;
+                    updates.streak = newStreak;
+                    profileToSet.streak = newStreak;
+                    profileToSet.lastLogin = today;
+                }
+                
+                // Quest Refresh Logic
+                if (data.questDate !== today) {
+                    const newQuests = generateDailyQuests();
+                    updates.questDate = today;
+                    updates.dailyQuests = newQuests;
+                    profileToSet.dailyQuests = newQuests;
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    setDoc(userDocRef, updates, { merge: true });
                 }
                 
                 if (data.currentCourseId) {
                     setCurrentCourseId(data.currentCourseId);
                 }
 
-                // Check for onboarding completion
                 if (data.hasCompletedTutorial === false || data.hasCompletedTutorial === undefined) {
                     setShowTutorial(true);
                 } else {
@@ -72,6 +90,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     name: user.displayName || 'New Learner', 
                     pfp: user.photoURL || '', 
                     points: 0, 
+                    coins: 50,
                     streak: 1, 
                     completedLessons: [], 
                     lastLogin: today, 
@@ -79,7 +98,10 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     hasCompletedTutorial: false, 
                     role: 'learner', 
                     isAvailableForCalls: false,
-                    currentCourseId: 'spanish'
+                    currentCourseId: 'spanish',
+                    inventory: [],
+                    dailyQuests: generateDailyQuests(),
+                    questDate: today
                 };
                 setDoc(userDocRef, newProfile);
                 setUserProfile(newProfile);
@@ -124,7 +146,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         const leaderboardDocRef = doc(db, `artifacts/${appId}/public/data/leaderboard`, user.uid);
         await setDoc(leaderboardDocRef, { name: newProfileData.name, pfp: newProfileData.pfp, points: newProfileData.points, role: newProfileData.role, isAvailableForCalls: newProfileData.isAvailableForCalls }, { merge: true });
         
-        if (newProfileData.name !== userProfile?.name || newProfileData.pfp !== userProfile?.pfp || newProfileData.language !== userProfile?.language || newProfileData.role !== userProfile?.role || newProfileData.isAvailableForCalls !== userProfile?.isAvailableForCalls) {
+        if (newProfileData.name !== userProfile?.name) {
             setNotification(t('profileUpdated'));
         }
     };
@@ -143,27 +165,79 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         }
     }
 
+    const updateQuests = (type: 'lesson' | 'chat' | 'minigame', amount: number = 1) => {
+        if (!userProfile || !userProfile.dailyQuests) return { updatedQuests: [] as DailyQuest[], coinsEarned: 0 };
+        
+        let coinsEarned = 0;
+        const updatedQuests = userProfile.dailyQuests.map(q => {
+            if (q.type === type && !q.completed) {
+                const newCurrent = Math.min(q.current + amount, q.target);
+                if (newCurrent >= q.target) {
+                    coinsEarned += q.reward;
+                    setNotification(`${t('questCompleted')}: ${q.description} (+${q.reward} Coins)`);
+                    return { ...q, current: newCurrent, completed: true };
+                }
+                return { ...q, current: newCurrent };
+            }
+            return q;
+        });
+        
+        return { updatedQuests, coinsEarned };
+    }
+
     const handleLessonComplete = (points: number, lessonId: string) => {
         if (!userProfile) return;
+        
+        const { updatedQuests, coinsEarned } = updateQuests('lesson');
+        
         const updatedProfile: UserProfile = {
             ...userProfile,
             points: (userProfile.points || 0) + points,
-            completedLessons: [...new Set([...(userProfile.completedLessons || []), lessonId])]
+            coins: (userProfile.coins || 0) + 10 + coinsEarned, // 10 coins per lesson + quest reward
+            completedLessons: [...new Set([...(userProfile.completedLessons || []), lessonId])],
+            dailyQuests: updatedQuests
         };
         updateProfileOnDb(updatedProfile);
-        setNotification(`${t('youEarnedPoints')} ${points} ${t('points')}!`);
+        setNotification(`${t('youEarnedPoints')} ${points} ${t('points')} & 10 Coins!`);
         setCurrentLesson(null);
         setPage('lessons');
     };
     
-    const handlePointsUpdate = (points: number) => {
+    const handlePointsUpdate = (points: number, source: 'minigame' | 'chat' = 'minigame') => {
         if (!userProfile) return;
+        const { updatedQuests, coinsEarned } = updateQuests(source);
+        
+        const coinReward = Math.floor(points / 5); // 1 coin per 5 points
+        
          const updatedProfile: UserProfile = {
             ...userProfile,
             points: (userProfile.points || 0) + points,
+            coins: (userProfile.coins || 0) + coinReward + coinsEarned,
+            dailyQuests: updatedQuests
         };
         updateProfileOnDb(updatedProfile);
-        setNotification(`${t('youEarnedPoints')} ${points} ${t('points')}!`);
+        setNotification(`${t('youEarnedPoints')} ${points} ${t('points')} & ${coinReward} Coins!`);
+    }
+
+    const handleBuyItem = (cost: number, itemId: string) => {
+        if (!userProfile) return;
+        if (userProfile.coins < cost) {
+            setNotification("Not enough coins!");
+            return;
+        }
+        const updatedProfile = {
+            ...userProfile,
+            coins: userProfile.coins - cost,
+            inventory: [...(userProfile.inventory || []), itemId]
+        };
+        updateProfileOnDb(updatedProfile);
+        setNotification("Item purchased!");
+    }
+    
+    const handleEquipItem = (itemId: string) => {
+         if (!userProfile) return;
+         updateProfileOnDb({ ...userProfile, equippedOutfit: itemId });
+         setNotification("Item equipped!");
     }
 
     const handleDeleteAccount = async () => {
@@ -232,19 +306,20 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         switch (page) {
             case 'home': return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} />;
             case 'lessons': return <LearnHub currentUser={userProfile} completedLessons={userProfile.completedLessons || []} onSelectLesson={setCurrentLesson} onInitiateCall={handleInitiateCall} currentCourseId={currentCourseId} onCourseChange={handleCourseSelection} />;
-            case 'chat': return <AiChatView userId={user.uid} setNotification={setNotification} />;
+            case 'chat': return <AiChatView userId={user.uid} setNotification={setNotification} onMessageSent={() => handlePointsUpdate(10, 'chat')} />;
             case 'leaderboard': return <LeaderboardView />;
             case 'profile': return <ProfileView user={user} userProfile={userProfile} onUpdateProfile={updateProfileOnDb} onSignOut={() => auth.signOut()} onDeleteAccount={handleDeleteAccount} />;
-            case 'minigames': return <MinigamesView onGameComplete={handlePointsUpdate} />;
+            case 'minigames': return <MinigamesView onGameComplete={(score) => handlePointsUpdate(score, 'minigame')} />;
             case 'friends': return <FriendsView currentUser={userProfile} />;
-            case 'community': return <CommunityView currentUser={userProfile} onQuizComplete={handlePointsUpdate} />;
+            case 'community': return <CommunityView currentUser={userProfile} onQuizComplete={(score) => handlePointsUpdate(score, 'minigame')} />;
+            case 'shop': return <ShopView userProfile={userProfile} onBuy={handleBuyItem} onEquip={handleEquipItem} />;
             case 'teaching-requests': return <TeachingRequestsView currentUser={userProfile} onAcceptCall={handleAcceptCall} />;
             default: return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} />;
         }
     };
 
     if (!userProfile) {
-        return <div className="flex justify-center items-center h-screen bg-gray-100"><SlothMascot className="w-24 h-24 animate-pulse" /></div>
+        return <div className="flex justify-center items-center h-screen"><SlothMascot className="w-24 h-24 animate-pulse" /></div>
     }
 
     if (activeCall) {

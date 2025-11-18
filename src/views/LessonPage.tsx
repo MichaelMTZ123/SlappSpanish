@@ -7,16 +7,17 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../lib/i18n';
 import type { Lesson } from '../types';
 import { generateContent } from '../lib/gemini';
-import { Heart, XCircle, CheckCircle } from 'lucide-react';
+import { Heart, XCircle, CheckCircle, HelpCircle, ArrowRight } from 'lucide-react';
+import { SlothMascot } from '../components/SlothMascot';
 
 const FailedLessonView = ({ onBack }) => {
     const { t } = useTranslation();
     return (
-        <div className="text-center bg-red-50 dark:bg-red-900/20 p-8 rounded-2xl shadow-lg">
-            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300">Out of Lives!</h2>
-            <p className="text-red-600 dark:text-red-400 mt-2 mb-6">Don't worry, practice makes perfect. Try the lesson again to master the concepts.</p>
-            <button onClick={onBack} className="w-full bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600 transition">
+        <div className="glass-panel p-8 rounded-3xl shadow-xl text-center max-w-md mx-auto mt-20">
+            <XCircle className="w-20 h-20 text-red-500 mx-auto mb-4 drop-shadow-md" />
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Out of Lives!</h2>
+            <p className="text-gray-600 dark:text-gray-300 mt-2 mb-6">Don't worry, practice makes perfect. Try again.</p>
+            <button onClick={onBack} className="w-full bg-red-500 text-white font-bold py-4 rounded-xl hover:bg-red-600 transition shadow-lg">
                 {t('tryAgain')}
             </button>
         </div>
@@ -24,7 +25,7 @@ const FailedLessonView = ({ onBack }) => {
 }
 
 export default function LessonPage({ lesson, onComplete, onBack, targetLanguage }: { lesson: Lesson, onComplete: (points: number, lessonId: string) => void, onBack: () => void, targetLanguage: string }) {
-    const { t, language } = useTranslation();
+    const { t } = useTranslation();
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -32,61 +33,34 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
     const [lives, setLives] = useState(3);
     const [score, setScore] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [explanation, setExplanation] = useState('');
+    const [isExplaining, setIsExplaining] = useState(false);
 
     useEffect(() => {
         const generateQuiz = async () => {
             setIsLoading(true);
-            setError('');
             try {
                 const lang = targetLanguage || 'Spanish';
-                const prompt = `Create a 7-question multiple-choice quiz to teach ${lang}. The specific topic is "${lesson.title}" and content: "${lesson.content}". 
-                For each question, provide a scenario or translation task.
-                Ensure the 'correctAnswer' is correct.
-                Provide 3 incorrect options.
-                Return JSON.`;
+                const prompt = `Create a 5-question multiple-choice quiz for ${lang}. Topic: "${lesson.title}". Content: "${lesson.content}". 
+                Return JSON: { quiz: [{ question: string, options: string[], correctAnswer: string }] }`;
                 
                 const response = await generateContent({
                     model: "gemini-2.5-flash",
                     contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                    config: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: 'OBJECT',
-                            properties: {
-                                quiz: {
-                                    type: 'ARRAY',
-                                    items: {
-                                        type: 'OBJECT',
-                                        properties: {
-                                            question: { type: 'STRING' },
-                                            options: { type: 'ARRAY', items: { type: 'STRING' } },
-                                            correctAnswer: { type: 'STRING' }
-                                        },
-                                        required: ["question", "options", "correctAnswer"]
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    config: { responseMimeType: "application/json" }
                 });
                 const result = JSON.parse(response.text);
                 setQuestions(result.quiz);
             } catch (e) {
-                console.error("Failed to generate quiz", e);
-                setError("Failed to create the lesson quiz. Please try again later.");
-                // Minimal Fallback
-                const fallback = [
-                    { question: "Select the correct matching word for the lesson topic.", options: ["Wrong", "Incorrect", "Right Answer"], correctAnswer: "Right Answer" }
-                ];
-                setQuestions(fallback);
+                console.error(e);
+                // Fallback
+                setQuestions([{ question: `What relates to ${lesson.title}?`, options: ["Wrong", "Incorrect", "Right Answer"], correctAnswer: "Right Answer" }]);
             } finally {
                 setIsLoading(false);
             }
         };
-
         generateQuiz();
-    }, [lesson, language, targetLanguage]);
+    }, [lesson, targetLanguage]);
 
     const handleAnswerSelect = (option) => {
         if (isAnswered) return;
@@ -101,8 +75,8 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
     };
     
     const handleNextQuestion = () => {
+        setExplanation('');
         if (lives === 0) return; 
-
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setIsAnswered(false);
@@ -112,72 +86,80 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
         }
     };
     
-    if (isLoading) {
-        return <div className="p-8 text-center h-full flex flex-col justify-center items-center"><p className="text-xl font-semibold animate-pulse dark:text-gray-300">Preparing your lesson...</p></div>;
+    const askAiWhy = async () => {
+        setIsExplaining(true);
+        const q = questions[currentQuestionIndex];
+        const prompt = `I answered "${selectedAnswer}" to the question "${q.question}". The correct answer is "${q.correctAnswer}". Explain briefly why I am wrong and the other is right in simple terms.`;
+         const response = await generateContent({
+            model: "gemini-2.5-flash",
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        });
+        setExplanation(response.text);
+        setIsExplaining(false);
     }
     
-    if (error) {
-         return <div className="p-8 text-center text-red-500"><p>{error}</p><button onClick={onBack} className="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Go Back</button></div>;
-    }
-
-    if (lives <= 0) {
-        return (
-            <div className="p-4 sm:p-8 flex items-center justify-center h-full">
-                 <FailedLessonView onBack={onBack} />
-            </div>
-        )
-    }
+    if (isLoading) return <div className="flex justify-center items-center h-full"><SlothMascot className="w-24 h-24 animate-pulse" /></div>;
+    if (lives <= 0) return <FailedLessonView onBack={onBack} />;
     
     const currentQuestion = questions[currentQuestionIndex];
     const progress = ((currentQuestionIndex) / questions.length) * 100;
 
     return (
-        <div className="p-4 sm:p-8 max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-4">
-                 <button onClick={onBack} className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition text-sm">
-                    &larr; Quit
-                </button>
-                <div className="flex items-center gap-2">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                        <Heart key={i} className={`w-6 h-6 ${i < lives ? 'text-red-500 fill-current' : 'text-gray-300 dark:text-gray-600'}`} />
-                    ))}
+        <div className="p-4 sm:p-8 max-w-2xl mx-auto h-full flex flex-col">
+            {/* Top Bar */}
+            <div className="flex justify-between items-center mb-6">
+                 <button onClick={onBack} className="text-gray-200 hover:text-white font-bold text-xl">✕</button>
+                 <div className="flex-grow mx-6 h-4 bg-gray-200/30 rounded-full overflow-hidden backdrop-blur-sm">
+                    <div className="bg-green-400 h-full rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                 </div>
+                <div className="flex items-center gap-1">
+                    <Heart className="text-red-500 fill-red-500" /> <span className="text-white font-bold text-xl">{lives}</span>
                 </div>
             </div>
             
-             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-6">
-                <div className="bg-green-500 h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border-b-4 border-gray-200 dark:border-gray-900">
-                <h1 className="text-2xl font-bold mb-6 text-center dark:text-gray-100">{currentQuestion.question}</h1>
-                <div className="grid grid-cols-1 gap-3 mt-4">
+            {/* Quiz Card */}
+            <div className="glass-panel flex-grow p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-center">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center text-gray-800 dark:text-white leading-tight">{currentQuestion.question}</h1>
+                
+                <div className="grid grid-cols-1 gap-4">
                     {currentQuestion.options.map(option => {
-                        let bgColor = 'bg-white border-2 border-gray-200 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600';
+                        let style = 'bg-white dark:bg-gray-700 border-2 border-transparent hover:border-blue-400';
                         if (isAnswered) {
-                            if (option === currentQuestion.correctAnswer) bgColor = 'bg-green-100 border-green-500 text-green-700 dark:bg-green-900/30 dark:text-green-300';
-                            else if (option === selectedAnswer) bgColor = 'bg-red-100 border-red-500 text-red-700 dark:bg-red-900/30 dark:text-red-300';
-                            else bgColor = 'opacity-50 cursor-not-allowed border-gray-200 dark:border-gray-700';
+                            if (option === currentQuestion.correctAnswer) style = 'bg-green-100 border-green-500 text-green-800 dark:bg-green-900/50 dark:text-green-100';
+                            else if (option === selectedAnswer) style = 'bg-red-100 border-red-500 text-red-800 dark:bg-red-900/50 dark:text-red-100';
+                            else style = 'opacity-50';
                         }
                         return (
-                            <button key={option} onClick={() => handleAnswerSelect(option)}
-                                disabled={isAnswered}
-                                className={`p-4 rounded-xl text-left text-lg font-semibold transition-all ${bgColor} dark:text-gray-100 shadow-sm`}>
+                            <button key={option} onClick={() => handleAnswerSelect(option)} disabled={isAnswered} className={`p-5 rounded-2xl text-left text-lg font-bold shadow-sm transition-all transform hover:scale-[1.01] ${style} dark:text-white`}>
                                 {option}
                             </button>
                         );
                     })}
                 </div>
-                
+
+                {/* Feedback Area */}
                 {isAnswered && (
                      <div className="mt-6 animate-fade-in-up">
-                        <div className={`p-4 rounded-xl mb-4 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'}`}>
-                           <h3 className="text-xl font-bold flex items-center gap-2">
-                               {selectedAnswer === currentQuestion.correctAnswer ? <><CheckCircle/> Correct!</> : <><XCircle/> Incorrect</>}
-                           </h3>
-                           {selectedAnswer !== currentQuestion.correctAnswer && <p className="mt-1">The correct answer is: <strong>{currentQuestion.correctAnswer}</strong></p>}
+                        <div className={`p-4 rounded-xl mb-4 flex items-start gap-3 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                           {selectedAnswer === currentQuestion.correctAnswer ? <CheckCircle className="flex-shrink-0"/> : <XCircle className="flex-shrink-0"/>}
+                           <div>
+                               <h3 className="font-bold text-lg">{selectedAnswer === currentQuestion.correctAnswer ? "Correct!" : "Incorrect"}</h3>
+                               {selectedAnswer !== currentQuestion.correctAnswer && (
+                                   <>
+                                       <p className="mt-1">Answer: <strong>{currentQuestion.correctAnswer}</strong></p>
+                                       {!explanation && (
+                                            <button onClick={askAiWhy} className="mt-2 text-sm font-bold underline flex items-center gap-1 hover:text-red-600">
+                                                <HelpCircle size={14}/> Ask Slappy Why?
+                                            </button>
+                                       )}
+                                       {isExplaining && <p className="text-sm mt-2 animate-pulse">Slappy is thinking...</p>}
+                                       {explanation && <p className="text-sm mt-2 bg-white/50 p-2 rounded-lg">{explanation}</p>}
+                                   </>
+                               )}
+                           </div>
                         </div>
-                        <button onClick={handleNextQuestion} className={`w-full font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-105 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}`}>
-                            Continue
+                        <button onClick={handleNextQuestion} className={`w-full font-bold py-4 rounded-xl shadow-lg text-white text-lg transition-transform hover:scale-105 flex justify-center items-center gap-2 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-800 hover:bg-gray-900'}`}>
+                            Continue <ArrowRight/>
                         </button>
                     </div>
                 )}
