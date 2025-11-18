@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { doc, onSnapshot, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db, appId } from '../../lib/firebase';
 import type { Call, UserProfile } from '../../types';
@@ -23,13 +23,12 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
     // Refs for WebRTC objects
     const peerConnection = useRef<RTCPeerConnection | null>(null);
     const localStream = useRef<MediaStream | null>(null);
-    const remoteStream = useRef<MediaStream>(new MediaStream()); // Use a stable MediaStream object
     
     // Refs for UI elements
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
 
-    // Refs for cleanup
+    // Refs for cleanup to avoid stale closures
     const unsubCallDoc = useRef<() => void>(() => {});
     const unsubCandidates = useRef<() => void>(() => {});
 
@@ -41,15 +40,11 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
     // Debugging states
     const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>('new');
     const [iceConnectionState, setIceConnectionState] = useState<RTCIceConnectionState>('new');
-    const [signalingState, setSignalingState] = useState<RTCSignalingState>('stable');
 
     const isCaller = call.callerId === currentUser.uid;
 
     useEffect(() => {
-        // Assign streams to video elements on mount
-        if (localVideoRef.current) localVideoRef.current.srcObject = localStream.current;
-        if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream.current;
-        
+        // Initialize PeerConnection
         const pc = new RTCPeerConnection(servers);
         peerConnection.current = pc;
         const queuedCandidates: RTCIceCandidateInit[] = [];
@@ -57,20 +52,23 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
         // --- Setup Peer Connection Handlers ---
         pc.onconnectionstatechange = () => setConnectionState(pc.connectionState);
         pc.oniceconnectionstatechange = () => setIceConnectionState(pc.iceConnectionState);
-        pc.onsignalingstatechange = () => setSignalingState(pc.signalingState);
 
+        // Handle remote stream
         pc.ontrack = (event) => {
             console.log('Received remote track:', event.track.kind);
-            setIsRemoteConnected(true);
-            event.streams[0].getTracks().forEach(track => {
-                remoteStream.current.addTrack(track);
-            });
+            // Force the video element to play the new stream
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0];
+                setIsRemoteConnected(true);
+            }
         };
 
+        // Firestore References
         const callDocRef = doc(db, `artifacts/${appId}/users/${call.calleeId}/calls`, call.id);
         const callerCandidatesCol = collection(callDocRef, 'callerCandidates');
         const calleeCandidatesCol = collection(callDocRef, 'calleeCandidates');
 
+        // Send Local ICE Candidates
         pc.onicecandidate = event => {
             if (event.candidate) {
                 const candidatesCollection = isCaller ? callerCandidatesCol : calleeCandidatesCol;
@@ -80,20 +78,27 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
 
         const startCallFlow = async () => {
              try {
-                localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                if (localVideoRef.current) localVideoRef.current.srcObject = localStream.current;
+                // Get Local Stream
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localStream.current = stream;
                 
-                localStream.current.getTracks().forEach(track => {
-                    pc.addTrack(track, localStream.current!);
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                }
+                
+                stream.getTracks().forEach(track => {
+                    pc.addTrack(track, stream);
                 });
 
+                // Listen for Remote ICE Candidates
                 const remoteCandidatesCol = isCaller ? calleeCandidatesCol : callerCandidatesCol;
                 unsubCandidates.current = onSnapshot(remoteCandidatesCol, snapshot => {
                     snapshot.docChanges().forEach(async change => {
                         if (change.type === 'added') {
-                            const candidate = new RTCIceCandidate(change.doc.data());
-                             if (pc.remoteDescription) {
-                                await pc.addIceCandidate(candidate);
+                            const candidateData = change.doc.data();
+                            const candidate = new RTCIceCandidate(candidateData);
+                             if (pc.remoteDescription && pc.remoteDescription.type) {
+                                await pc.addIceCandidate(candidate).catch(e => console.error("Error adding candidate", e));
                             } else {
                                 queuedCandidates.push(candidate);
                             }
@@ -101,12 +106,14 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
                     });
                 });
 
+                // Signaling Logic
                 if (isCaller) {
                     const offer = await pc.createOffer();
                     await pc.setLocalDescription(offer);
                     await updateDoc(callDocRef, { offer: { sdp: offer.sdp, type: offer.type } });
                 }
 
+                // Listen for Call Document Changes (Offer/Answer)
                 unsubCallDoc.current = onSnapshot(callDocRef, async snapshot => {
                     const data = snapshot.data();
                     if (!data || data.status === 'ended' || data.status === 'declined') {
@@ -114,107 +121,150 @@ export default function VideoCallView({ call, currentUser, onHangup }: { call: C
                         return;
                     }
 
+                    // Callee Logic: Receive Offer, Send Answer
                     if (!isCaller && data.offer && !pc.remoteDescription) {
                         await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-                        for(const candidate of queuedCandidates) await pc.addIceCandidate(candidate);
-                        queuedCandidates.length = 0;
+                        
+                        // Process queued candidates
+                        while(queuedCandidates.length > 0) {
+                            const c = queuedCandidates.shift();
+                            if(c) await pc.addIceCandidate(c);
+                        }
 
                         const answer = await pc.createAnswer();
                         await pc.setLocalDescription(answer);
                         await updateDoc(callDocRef, { answer: { type: answer.type, sdp: answer.sdp }, status: 'active' });
                     }
 
+                    // Caller Logic: Receive Answer
                     if (isCaller && data.answer && !pc.remoteDescription) {
                         await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-                         for(const candidate of queuedCandidates) await pc.addIceCandidate(candidate);
-                         queuedCandidates.length = 0;
+                        
+                        // Process queued candidates
+                         while(queuedCandidates.length > 0) {
+                            const c = queuedCandidates.shift();
+                            if(c) await pc.addIceCandidate(c);
+                        }
                     }
                 });
 
             } catch (error) {
                 console.error("Error starting call (media permissions?):", error);
-                onHangup(); // Abort on error
+                alert("Could not access camera or microphone. Please check permissions.");
+                onHangup();
             }
         };
 
         startCallFlow();
 
+        // Cleanup function
         return () => {
             console.log("Cleaning up call view...");
             unsubCallDoc.current();
             unsubCandidates.current();
 
-            localStream.current?.getTracks().forEach(track => track.stop());
-            remoteStream.current?.getTracks().forEach(track => track.stop());
-            
-            if (pc) {
-                pc.ontrack = null;
-                pc.onicecandidate = null;
-                pc.onconnectionstatechange = null;
-                pc.oniceconnectionstatechange = null;
-                pc.onsignalingstatechange = null;
-                pc.getTransceivers().forEach(transceiver => transceiver.stop());
-                pc.close();
+            // Stop all local tracks
+            if (localStream.current) {
+                localStream.current.getTracks().forEach(track => track.stop());
             }
-            peerConnection.current = null;
+            
+            // Close PeerConnection
+            if (peerConnection.current) {
+                peerConnection.current.ontrack = null;
+                peerConnection.current.onicecandidate = null;
+                peerConnection.current.onconnectionstatechange = null;
+                peerConnection.current.oniceconnectionstatechange = null;
+                peerConnection.current.close();
+                peerConnection.current = null;
+            }
         };
     }, [call.id, call.calleeId, isCaller, onHangup]);
 
     const handleHangupClick = async () => {
-        const callDocRef = doc(db, `artifacts/${appId}/users/${call.calleeId}/calls`, call.id);
-        await updateDoc(callDocRef, { status: 'ended' });
-        // The onSnapshot listener will trigger the onHangup callback
+        // Mark call as ended in DB. The listener will trigger onHangup locally.
+        try {
+            const callDocRef = doc(db, `artifacts/${appId}/users/${call.calleeId}/calls`, call.id);
+            await updateDoc(callDocRef, { status: 'ended' });
+        } catch (e) {
+            console.error("Error ending call:", e);
+            onHangup(); // Force local hangup if DB fails
+        }
     };
     
     const toggleMute = () => {
-        localStream.current?.getAudioTracks().forEach(track => {
-            track.enabled = !track.enabled;
-        });
-        setIsMuted(prev => !prev);
+        if (localStream.current) {
+            localStream.current.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsMuted(prev => !prev);
+        }
     };
 
     const toggleVideo = () => {
-        localStream.current?.getVideoTracks().forEach(track => {
-            track.enabled = !track.enabled;
-        });
-        setIsVideoOff(prev => !prev);
+        if (localStream.current) {
+            localStream.current.getVideoTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsVideoOff(prev => !prev);
+        }
     };
 
     const remoteUser = isCaller ? { name: call.calleeName, pfp: call.calleePfp } : { name: call.callerName, pfp: call.callerPfp };
 
     return (
         <div className="w-screen h-screen bg-gray-900 flex flex-col relative text-white">
-            <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
+            {/* Remote Video */}
+            <video 
+                ref={remoteVideoRef} 
+                autoPlay 
+                playsInline 
+                className="w-full h-full object-cover" 
+            />
             
-            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-                {!isRemoteConnected && (
+            {/* Connecting Overlay */}
+            {!isRemoteConnected && (
+                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 z-10">
                     <div className="text-center">
                         <img src={remoteUser.pfp} alt={remoteUser.name} className="w-32 h-32 rounded-full mx-auto border-4 border-teal-400 mb-4 animate-pulse" />
                         <p className="text-2xl font-bold">{isCaller ? t('waitingForTeacher') : `Connecting to ${remoteUser.name}`}</p>
-                        <p className="text-lg text-gray-200">{remoteUser.name}</p>
+                        <p className="text-lg text-gray-300 mt-2">{t('loading')}...</p>
+                    </div>
+                </div>
+            )}
+            
+            {/* Local Video (Picture in Picture) */}
+            <div className={`absolute top-4 right-4 w-32 sm:w-48 aspect-[3/4] sm:aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 transition-all duration-300 ${isVideoOff ? 'opacity-50' : 'opacity-100'} z-20`}>
+                 <video 
+                    ref={localVideoRef} 
+                    autoPlay 
+                    playsInline 
+                    muted 
+                    className={`w-full h-full object-cover ${isVideoOff ? 'hidden' : 'block'}`} 
+                />
+                {isVideoOff && (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                        <VideoOff size={32} className="text-gray-400" />
                     </div>
                 )}
             </div>
-            
-            <video ref={localVideoRef} autoPlay playsInline muted className={`absolute top-4 right-4 w-40 h-auto rounded-lg shadow-2xl border-2 border-white transition-opacity ${isVideoOff ? 'opacity-0' : 'opacity-100'}`} />
-            
-            {/* Debug Info */}
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black bg-opacity-60 p-2 rounded-lg text-xs flex gap-4 pointer-events-none">
-                <p>Connection: <span className="font-bold uppercase">{connectionState}</span></p>
-                <p>ICE: <span className="font-bold uppercase">{iceConnectionState}</span></p>
-                <p>Signaling: <span className="font-bold uppercase">{signalingState}</span></p>
-            </div>
+
+            {/* Debug Info (Hidden on mobile usually, but helpful) */}
+            {connectionState !== 'connected' && connectionState !== 'new' && (
+                 <div className="absolute top-20 left-4 bg-black/50 p-2 rounded text-xs pointer-events-none">
+                    Status: {connectionState} / {iceConnectionState}
+                </div>
+            )}
             
             {/* Controls */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent flex justify-center items-center">
-                <div className="flex items-center space-x-6">
-                    <button onClick={toggleMute} className="p-3 bg-white bg-opacity-20 rounded-full hover:bg-opacity-40 transition">
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-center items-center z-20">
+                <div className="flex items-center space-x-6 sm:space-x-8">
+                    <button onClick={toggleMute} className={`p-4 rounded-full transition-all ${isMuted ? 'bg-white text-gray-900' : 'bg-white/20 hover:bg-white/30 text-white'}`}>
                         {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
                     </button>
-                    <button onClick={handleHangupClick} className="p-4 bg-red-500 rounded-full hover:bg-red-600 transition-transform hover:scale-110">
-                        <PhoneOff size={28} />
+                    <button onClick={handleHangupClick} className="p-5 bg-red-500 rounded-full hover:bg-red-600 transition-transform hover:scale-110 shadow-lg">
+                        <PhoneOff size={32} />
                     </button>
-                    <button onClick={toggleVideo} className="p-3 bg-white bg-opacity-20 rounded-full hover:bg-opacity-40 transition">
+                    <button onClick={toggleVideo} className={`p-4 rounded-full transition-all ${isVideoOff ? 'bg-white text-gray-900' : 'bg-white/20 hover:bg-white/30 text-white'}`}>
                         {isVideoOff ? <VideoOff size={24} /> : <Video size={24} />}
                     </button>
                 </div>

@@ -42,7 +42,7 @@ export default function LessonPage({ lesson, onComplete, onBack }: { lesson: Les
                 
                 const response = await generateContent({
                     model: "gemini-2.5-flash",
-                    contents: prompt,
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
                     config: {
                         responseMimeType: "application/json",
                         responseSchema: {

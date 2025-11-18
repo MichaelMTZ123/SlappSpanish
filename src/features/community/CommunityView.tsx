@@ -168,7 +168,7 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
             const prompt = `For the Spanish learning question "${questionText}", provide one correct answer and three incorrect but plausible distractors.`;
             const response = await generateContent({
                 model: "gemini-2.5-flash",
-                contents: prompt,
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
                 config: {
                     responseMimeType: "application/json",
                     responseSchema: {
@@ -207,9 +207,12 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
             // AI Moderation
             const contentToCheck = `Title: ${title}. Questions: ${JSON.stringify(questions.map(q => q.question))}`;
             const moderationPrompt = `Is the following content appropriate for a language learning app (no offensive, adult, or hateful content)? Answer with only 'APPROPRIATE' or 'INAPPROPRIATE'. Content: ${contentToCheck}`;
-            const moderationResponse = await generateContent({model: 'gemini-2.5-flash', contents: moderationPrompt });
+            const moderationResponse = await generateContent({
+                model: 'gemini-2.5-flash',
+                contents: [{ role: 'user', parts: [{ text: moderationPrompt }] }]
+            });
             
-            if (!moderationResponse.text.includes('APPROPRIATE')) {
+            if (!moderationResponse.text?.includes('APPROPRIATE')) {
                 setNotification(t('quizRejected'));
                 setIsLoading(false);
                 return;

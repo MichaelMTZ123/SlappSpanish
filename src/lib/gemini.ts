@@ -4,23 +4,28 @@
 */
 
 /**
- * Calls the server-side proxy to interact with the Gemini API.
+ * Interacts with the Gemini API via the secure server-side proxy.
  * @param payload The same payload object you would send to ai.models.generateContent()
- * @returns A promise that resolves to an object with a `text` property, e.g., { text: "..." }
+ * @returns A promise that resolves to an object with a `text` property.
  */
 export async function generateContent(payload: any) {
-  const response = await fetch('/api/gemini', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ payload }),
-  });
+    try {
+        const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: 'Failed to call Gemini proxy and parse error' }));
-    throw new Error(errorData.error || 'An unknown error occurred');
-  }
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
 
-  return response.json();
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error calling Gemini API:", error);
+        throw new Error("Failed to get response from AI service.");
+    }
 }

@@ -1,28 +1,6 @@
 {
   "rewrites": [
-    {
-      "source": "/:path((?!api/|.*\\.).*)",
-      "destination": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*\\.tsx$)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/javascript"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.ts$)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/javascript"
-        }
-      ]
-    }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

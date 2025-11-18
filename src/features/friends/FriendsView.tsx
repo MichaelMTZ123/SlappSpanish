@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, query, where, getDocs, doc, setDoc, onSnapshot, addDoc, serverTimestamp, orderBy, deleteDoc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, onSnapshot, addDoc, serverTimestamp, orderBy, deleteDoc, getDoc, writeBatch } from 'firebase/firestore';
 import { db, appId } from '../../lib/firebase';
 import { useTranslation } from '../../lib/i18n';
 import type { UserProfile } from '../../types';
@@ -187,20 +187,31 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
     const handleRequest = async (sender, accept) => {
         const senderId = sender.id;
 
-        // Delete from my incoming requests
-        const incomingRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/incomingFriendRequests`, senderId);
-        await deleteDoc(incomingRef);
-        
-        // Delete from sender's outgoing requests
-        const outgoingRef = doc(db, `artifacts/${appId}/users/${senderId}/outgoingFriendRequests`, currentUser.uid);
-        await deleteDoc(outgoingRef);
+        // Use a batch to ensure all operations succeed or fail together.
+        const batch = writeBatch(db);
 
-        if(accept) {
+        // 1. Reference to my incoming request from sender
+        const incomingRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/incomingFriendRequests`, senderId);
+        batch.delete(incomingRef);
+        
+        // 2. Reference to sender's outgoing request to me
+        const outgoingRef = doc(db, `artifacts/${appId}/users/${senderId}/outgoingFriendRequests`, currentUser.uid);
+        batch.delete(outgoingRef);
+
+        if (accept) {
             const timestamp = serverTimestamp();
-            await setDoc(doc(db, `artifacts/${appId}/users/${currentUser.uid}/friends`, senderId), { since: timestamp });
-            await setDoc(doc(db, `artifacts/${appId}/users/${senderId}/friends`, currentUser.uid), { since: timestamp });
+            // 3. Add sender to my friends list
+            const myFriendRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/friends`, senderId);
+            batch.set(myFriendRef, { since: timestamp });
+            
+            // 4. Add me to sender's friends list
+            const theirFriendRef = doc(db, `artifacts/${appId}/users/${senderId}/friends`, currentUser.uid);
+            batch.set(theirFriendRef, { since: timestamp });
         }
-    }
+
+        // Commit the batch
+        await batch.commit();
+    };
     
     const getFriendStatus = (targetUid) => {
         if (friendUids.has(targetUid)) return 'FRIENDS';

@@ -6,8 +6,18 @@ import React from 'react';
 import { Home, BookOpen, MessageSquare, Trophy, User, Gamepad2, Users, Library, BellRing } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { SlothMascot } from './SlothMascot';
+import type { UserProfile } from '../types';
 
-const NavItem = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrentLesson }) => {
+interface NavItemProps {
+    icon: React.ElementType;
+    label: string;
+    pageName: string;
+    currentPage: string;
+    setPage: (page: string) => void;
+    setCurrentLesson: (lesson: any) => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrentLesson }) => {
     const { t } = useTranslation();
     return (
         <li onClick={() => { setPage(pageName); setCurrentLesson(null); }} className={`flex items-center p-3 my-1 rounded-lg cursor-pointer transition-colors ${currentPage === pageName ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
@@ -17,7 +27,7 @@ const NavItem = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrent
     );
 };
 
-const MobileNavItem = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrentLesson }) => {
+const MobileNavItem: React.FC<NavItemProps> = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrentLesson }) => {
     const { t } = useTranslation();
     return (
         <button
@@ -32,7 +42,15 @@ const MobileNavItem = ({ icon: Icon, label, pageName, currentPage, setPage, setC
     );
 };
 
-export const Layout = ({ children, page, setPage, setCurrentLesson, userProfile }) => {
+interface LayoutProps {
+    children: React.ReactNode;
+    page: string;
+    setPage: (page: string) => void;
+    setCurrentLesson: (lesson: any) => void;
+    userProfile: UserProfile;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children, page, setPage, setCurrentLesson, userProfile }) => {
     const { t } = useTranslation();
 
     const navItems = [
