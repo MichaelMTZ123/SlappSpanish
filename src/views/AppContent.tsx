@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -8,7 +9,7 @@ import { db, appId, auth } from '../lib/firebase';
 import { useTranslation } from '../lib/i18n';
 import type { UserProfile, Lesson, Call } from '../types';
 import { SlothMascot } from '../components/SlothMascot';
-import { Tutorial } from '../components/Tutorial';
+import { Onboarding } from '../components/Onboarding';
 import { IncomingCallModal } from '../components/IncomingCallModal';
 
 import { Layout } from '../components/Layout';
@@ -31,6 +32,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [activeCall, setActiveCall] = useState<Call | null>(null);
     const [incomingCall, setIncomingCall] = useState<Call | null>(null);
+    const [currentCourseId, setCurrentCourseId] = useState('spanish'); // Default
     
     const fetchUserProfile = useCallback(() => {
         if (!user) return;
@@ -50,23 +52,42 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     setDoc(userDocRef, { lastLogin: today, streak: newStreak }, { merge: true });
                 }
                 
-                if (!data.hasCompletedTutorial) {
+                if (data.currentCourseId) {
+                    setCurrentCourseId(data.currentCourseId);
+                }
+
+                // Check for onboarding completion
+                if (data.hasCompletedTutorial === false || data.hasCompletedTutorial === undefined) {
                     setShowTutorial(true);
+                } else {
+                    setShowTutorial(false);
                 }
 
                 setUserProfile(profileToSet);
                 setLanguage(profileToSet.language || 'en');
             } else {
                 const today = new Date().toISOString().split('T')[0];
-                const newProfile: UserProfile = { uid: user.uid, name: user.displayName || 'New Learner', pfp: user.photoURL || '', points: 0, streak: 1, completedLessons: [], lastLogin: today, language: 'en', hasCompletedTutorial: false, role: 'learner', isAvailableForCalls: false };
+                const newProfile: UserProfile = { 
+                    uid: user.uid, 
+                    name: user.displayName || 'New Learner', 
+                    pfp: user.photoURL || '', 
+                    points: 0, 
+                    streak: 1, 
+                    completedLessons: [], 
+                    lastLogin: today, 
+                    language: 'en', 
+                    hasCompletedTutorial: false, 
+                    role: 'learner', 
+                    isAvailableForCalls: false,
+                    currentCourseId: 'spanish'
+                };
                 setDoc(userDocRef, newProfile);
                 setUserProfile(newProfile);
                 setLanguage('en');
-                setShowTutorial(true); // New user gets tutorial
+                setShowTutorial(true); 
             }
         }, (error) => {
              console.error("Error fetching user profile:", error);
-             // Handle permission errors or other issues gracefully.
         });
         return unsub;
     }, [user, setLanguage, setShowTutorial]);
@@ -76,18 +97,14 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         return () => unsub && unsub();
     }, [fetchUserProfile]);
 
-    // Listen for incoming calls for modal
     useEffect(() => {
         if (!userProfile || userProfile.role !== 'teacher') return;
-        
         const callsRef = collection(db, `artifacts/${appId}/users/${userProfile.uid}/calls`);
         const q = query(callsRef, where('status', '==', 'ringing'));
-        
         const unsubscribe = onSnapshot(q, (snapshot) => {
             if (!snapshot.empty) {
                 const callDoc = snapshot.docs[0];
                 const callData = { id: callDoc.id, ...callDoc.data() } as Call;
-                // Avoid showing modal for a call we are already in, or if we are on the requests page
                 if (!activeCall && !incomingCall && page !== 'teaching-requests') {
                     setIncomingCall(callData);
                 }
@@ -97,7 +114,6 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         });
         return unsubscribe;
     }, [userProfile, activeCall, incomingCall, page]);
-
 
     const updateProfileOnDb = async (newProfileData: UserProfile) => {
         if (!user) return;
@@ -113,11 +129,18 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         }
     };
 
-    const handleTutorialComplete = () => {
+    const handleOnboardingComplete = () => {
         if (!userProfile) return;
-        const updatedProfile = { ...userProfile, hasCompletedTutorial: true };
+        const updatedProfile = { ...userProfile, hasCompletedTutorial: true, currentCourseId: currentCourseId };
         updateProfileOnDb(updatedProfile);
         setShowTutorial(false);
+    }
+    
+    const handleCourseSelection = (courseId: string) => {
+        setCurrentCourseId(courseId);
+        if(userProfile) {
+            updateProfileOnDb({ ...userProfile, currentCourseId: courseId });
+        }
     }
 
     const handleLessonComplete = (points: number, lessonId: string) => {
@@ -149,10 +172,8 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
             const batch = writeBatch(db);
             const profileRef = doc(db, `artifacts/${appId}/users/${user.uid}/profile`, 'data');
             const leaderboardRef = doc(db, `artifacts/${appId}/public/data/leaderboard`, user.uid);
-            
             batch.delete(profileRef);
             batch.delete(leaderboardRef);
-
             await batch.commit();
             await auth.currentUser.delete();
             setNotification(t('accountDeleted'));
@@ -164,11 +185,9 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
 
     const handleInitiateCall = async (teacher: any) => {
         if (!userProfile) return;
-
         try {
             const callsRef = collection(db, `artifacts/${appId}/users/${teacher.uid}/calls`);
-            const newCallDoc = doc(callsRef); // Auto-generate ID
-
+            const newCallDoc = doc(callsRef);
             const callData: Call = {
                 id: newCallDoc.id,
                 callerId: userProfile.uid,
@@ -180,11 +199,8 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                 status: 'ringing',
                 createdAt: serverTimestamp(),
             };
-
             await setDoc(newCallDoc, callData);
-            // Now that the doc is created, set the active call to transition UI
             setActiveCall(callData);
-
         } catch (error) {
             console.error("Error creating call document:", error);
             setNotification(`${t('error')}: Failed to start call.`);
@@ -207,15 +223,15 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     }, []);
 
     const renderPage = () => {
-        if (!userProfile) {
-            return <div className="flex justify-center items-center h-full"><p>{t('loading')}</p></div>;
-        }
+        if (!userProfile) return <div className="flex justify-center items-center h-full"><SlothMascot className="w-24 h-24 animate-pulse"/></div>;
+        
         if (currentLesson) {
-            return <LessonPage lesson={currentLesson} onComplete={handleLessonComplete} onBack={() => setCurrentLesson(null)} />;
+            return <LessonPage lesson={currentLesson} onComplete={handleLessonComplete} onBack={() => setCurrentLesson(null)} targetLanguage={currentCourseId === 'english' ? 'English' : 'Spanish'} />;
         }
+        
         switch (page) {
             case 'home': return <HomeView userProfile={userProfile} onSelectLesson={setCurrentLesson} setPage={setPage} />;
-            case 'lessons': return <LearnHub currentUser={userProfile} completedLessons={userProfile.completedLessons || []} onSelectLesson={setCurrentLesson} onInitiateCall={handleInitiateCall}/>;
+            case 'lessons': return <LearnHub currentUser={userProfile} completedLessons={userProfile.completedLessons || []} onSelectLesson={setCurrentLesson} onInitiateCall={handleInitiateCall} currentCourseId={currentCourseId} onCourseChange={handleCourseSelection} />;
             case 'chat': return <AiChatView userId={user.uid} setNotification={setNotification} />;
             case 'leaderboard': return <LeaderboardView />;
             case 'profile': return <ProfileView user={user} userProfile={userProfile} onUpdateProfile={updateProfileOnDb} onSignOut={() => auth.signOut()} onDeleteAccount={handleDeleteAccount} />;
@@ -238,7 +254,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     return (
         <React.Fragment>
             <IncomingCallModal call={incomingCall} onAccept={handleAcceptCall} onDecline={handleDeclineCall} />
-            {showTutorial && <Tutorial onComplete={handleTutorialComplete} />}
+            {showTutorial && <Onboarding onComplete={handleOnboardingComplete} setTargetCourse={setCurrentCourseId} />}
             <Layout page={page} setPage={setPage} setCurrentLesson={setCurrentLesson} userProfile={userProfile}>
                 {renderPage()}
             </Layout>

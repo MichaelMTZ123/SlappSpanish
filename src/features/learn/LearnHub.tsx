@@ -9,12 +9,32 @@ import { useTranslation } from '../../lib/i18n';
 import type { UserProfile, Lesson } from '../../types';
 import { Users, BookCopy } from 'lucide-react';
 
-export default function LearnHub({ onSelectLesson, completedLessons, currentUser, onInitiateCall }: { onSelectLesson: (lesson: Lesson) => void, completedLessons: string[], currentUser: UserProfile, onInitiateCall: (teacher: any) => void }) {
+export default function LearnHub({ 
+    onSelectLesson, 
+    completedLessons, 
+    currentUser, 
+    onInitiateCall,
+    currentCourseId,
+    onCourseChange 
+}: { 
+    onSelectLesson: (lesson: Lesson) => void, 
+    completedLessons: string[], 
+    currentUser: UserProfile, 
+    onInitiateCall: (teacher: any) => void,
+    currentCourseId: string,
+    onCourseChange: (courseId: string) => void
+}) {
     const { t } = useTranslation();
     const [view, setView] = useState('hub'); // 'hub', 'lessons', 'online'
 
     if (view === 'lessons') {
-        return <SelfPacedLessonsView onSelectLesson={onSelectLesson} completedLessons={completedLessons} onBack={() => setView('hub')} />;
+        return <SelfPacedLessonsView 
+            onSelectLesson={onSelectLesson} 
+            completedLessons={completedLessons} 
+            onBack={() => setView('hub')} 
+            currentCourseId={currentCourseId}
+            onCourseChange={onCourseChange}
+        />;
     }
     if (view === 'online') {
         return <OnlineLearningView currentUser={currentUser} onBack={() => setView('hub')} onInitiateCall={onInitiateCall} />;

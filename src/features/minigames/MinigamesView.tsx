@@ -4,7 +4,7 @@
 */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '../../lib/i18n';
-import { spanishLessons } from '../../lib/data';
+import { courses } from '../../lib/data';
 
 const FlashcardFrenzy = ({ onGameEnd }) => {
     const { t } = useTranslation();
@@ -15,12 +15,15 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
     const [isFinished, setIsFinished] = useState(false);
 
     useEffect(() => {
-        const allVocab = spanishLessons.beginner.flatMap(l => l.vocab.map(v => {
-            // Simple parsing for vocab like 'Word (meaning)'
-            const match = v.match(/(.+)\s\((.+)\)/);
-            if (match) return { spanish: match[1], english: match[2] };
-            return { spanish: v, english: `Translation for ${v}` }; // Fallback
-        }));
+        // Extract vocab from all units in the Spanish course
+        const allVocab = courses.spanish.units.flatMap(unit => 
+            unit.lessons.flatMap(l => l.vocab.map(v => {
+                // Simple parsing for vocab like 'Word (meaning)'
+                const match = v.match(/(.+)\s\((.+)\)/);
+                if (match) return { spanish: match[1], english: match[2] };
+                return { spanish: v, english: `Translation for ${v}` }; // Fallback
+            }))
+        );
         
         const shuffled = [...allVocab].sort(() => 0.5 - Math.random());
         const gameCards = shuffled.slice(0, 10).map(card => {

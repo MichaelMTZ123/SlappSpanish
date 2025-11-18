@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -9,7 +10,7 @@ const translations = {
         // General
         'appName': 'Slapp',
         'welcomeTo': 'Welcome to',
-        'tagline': 'The slow and steady way to learn Spanish.',
+        'tagline': 'The slow and steady way to learn.',
         'or': 'OR',
         'signInWithGoogle': 'Sign in with Google',
         'alreadyHaveAccount': 'Already have an account?',
@@ -58,7 +59,7 @@ const translations = {
 
         // Navigation
         'home': 'Home',
-        'lessons': 'Lessons',
+        'lessons': 'Learn',
         'aiPractice': 'AI Practice',
         'leaderboard': 'Leaderboard',
         'profile': 'Profile',
@@ -70,16 +71,16 @@ const translations = {
 
         // Lessons & Learning Hub
         'spanishLessons': 'Spanish Lessons',
-        'backToLessons': 'Back to Lessons',
+        'backToLessons': 'Back to Learning',
         'vocabulary': 'Vocabulary',
         'quiz': 'Quiz',
         'submitQuiz': 'Submit Quiz',
         'quizCompleted': 'Quiz completed! You can go back or try another lesson.',
         'youEarnedPoints': 'You earned',
-        'onlineLearning': 'Online Learning',
-        'selfPacedLessons': 'Self-Paced Lessons',
+        'onlineLearning': 'Live Tutors',
+        'selfPacedLessons': 'Your Path',
         'learnFromPeers': 'Connect with a live teacher for a 1-on-1 video session.',
-        'browseLessons': 'Work through our curriculum of lessons and quizzes at your own pace.',
+        'browseLessons': 'Follow the path to fluency.',
         'findATeacher': 'Find a Teacher',
         'availableTeachers': 'Available Teachers',
         'noTeachersAvailable': 'No teachers are available right now. Check back later!',
@@ -117,7 +118,7 @@ const translations = {
         'myProfile': 'My Profile',
         'displayName': 'Display Name',
         'yourRank': 'Your Rank',
-        'changeLanguage': 'Change Language',
+        'changeLanguage': 'App Language',
         'setYourRole': 'Set Your Role',
         'teacher': 'Teacher',
         'learner': 'Learner',
@@ -181,7 +182,7 @@ const translations = {
         // General
         'appName': 'Slapp',
         'welcomeTo': 'ברוכים הבאים ל-',
-        'tagline': 'הדרך האיטית והבטוחה ללמוד ספרדית.',
+        'tagline': 'הדרך האיטית והבטוחה ללמוד.',
         'or': 'או',
         'signInWithGoogle': 'התחבר עם גוגל',
         'alreadyHaveAccount': 'כבר יש לך חשבון?',
@@ -213,7 +214,7 @@ const translations = {
         'goodMorning': 'בוקר טוב',
         'goodAfternoon': 'צהריים טובים',
         'goodEvening': 'ערב טוב',
-        'readyToLearn': 'מוכן ללמוד קצת ספרדית היום?',
+        'readyToLearn': 'מוכן ללמוד היום?',
         'continueLearning': 'המשך ללמוד',
         'nextStep': 'הצעד הבא שלך הוא',
         'startLesson': 'התחל שיעור',
@@ -230,7 +231,7 @@ const translations = {
 
         // Navigation
         'home': 'בית',
-        'lessons': 'שיעורים',
+        'lessons': 'למידה',
         'aiPractice': 'אימון AI',
         'leaderboard': 'טבלת מובילים',
         'profile': 'פרופיל',
@@ -242,16 +243,16 @@ const translations = {
 
         // Lessons & Learning Hub
         'spanishLessons': 'שיעורי ספרדית',
-        'backToLessons': 'חזרה לשיעורים',
+        'backToLessons': 'חזרה ללמידה',
         'vocabulary': 'אוצר מילים',
         'quiz': 'בחן',
         'submitQuiz': 'שלח בחן',
         'quizCompleted': 'הבחן הושלם! תוכל לחזור או לנסות שיעור אחר.',
         'youEarnedPoints': 'צברת',
-        'onlineLearning': 'למידה אונליין',
-        'selfPacedLessons': 'שיעורים בקצב אישי',
+        'onlineLearning': 'מורים חיים',
+        'selfPacedLessons': 'הנתיב שלך',
         'learnFromPeers': 'התחבר עם מורה לשיעור וידאו 1-על-1.',
-        'browseLessons': 'עבור על תוכנית הלימודים שלנו הכוללת שיעורים ומבחנים בקצב שלך.',
+        'browseLessons': 'עקוב אחר הנתיב לשליטה בשפה.',
         'findATeacher': 'מצא מורה',
         'availableTeachers': 'מורים זמינים',
         'noTeachersAvailable': 'אין מורים זמינים כרגע. נסה שוב מאוחר יותר!',
@@ -272,7 +273,7 @@ const translations = {
         // AI Chat
         'aiPracticeChat': 'צ\'אט אימון עם AI',
         'typeYourMessage': 'הקלד את הודעתך...',
-        'aiInitialMessage': '¡Hola! אני המורה ה-AI שלך. שאל אותי כל דבר בספרדית או באנגלית.',
+        'aiInitialMessage': '¡Hola! אני המורה ה-AI שלך. שאל אותי כל דבר.',
         'oopsError': 'אופס! משהו השתבש. אנא נסה שוב.',
         'slappyIsThinking': 'סלאפי חושב...',
         'mascotDefault': 'רק זכור, לאט ובטוח מנצחים במירוץ!',
@@ -288,7 +289,7 @@ const translations = {
         'myProfile': 'הפרופיל שלי',
         'displayName': 'שם תצוגה',
         'yourRank': 'הדרגה שלך',
-        'changeLanguage': 'שנה שפה',
+        'changeLanguage': 'שפת אפליקציה',
         'setYourRole': 'קבע את תפקידך',
         'teacher': 'מורה',
         'learner': 'תלמיד',

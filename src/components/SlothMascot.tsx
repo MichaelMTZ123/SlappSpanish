@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -6,11 +7,42 @@ import React from 'react';
 
 export const SlothMascot = ({ className = '' }) => (
     <svg viewBox="0 0 200 200" className={className} xmlns="http://www.w3.org/2000/svg">
-        <path fill="#C2A993" d="M100,200 C155.228,200 200,155.228 200,100 C200,44.7715 155.228,0 100,0 C44.7715,0 0,44.7715 0,100 C0,155.228 44.7715,200 100,200 Z" />
-        <path fill="#A0846D" d="M100,180 C144.183,180 180,144.183 180,100 C180,55.8172 144.183,20 100,20 C55.8172,20 20,55.8172 20,100 C20,144.183 55.8172,180 100,180 Z" />
-        <path fill="#F5EFE6" d="M125.4,123.2c0,14-11.4,25.4-25.4,25.4s-25.4-11.4-25.4-25.4c0-7.7,3.4-14.6,8.8-19.4 C75.9,96.1,65,84.5,65,70c0-19.3,15.7-35,35-35s35,15.7,35,35c0,14.5-10.9,26.1-23.4,31.8 C122,108.6,125.4,115.5,125.4,123.2z" />
-        <circle fill="#2C2C2C" cx="85" cy="70" r="8" />
-        <circle fill="#2C2C2C" cx="115" cy="70" r="8" />
-        <path fill="#2C2C2C" d="M100,95c-5,0-9.4,2.5-12.1,6.3c-0.6,0.8-0.4,2,0.4,2.6c0.8,0.6,2,0.4,2.6-0.4 c2-2.7,5-4.5,8.1-4.5s6.1,1.8,8.1,4.5c0.6,0.8,1.8,1,2.6,0.4c0.8-0.6,1-1.8,0.4-2.6C109.4,97.5,105,95,100,95z" />
+        <defs>
+            <radialGradient id="faceGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" stopColor="#F5EFE6" />
+                <stop offset="100%" stopColor="#E8DCCA" />
+            </radialGradient>
+        </defs>
+
+        {/* Body/Head Shape */}
+        <path fill="#A0846D" d="M100,15 C50,15 20,55 20,100 C20,150 45,190 100,190 C155,190 180,150 180,100 C180,55 150,15 100,15 Z" />
+        
+        {/* Face Patch */}
+        <path fill="url(#faceGradient)" d="M100,40 C140,40 160,70 160,110 C160,155 135,175 100,175 C65,175 40,155 40,110 C40,70 60,40 100,40 Z" />
+
+        {/* Eye Patches */}
+        <path fill="#8B6B52" d="M70,90 C55,90 45,100 45,115 C45,135 60,140 75,130 C85,122 85,100 70,90 Z" />
+        <path fill="#8B6B52" d="M130,90 C145,90 155,100 155,115 C155,135 140,140 125,130 C115,122 115,100 130,90 Z" />
+
+        {/* Eyes (Shiny) */}
+        <circle fill="#2C2C2C" cx="65" cy="110" r="8" />
+        <circle fill="#FFFFFF" cx="68" cy="108" r="3" />
+        
+        <circle fill="#2C2C2C" cx="135" cy="110" r="8" />
+        <circle fill="#FFFFFF" cx="138" cy="108" r="3" />
+
+        {/* Nose */}
+        <ellipse fill="#2C2C2C" cx="100" cy="135" rx="12" ry="8" />
+        <path fill="#FFFFFF" fillOpacity="0.3" d="M96,133 Q100,130 104,133" stroke="none" />
+
+        {/* Smile */}
+        <path d="M85,150 Q100,160 115,150" fill="none" stroke="#2C2C2C" strokeWidth="3" strokeLinecap="round" />
+
+        {/* Hair/Fur Tuft */}
+        <path fill="none" stroke="#A0846D" strokeWidth="4" strokeLinecap="round" d="M90,15 Q100,5 110,15" />
+        
+        {/* Cute Cheek Blush */}
+        <circle fill="#FFB7B2" fillOpacity="0.6" cx="55" cy="135" r="8" />
+        <circle fill="#FFB7B2" fillOpacity="0.6" cx="145" cy="135" r="8" />
     </svg>
 );

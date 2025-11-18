@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -15,6 +16,7 @@ export interface UserProfile {
     hasCompletedTutorial?: boolean;
     role?: 'learner' | 'teacher';
     isAvailableForCalls?: boolean;
+    currentCourseId?: string;
 }
 
 export interface Call {
@@ -36,7 +38,7 @@ export interface Lesson {
     title: string;
     content: string;
     vocab: string[];
-    quiz: QuizQuestion[];
+    quiz?: QuizQuestion[];
 }
 
 export interface QuizQuestion {
