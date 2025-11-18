@@ -101,8 +101,8 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
                 </div>
             </div>
             
-            <h1 className="text-xl font-bold mb-1 text-white drop-shadow-md">{quiz.title}</h1>
-            <p className="text-sm text-white/80 mb-4 font-medium">by {quiz.creatorName}</p>
+            <h1 className="text-xl font-bold mb-1 text-gray-900 dark:text-white drop-shadow-sm">{quiz.title}</h1>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 font-medium">by {quiz.creatorName}</p>
             
             <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-3 mb-6 border border-white/30">
                 <div className="bg-blue-500 h-full rounded-full transition-all" style={{ width: `${progress}%` }}></div>
@@ -305,7 +305,7 @@ export default function CommunityView({ currentUser, onQuizComplete }: { current
         <div className="p-4 sm:p-8">
              {notification && <div className="mb-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">{notification}</div>}
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md">{t('communityQuizzes')}</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-sm">{t('communityQuizzes')}</h1>
                 <button onClick={() => setCreateModalOpen(true)} className="bg-teal-500 text-white font-bold py-2 px-4 rounded-xl hover:bg-teal-600 transition flex items-center gap-2 shadow-lg">
                     <PlusCircle size={20} /> {t('createQuiz')}
                 </button>

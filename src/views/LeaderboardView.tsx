@@ -27,15 +27,15 @@ export default function LeaderboardView() {
 
     return (
         <div className="p-4 sm:p-8 max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md mb-8 text-center">{t('leaderboard')}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-sm mb-8 text-center">{t('leaderboard')}</h1>
             <div className="glass-panel rounded-3xl shadow-2xl overflow-hidden border-2 border-white/40">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-white/50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
                             <tr>
-                                <th className="p-4 text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider text-center">#</th>
-                                <th className="p-4 text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">User</th>
-                                <th className="p-4 text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider text-right">Score</th>
+                                <th className="p-4 text-sm font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider text-center">#</th>
+                                <th className="p-4 text-sm font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider">User</th>
+                                <th className="p-4 text-sm font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider text-right">Score</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">

@@ -79,7 +79,7 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
             </div>
             <div className="grid grid-cols-2 gap-4">
                 {currentCard.options.map(opt => (
-                    <button key={opt} onClick={() => handleAnswer(opt)} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-600 p-4 rounded-xl font-semibold hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm">
+                    <button key={opt} onClick={() => handleAnswer(opt)} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-600 p-4 rounded-xl font-semibold hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm text-gray-900 dark:text-white">
                         {opt}
                     </button>
                 ))}
@@ -276,11 +276,11 @@ const SpeedListen = ({ onGameEnd }) => {
 
     return (
         <div className="text-center">
-             <h2 className="text-xl font-bold mb-4 text-white">{t('score')}: {score}</h2>
+             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t('score')}: {score}</h2>
              <button onClick={() => playAudio(targetWord.es)} className="bg-indigo-500 hover:bg-indigo-600 text-white p-8 rounded-full shadow-lg mb-8 animate-pulse">
                 <Volume2 size={48} />
              </button>
-             <p className="mb-4 text-white font-medium">Listen and select the correct meaning:</p>
+             <p className="mb-4 text-gray-800 dark:text-white font-medium">Listen and select the correct meaning:</p>
              <div className="grid grid-cols-2 gap-4">
                  {options.map((opt, i) => (
                      <button key={i} onClick={() => handleOptionClick(opt)} className={`p-4 rounded-xl font-bold text-lg transition-all ${status === 'playing' ? 'bg-white text-gray-800 hover:bg-gray-100' : status === 'correct' && opt.es === targetWord.es ? 'bg-green-500 text-white' : 'bg-red-400 text-white opacity-50'}`}>
@@ -312,7 +312,7 @@ export default function MinigamesView({ onGameComplete }) {
         const GameComponent = activeGame.component;
         return (
             <div className="p-4 sm:p-8 max-w-3xl mx-auto">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md mb-6">{activeGame.name}</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-md mb-6">{activeGame.name}</h1>
                  <div className="glass-panel p-8 rounded-3xl shadow-2xl">
                     <GameComponent onGameEnd={handleGameEnd} />
                     <button onClick={() => setActiveGame(null)} className="w-full mt-8 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition">
@@ -329,14 +329,14 @@ export default function MinigamesView({ onGameComplete }) {
 
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md mb-2">{t('minigames')}</h1>
-            <p className="text-white/80 text-lg mb-8">{t('selectAGame')}</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-md mb-2">{t('minigames')}</h1>
+            <p className="text-gray-700 dark:text-gray-200 text-lg mb-8 font-bold">{t('selectAGame')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {games.map(game => (
                     <div key={game.id} className="glass-panel p-8 rounded-3xl shadow-xl flex flex-col relative overflow-hidden group cursor-pointer transition-transform hover:scale-[1.02]" onClick={() => setActiveGame(game)}>
                         <div className={`absolute top-0 right-0 w-32 h-32 ${game.color} opacity-20 rounded-bl-full z-0 transition-transform group-hover:scale-110`}></div>
-                         <h3 className="text-2xl font-bold text-gray-800 dark:text-white z-10">{game.name}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 mt-2 flex-grow z-10 font-medium">{game.description}</p>
+                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white z-10">{game.name}</h3>
+                        <p className="text-gray-700 dark:text-gray-300 mt-2 flex-grow z-10 font-medium">{game.description}</p>
                         <button className={`mt-6 w-full ${game.color} text-white font-bold py-3 rounded-xl shadow-lg hover:opacity-90 transition z-10`}>
                             {t('start')}
                         </button>

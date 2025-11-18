@@ -21,9 +21,9 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, pageName, currentPage, setPage, setCurrentLesson }) => {
     const { t } = useTranslation();
     return (
-        <li onClick={() => { setPage(pageName); setCurrentLesson(null); }} className={`flex items-center p-3 my-1 rounded-xl cursor-pointer transition-all duration-200 ${currentPage === pageName ? 'bg-white/90 dark:bg-gray-700/90 text-blue-600 shadow-md scale-105' : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-gray-700/40'}`}>
+        <li onClick={() => { setPage(pageName); setCurrentLesson(null); }} className={`flex items-center p-3 my-1 rounded-xl cursor-pointer transition-all duration-200 ${currentPage === pageName ? 'bg-white/90 dark:bg-gray-700/90 text-blue-600 shadow-md scale-105' : 'text-gray-900 dark:text-gray-200 hover:bg-white/40 dark:hover:bg-gray-700/40 font-bold'}`}>
             <Icon className="w-6 h-6" />
-            <span className="ms-4 font-bold">{t(label)}</span>
+            <span className="ms-4">{t(label)}</span>
         </li>
     );
 };
@@ -34,7 +34,7 @@ const MobileNavItem: React.FC<NavItemProps> = ({ icon: Icon, label, pageName, cu
         <button
             onClick={() => { setPage(pageName); setCurrentLesson(null); }}
             className={`flex flex-col items-center justify-center flex-shrink-0 w-20 p-2 transition-all duration-200 rounded-xl ${
-                currentPage === pageName ? 'text-blue-600 bg-white/80 dark:bg-gray-800/80 shadow-sm transform -translate-y-2' : 'text-gray-600 dark:text-gray-400 hover:bg-white/30'
+                currentPage === pageName ? 'text-blue-600 bg-white/80 dark:bg-gray-800/80 shadow-sm transform -translate-y-2' : 'text-gray-800 dark:text-gray-300 hover:bg-white/30'
             }`}
         >
             <Icon className="w-6 h-6 mb-1" />
@@ -79,7 +79,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, page, setPage, setCurr
             <aside className="w-72 glass-panel m-4 rounded-3xl flex-shrink-0 hidden md:flex flex-col shadow-2xl z-10">
                 <div className="flex items-center justify-center p-6 border-b border-gray-200/30 dark:border-gray-700/30">
                     <SlothMascot className="w-12 h-12 drop-shadow-lg" />
-                    <span className="ms-3 text-3xl font-extrabold tracking-tight text-gray-800 dark:text-white drop-shadow-sm">{t('appName')}</span>
+                    <span className="ms-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">{t('appName')}</span>
                 </div>
                 <nav className="flex-grow p-4 overflow-y-auto no-scrollbar">
                     <ul>
@@ -100,8 +100,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, page, setPage, setCurr
                     <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-3 flex items-center gap-3 shadow-inner">
                         <img src={userProfile.pfp || `https://placehold.co/40x40`} alt="User" className="w-10 h-10 rounded-full border-2 border-white shadow-sm"/>
                         <div>
-                            <p className="font-bold text-sm text-gray-800 dark:text-white truncate">{userProfile.name}</p>
-                            <p className="text-xs text-gray-600 dark:text-gray-300">{userProfile.coins || 0} Coins</p>
+                            <p className="font-bold text-sm text-gray-900 dark:text-white truncate">{userProfile.name}</p>
+                            <p className="text-xs text-gray-700 dark:text-gray-300">{userProfile.coins || 0} Coins</p>
                         </div>
                     </div>
                 </div>

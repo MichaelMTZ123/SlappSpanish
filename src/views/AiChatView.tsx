@@ -207,14 +207,14 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
     return (
         <div className="p-4 sm:p-8 h-full flex flex-col max-w-5xl mx-auto">
              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md flex items-center gap-2">
-                     {t('aiPracticeChat')} {activeScenario && <span className="text-sm bg-teal-500 px-2 py-1 rounded-lg shadow-sm">{activeScenario.title}</span>}
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-sm flex items-center gap-2">
+                     {t('aiPracticeChat')} {activeScenario && <span className="text-sm bg-teal-500 px-2 py-1 rounded-lg shadow-sm text-white">{activeScenario.title}</span>}
                 </h1>
                 <div className="flex items-center gap-2">
-                     <button onClick={() => setIsScenarioModalOpen(true)} className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition text-white" title={t('pickScenario')}>
+                     <button onClick={() => setIsScenarioModalOpen(true)} className="p-2 rounded-full bg-white/50 hover:bg-white/80 transition text-gray-800 dark:text-white" title={t('pickScenario')}>
                         <Sparkles className="w-6 h-6" />
                     </button>
-                    <button onClick={() => setIsClearModalOpen(true)} className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition text-white" title={t('clearChat')}>
+                    <button onClick={() => setIsClearModalOpen(true)} className="p-2 rounded-full bg-white/50 hover:bg-white/80 transition text-gray-800 dark:text-white" title={t('clearChat')}>
                         <Trash2 className="w-6 h-6" />
                     </button>
                     <div className="relative inline-block w-10 align-middle select-none ml-2">

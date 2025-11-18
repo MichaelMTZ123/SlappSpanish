@@ -67,11 +67,11 @@ body {
 }
 
 .glass-panel {
-    background: rgba(255, 255, 255, 0.65); /* LOWERED opacity for background visibility */
+    background: rgba(255, 255, 255, 0.65); /* Keep opacity for glass effect */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    color: #1f2937; /* Ensure text is dark inside panels by default */
+    color: #111827; /* Ensure text is almost black (gray-900) inside panels by default */
 }
 
 .dark .glass-panel {

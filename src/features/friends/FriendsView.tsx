@@ -240,7 +240,7 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
 
     return (
         <div className="p-4 sm:p-8 max-w-6xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-md mb-6">{t('friends')}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-sm mb-6">{t('friends')}</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column */}
                 <div>

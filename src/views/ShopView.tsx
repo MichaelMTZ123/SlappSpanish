@@ -16,7 +16,7 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 dark:text-white drop-shadow-sm flex items-center gap-3">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-sm flex items-center gap-3">
                     <ShoppingBag className="text-indigo-500" size={40}/> {t('slothShop')}
                 </h1>
                 <div className="glass-panel px-6 py-2 rounded-full flex items-center gap-2 shadow-md bg-yellow-50 border-yellow-200">
@@ -25,7 +25,7 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                 </div>
             </div>
 
-            <p className="text-lg text-gray-700 dark:text-gray-200 mb-8 font-medium bg-white/40 dark:bg-gray-800/40 p-4 rounded-xl inline-block">{t('spendCoins')}</p>
+            <p className="text-lg text-gray-800 dark:text-gray-200 mb-8 font-medium bg-white/40 dark:bg-gray-800/40 p-4 rounded-xl inline-block border border-white/50">{t('spendCoins')}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {shopItems.map(item => {
@@ -46,8 +46,8 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                                 )}
                             </div>
 
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">{item.name}</h3>
-                            <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4 bg-white/50 dark:bg-gray-700/50 px-2 py-1 rounded-md">{item.type}</span>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{item.name}</h3>
+                            <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400 mb-4 bg-white/50 dark:bg-gray-700/50 px-2 py-1 rounded-md">{item.type}</span>
                             
                             <div className="mt-auto w-full">
                                 {isOwned ? (
@@ -55,7 +55,7 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
                                         <button 
                                             onClick={() => onEquip(item.id)}
                                             disabled={isEquipped}
-                                            className={`w-full py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 ${isEquipped ? 'bg-green-500 text-white cursor-default' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300'}`}
+                                            className={`w-full py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 ${isEquipped ? 'bg-green-500 text-white cursor-default' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300'}`}
                                         >
                                             {isEquipped ? <><Check size={18}/> {t('equipped')}</> : t('equip')}
                                         </button>

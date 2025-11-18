@@ -31,8 +31,8 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl sm:text-5xl font-extrabold text-white drop-shadow-md">{getGreeting()}, {userProfile.name}!</h1>
-                    <p className="mt-2 text-lg text-white/90 font-medium drop-shadow-sm">{t('readyToLearn')}</p>
+                    <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 dark:text-white drop-shadow-sm">{getGreeting()}, {userProfile.name}!</h1>
+                    <p className="mt-2 text-lg text-gray-700 dark:text-gray-200 font-bold">{t('readyToLearn')}</p>
                 </div>
                 <SlothMascot className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-2xl animate-float" />
             </div>
@@ -46,7 +46,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                             <div className="absolute top-0 right-0 w-40 h-40 bg-teal-500/10 rounded-bl-full z-0 transition-transform group-hover:scale-110"></div>
                             <div className="relative z-10">
                                 <h2 className="text-xl font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wider mb-1">{t('continueLearning')}</h2>
-                                <p className="text-3xl font-bold text-gray-800 dark:text-white mb-4">{nextLesson.title}</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{nextLesson.title}</p>
                                 <button className="bg-teal-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-teal-600 transition-all flex items-center gap-2">
                                     {t('startLesson')} →
                                 </button>
@@ -54,8 +54,8 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                         </div>
                     ) : (
                         <div className="glass-panel p-8 rounded-3xl shadow-xl text-center">
-                            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">All lessons complete!</h2>
-                            <p className="text-gray-600 dark:text-gray-300 mt-2">You are a legend. Check back later for more content.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">All lessons complete!</h2>
+                            <p className="text-gray-700 dark:text-gray-300 mt-2">You are a legend. Check back later for more content.</p>
                         </div>
                     )}
 
@@ -63,13 +63,13 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                     <div className="grid grid-cols-2 gap-6">
                         <div className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center">
                             <Zap className="w-10 h-10 text-yellow-500 mb-2" />
-                            <span className="text-4xl font-bold text-gray-800 dark:text-white">{userProfile.streak || 0}</span>
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('dailyStreak')}</span>
+                            <span className="text-4xl font-bold text-gray-900 dark:text-white">{userProfile.streak || 0}</span>
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">{t('dailyStreak')}</span>
                         </div>
                          <div className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/40 transition" onClick={() => setPage('shop')}>
                             <ShoppingBag className="w-10 h-10 text-indigo-500 mb-2" />
-                            <span className="text-4xl font-bold text-gray-800 dark:text-white">{userProfile.coins || 0}</span>
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t('coins')}</span>
+                            <span className="text-4xl font-bold text-gray-900 dark:text-white">{userProfile.coins || 0}</span>
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">{t('coins')}</span>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
 
                     {/* Quick Links */}
                     <div className="glass-panel p-6 rounded-3xl shadow-lg">
-                        <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">Quick Access</h3>
+                        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Quick Access</h3>
                         <div className="space-y-3">
                             <button onClick={() => setPage('chat')} className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md hover:scale-105 transition">
                                 <div className="bg-white/20 p-2 rounded-lg"><SlothMascot className="w-6 h-6"/></div>
