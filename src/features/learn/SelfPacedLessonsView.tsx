@@ -66,7 +66,7 @@ export default function SelfPacedLessonsView({ onSelectLesson, completedLessons,
 
             <div className="space-y-12 pb-20">
                 {course.units.map((unit, unitIndex) => (
-                    <div key={unit.id} className="relative">
+                    <div key={unit.id} id={unitIndex === 0 ? "lesson-unit-1" : undefined} className="relative">
                         {/* Unit Header */}
                         <div className={`bg-${unit.color}-500 text-white p-4 rounded-xl mb-8 shadow-lg flex justify-between items-center transform hover:scale-[1.02] transition`}>
                             <div>

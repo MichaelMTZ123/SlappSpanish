@@ -332,8 +332,8 @@ export default function MinigamesView({ onGameComplete }) {
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-md mb-2">{t('minigames')}</h1>
             <p className="text-gray-700 dark:text-gray-200 text-lg mb-8 font-bold">{t('selectAGame')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {games.map(game => (
-                    <div key={game.id} className="glass-panel p-8 rounded-3xl shadow-xl flex flex-col relative overflow-hidden group cursor-pointer transition-transform hover:scale-[1.02]" onClick={() => setActiveGame(game)}>
+                {games.map((game, index) => (
+                    <div key={game.id} id={index === 0 ? "minigame-card-0" : undefined} className="glass-panel p-8 rounded-3xl shadow-xl flex flex-col relative overflow-hidden group cursor-pointer transition-transform hover:scale-[1.02]" onClick={() => setActiveGame(game)}>
                         <div className={`absolute top-0 right-0 w-32 h-32 ${game.color} opacity-20 rounded-bl-full z-0 transition-transform group-hover:scale-110`}></div>
                          <h3 className="text-2xl font-bold text-gray-900 dark:text-white z-10">{game.name}</h3>
                         <p className="text-gray-700 dark:text-gray-300 mt-2 flex-grow z-10 font-medium">{game.description}</p>

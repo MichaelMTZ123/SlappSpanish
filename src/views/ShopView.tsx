@@ -28,13 +28,13 @@ export default function ShopView({ userProfile, onBuy, onEquip }: { userProfile:
             <p className="text-lg text-gray-800 dark:text-gray-200 mb-8 font-medium bg-white/40 dark:bg-gray-800/40 p-4 rounded-xl inline-block border border-white/50">{t('spendCoins')}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {shopItems.map(item => {
+                {shopItems.map((item, index) => {
                     const isOwned = userProfile.inventory?.includes(item.id);
                     const isEquipped = userProfile.equippedOutfit === item.id;
                     const canAfford = userProfile.coins >= item.price;
 
                     return (
-                        <div key={item.id} className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center relative overflow-hidden transition-transform hover:scale-[1.02] border-2 border-white/50">
+                        <div key={item.id} id={index === 0 ? "shop-item-0" : undefined} className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center relative overflow-hidden transition-transform hover:scale-[1.02] border-2 border-white/50">
                             {/* Preview Area */}
                             <div className="w-32 h-32 mb-4 relative">
                                 {item.type === 'outfit' ? (

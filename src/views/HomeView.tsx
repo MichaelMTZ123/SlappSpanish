@@ -31,7 +31,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
 
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
-            {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} />}
+            {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} setPage={setPage} />}
             
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
@@ -80,7 +80,7 @@ export default function HomeView({ userProfile, onSelectLesson, setPage }) {
                     )}
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-6">
+                    <div id="home-stats" className="grid grid-cols-2 gap-6">
                         <div className="glass-panel p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center">
                             <Zap className="w-10 h-10 text-yellow-500 mb-2" />
                             <span className="text-4xl font-bold text-gray-900 dark:text-white">{userProfile.streak || 0}</span>
