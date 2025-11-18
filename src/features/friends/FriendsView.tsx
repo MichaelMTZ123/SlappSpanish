@@ -245,7 +245,7 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
                 {/* Left Column */}
                 <div>
                     {/* Search */}
-                    <div className="glass-panel p-6 rounded-3xl shadow-lg mb-8">
+                    <div id="friends-search-panel" className="glass-panel p-6 rounded-3xl shadow-lg mb-8">
                         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">{t('findFriends')}</h2>
                         <div className="flex gap-2">
                             <input type="text" value={search} onChange={e => setSearch(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSearch()} placeholder={t('searchUsers')} className="flex-grow p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-teal-500 outline-none" />

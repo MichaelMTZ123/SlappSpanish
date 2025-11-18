@@ -93,7 +93,9 @@ export default function HomeView({ userProfile, onSelectLesson, setPage, onStart
 
                 {/* Right Column: Quests & Social */}
                 <div className="space-y-8">
-                    <DailyQuests quests={userProfile.dailyQuests || []} />
+                    <div id="daily-quests-panel">
+                        <DailyQuests quests={userProfile.dailyQuests || []} />
+                    </div>
 
                     {/* Quick Links */}
                     <div className="glass-panel p-6 rounded-3xl shadow-lg">

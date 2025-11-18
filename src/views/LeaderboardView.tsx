@@ -28,7 +28,7 @@ export default function LeaderboardView() {
     return (
         <div className="p-4 sm:p-8 max-w-4xl mx-auto">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-sm mb-8 text-center">{t('leaderboard')}</h1>
-            <div className="glass-panel rounded-3xl shadow-2xl overflow-hidden border-2 border-white/40">
+            <div id="leaderboard-table" className="glass-panel rounded-3xl shadow-2xl overflow-hidden border-2 border-white/40">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-white/50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">

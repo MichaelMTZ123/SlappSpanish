@@ -54,7 +54,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                 <div className="flex flex-col items-center">
                     
                     {/* Avatar Area */}
-                    <div className="relative mb-6 group cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                    <div id="profile-avatar" className="relative mb-6 group cursor-pointer" onClick={() => fileInputRef.current.click()}>
                         <div className="w-40 h-40 rounded-full bg-gradient-to-b from-blue-200 to-blue-50 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center shadow-inner overflow-hidden border-4 border-white dark:border-gray-600">
                             {/* If user has a real PFP uploaded, show it, otherwise show Mascot */}
                              <SlothMascot className="w-32 h-32 mt-4 drop-shadow-md transition-transform group-hover:scale-110" outfit={userProfile.equippedOutfit} />

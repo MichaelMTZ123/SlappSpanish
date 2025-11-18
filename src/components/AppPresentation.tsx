@@ -3,9 +3,9 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SlothMascot } from './SlothMascot';
-import { ArrowLeft, X, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X, Send, Loader2, HelpCircle } from 'lucide-react';
 import { generateContent } from '../lib/gemini';
 
 interface AppPresentationProps {
@@ -18,65 +18,85 @@ const steps = [
         id: 'intro',
         page: 'home',
         targetId: null,
-        text: 'שלום! אני Slothy. ברוכים הבאים לאפליקציה שתלמד אתכם שפות בדרך הכי רגועה ויעילה שיש. בואו אעשה לכם סיבוב!',
-        position: 'center'
+        text: 'שלום! אני Slothy. ברוכים הבאים לאפליקציה שתלמד אתכם ספרדית בדרך הכי רגועה ויעילה שיש. בואו אעשה לכם סיבוב מלא!',
     },
     {
         id: 'stats',
         page: 'home',
         targetId: 'home-stats',
-        text: 'כאן למעלה תוכלו לראות את ההתקדמות שלכם. הרצף היומי (Streak) והמטבעות שצברתם. התמידו כדי לא לאבד את הרצף!',
-        position: 'bottom'
+        text: 'כאן למעלה רואים את ההתקדמות. הרצף היומי (Streak) והמטבעות. חשוב להתמיד כל יום כדי לא לאבד את הרצף!',
+    },
+    {
+        id: 'quests',
+        page: 'home',
+        targetId: 'daily-quests-panel',
+        text: 'אלו המשימות היומיות שלכם. השלימו אותן כדי לזכות בבונוסים של מטבעות ולהתקדם מהר יותר.',
     },
     {
         id: 'learn',
         page: 'lessons',
-        // Updated target to the general "Path" card on the Learn Hub page
-        targetId: 'learn-path-card', 
-        text: 'זה הלב של האפליקציה. מסלול הלמידה שלכם בנוי מיחידות. כאן תוכלו להתחיל בשיעורים עצמיים בקצב שלכם.',
-        position: 'bottom'
+        targetId: 'learn-path-card',
+        text: 'זה הלב של האפליקציה. מסלול הלמידה שלכם בנוי מיחידות. כאן מתחילים בשיעורים עצמיים בקצב שלכם.',
+    },
+    {
+        id: 'online',
+        page: 'lessons',
+        targetId: 'learn-online-card',
+        text: 'רוצים לתרגל דיבור? כאן תוכלו למצוא מורים זמינים ולבצע שיחות וידאו בלייב כדי לשפר את השפה.',
     },
     {
         id: 'chat',
         page: 'chat',
         targetId: 'chat-input-area',
-        text: 'בואו נדבר! כאן תוכלו לנהל איתי שיחות בכתב או בדיבור. אני כאן כדי לתקן טעויות ולעזור לכם לצבור ביטחון.',
-        position: 'top'
+        text: 'בואו נדבר! כאן תוכלו לנהל איתי (ה-AI) שיחות בכתב או בדיבור. אני אתקן טעויות ואעזור לכם לצבור ביטחון.',
     },
     {
         id: 'minigames',
         page: 'minigames',
         targetId: 'minigame-card-0',
-        text: 'רוצים הפסקה מהלימודים? המיני-משחקים שלנו יעזרו לכם לשפר את הזיכרון וללמוד מילים חדשות בכיף.',
-        position: 'top'
+        text: 'רוצים הפסקה? המיני-משחקים יעזרו לכם לשפר את הזיכרון וללמוד מילים חדשות בדרך כיפית.',
     },
     {
         id: 'shop',
         page: 'shop',
         targetId: 'shop-item-0',
-        text: 'שופינג! השתמשו במטבעות שהרווחתם כדי לקנות לי תלבושות מגניבות או כוחות מיוחדים שיעזרו לכם בלימודים.',
-        position: 'top'
+        text: 'שופינג! השתמשו במטבעות שהרווחתם כדי לקנות לי תלבושות מגניבות או "הקפאת רצף" לימים עמוסים.',
+    },
+    {
+        id: 'friends',
+        page: 'friends',
+        targetId: 'friends-search-panel',
+        text: 'יותר כיף ללמוד ביחד! חפשו חברים, עקבו אחרי ההתקדמות שלהם ושלחו להם הודעות.',
     },
     {
         id: 'community',
         page: 'community',
         targetId: 'create-quiz-btn',
-        text: 'הקהילה שלנו תוססת! כאן תוכלו ליצור בחנים משלכם עבור אחרים, או לנסות את הבחנים שחברים יצרו.',
-        position: 'bottom'
+        text: 'הקהילה שלנו תוססת! צרו בחנים משלכם עבור אחרים, או נסו את הבחנים שמשתמשים אחרים יצרו.',
+    },
+    {
+        id: 'leaderboard',
+        page: 'leaderboard',
+        targetId: 'leaderboard-table',
+        text: 'רוצים להיות אגדה? כאן הטבלה המובילה. צברו נקודות בשיעורים ובמשחקים כדי לטפס לפסגה.',
+    },
+    {
+        id: 'profile',
+        page: 'profile',
+        targetId: 'profile-avatar',
+        text: 'זה האזור האישי שלכם. כאן משנים שפה, מחליפים תמונת פרופיל, ורואים את הדרגה הנוכחית שלכם.',
     },
     {
         id: 'qa',
-        page: 'home', // Return home for Q&A
+        page: 'home',
         targetId: null,
-        text: 'זהו, סיימנו את הסיבוב! יש לכם שאלות נוספות על האפליקציה? אני כאן לענות על הכל.',
-        position: 'center'
+        text: 'זהו, סיימנו את הסיבוב! יש לכם שאלות נוספות על האפליקציה? אני כאן לענות על הכל (ממש עכשיו!).',
     }
 ];
 
 export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPage }) => {
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [spotlightStyle, setSpotlightStyle] = useState<React.CSSProperties>({});
-    const [mascotStyle, setMascotStyle] = useState<React.CSSProperties>({});
     const [question, setQuestion] = useState('');
     const [aiAnswer, setAiAnswer] = useState('');
     const [isThinking, setIsThinking] = useState(false);
@@ -84,23 +104,16 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
 
     const currentStep = steps[currentStepIndex];
 
-    // Main Effect for Navigation and Targeting
     useEffect(() => {
-        setHighlightVisible(false); // Reset highlight immediately on step change
+        setHighlightVisible(false);
         setPage(currentStep.page);
 
         let retryCount = 0;
-        const maxRetries = 20; // Retry for 2 seconds (20 * 100ms)
+        const maxRetries = 25; 
         
         const findTarget = () => {
             if (!currentStep.targetId) {
-                // Center position for steps without target
                 setSpotlightStyle({ opacity: 0, display: 'none' });
-                setMascotStyle({
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)'
-                });
                 setHighlightVisible(true);
                 return;
             }
@@ -108,13 +121,11 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             const element = document.getElementById(currentStep.targetId);
             
             if (element) {
-                // Scroll element into view first to ensure correct rect calculation
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                // Small delay to allow scroll to settle
                 setTimeout(() => {
                     const rect = element.getBoundingClientRect();
-                    const padding = 10;
+                    const padding = 8;
                     
                     setSpotlightStyle({
                         top: rect.top - padding,
@@ -123,49 +134,22 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                         height: rect.height + (padding * 2),
                         opacity: 1,
                         display: 'block',
-                        position: 'fixed' // Important: use fixed to align with viewport
-                    });
-
-                    // Position Mascot relative to target
-                    // Default: Below the element
-                    let mascotTop = rect.bottom + 20;
-                    let mascotLeft = rect.left + (rect.width / 2) - 160; // Center approx (320px width / 2)
-
-                    // Adjust if off-screen bottom
-                    if (mascotTop + 300 > window.innerHeight || currentStep.position === 'top') {
-                        mascotTop = rect.top - 320; // Place above
-                    }
-
-                    // Adjust horizontal boundaries
-                    if (mascotLeft < 10) mascotLeft = 10;
-                    if (mascotLeft + 320 > window.innerWidth) mascotLeft = window.innerWidth - 330;
-
-                    setMascotStyle({
-                        top: mascotTop,
-                        left: mascotLeft,
-                        transform: 'none'
+                        position: 'fixed' 
                     });
                     setHighlightVisible(true);
-                }, 500);
+                }, 600); // Wait for scroll
             } else {
                 if (retryCount < maxRetries) {
                     retryCount++;
                     setTimeout(findTarget, 100);
                 } else {
-                    console.warn(`Tour target ${currentStep.targetId} not found.`);
-                    // Fallback to center if element not found
+                    // If target not found, just show text without highlight
                     setSpotlightStyle({ opacity: 0, display: 'none' });
-                    setMascotStyle({
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)'
-                    });
                     setHighlightVisible(true);
                 }
             }
         };
 
-        // Start searching
         findTarget();
 
     }, [currentStepIndex, setPage, currentStep]);
@@ -173,6 +157,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
     const handleNext = () => {
         if (currentStepIndex < steps.length - 1) {
             setCurrentStepIndex(prev => prev + 1);
+            setAiAnswer(''); // Reset Q&A
         } else {
             onClose();
         }
@@ -181,6 +166,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
     const handlePrev = () => {
          if (currentStepIndex > 0) {
             setCurrentStepIndex(prev => prev - 1);
+            setAiAnswer('');
         }
     }
 
@@ -193,7 +179,8 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             const prompt = `
             You are Slothy, the mascot of the language learning app "Sloth".
             The user is asking a question about the app during the onboarding tour.
-            Answer briefly, friendly, and in Hebrew.
+            Answer clearly, friendly, and strictly in Hebrew. Keep it short (max 2 sentences).
+            If asked about capabilities, mention: Learning Spanish/English/Arabic, AI Chat, Video Calls with real tutors, Minigames, and Leaderboards.
             User Question: "${question}"
             `;
 
@@ -204,99 +191,115 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
 
             setAiAnswer(response.text);
         } catch (error) {
-            setAiAnswer('אופס, התבלבלתי קצת. נסה לשאול שוב?');
+            console.error(error);
+            setAiAnswer('מצטער, הייתה בעיה בתקשורת. נסה שוב?');
         } finally {
             setIsThinking(false);
         }
     };
 
-    if (!highlightVisible && currentStepIndex !== 0) return null; // Hide flicker
+    // Prevent rendering flash before position is calculated
+    if (!highlightVisible && currentStepIndex !== 0 && currentStepIndex !== steps.length - 1) return null;
 
     return (
-        <div className="fixed inset-0 z-[9999] overflow-hidden font-sans" dir="rtl">
-            {/* Dark Backdrop */}
-            <div className="absolute inset-0 bg-black/70 transition-opacity duration-500" />
+        <div className="fixed inset-0 z-[9999] font-sans" dir="rtl">
+            {/* 1. Dark Overlay with Cutout logic (Simulated by 4 divs or just transparency) */}
+            {/* Simplified approach: Full dark background, Spotlight sits on top with box-shadow hack for cutout effect */}
+            <div className="absolute inset-0 bg-black/60 transition-opacity duration-500" />
 
-            {/* Spotlight Box (Highlighter) */}
+            {/* 2. Spotlight Highlighting the Element */}
             {currentStep.targetId && (
                  <div 
-                    className="fixed border-4 border-yellow-400 rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.75)] transition-all duration-500 pointer-events-none z-[10000] animate-pulse"
+                    className="fixed border-4 border-yellow-400 rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.6)] transition-all duration-500 pointer-events-none z-[10000] animate-pulse"
                     style={spotlightStyle}
                 />
             )}
 
-            {/* Interactive Container */}
-            <div 
-                className="fixed transition-all duration-700 ease-in-out z-[10001] flex flex-col items-center w-[320px] md:w-[400px]"
-                style={mascotStyle}
-            >
-                {/* Speech Bubble */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-2xl border-2 border-teal-100 relative mb-4 animate-fade-in-up">
-                     {/* Triangle pointer */}
-                    <div className={`absolute w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[15px] border-t-white dark:border-t-gray-800 left-1/2 -translate-x-1/2 ${currentStep.position === 'top' || (!currentStep.targetId) ? '-bottom-3' : '-top-3 rotate-180'}`}></div>
-
-                    {/* Content */}
-                    <h3 className="font-bold text-xl text-teal-600 mb-2">Slothy אומר:</h3>
+            {/* 3. Fixed Bottom Controller (Tour Guide) */}
+            <div className="fixed bottom-0 left-0 right-0 z-[10001] p-4 flex flex-col items-center justify-end pointer-events-none">
+                <div className="w-full max-w-2xl pointer-events-auto animate-fade-in-up">
                     
-                    {currentStep.id === 'qa' ? (
-                        <div className="space-y-4">
-                            <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed min-h-[60px]">
-                                {aiAnswer || currentStep.text}
-                            </p>
+                    {/* Mascot positioning - sitting on top of the card */}
+                    <div className="flex justify-end -mb-6 mr-4 relative z-10">
+                        <SlothMascot className="w-28 h-28 drop-shadow-2xl animate-bounce-subtle" outfit={currentStep.id === 'shop' ? 'glasses' : undefined} />
+                    </div>
+
+                    {/* Main Card */}
+                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 overflow-hidden">
+                        
+                        {/* Progress Bar */}
+                        <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700">
+                            <div 
+                                className="h-full bg-teal-500 transition-all duration-500 ease-out" 
+                                style={{ width: `${((currentStepIndex + 1) / steps.length) * 100}%` }}
+                            />
+                        </div>
+
+                        <div className="p-6">
+                            {/* Step Title */}
+                            <div className="flex items-center gap-2 mb-2 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                                <span>שלב {currentStepIndex + 1} מתוך {steps.length}</span>
+                            </div>
+
+                            {/* Content */}
+                            <h3 className="font-bold text-xl text-teal-600 mb-3">
+                                {currentStep.id === 'qa' ? 'יש שאלות?' : 'Slothy אומר:'}
+                            </h3>
                             
-                            <div className="flex gap-2">
-                                <input 
-                                    type="text" 
-                                    value={question} 
-                                    onChange={e => setQuestion(e.target.value)}
-                                    placeholder="שאל אותי משהו..." 
-                                    className="flex-grow p-2 border rounded-lg dark:bg-gray-700 dark:text-white"
-                                />
-                                <button onClick={handleAskAI} disabled={isThinking} className="bg-teal-500 text-white p-2 rounded-lg">
-                                    {isThinking ? <Loader2 className="animate-spin"/> : <Send size={20}/>}
+                            {currentStep.id === 'qa' ? (
+                                <div className="space-y-4">
+                                    <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed min-h-[40px]">
+                                        {aiAnswer || currentStep.text}
+                                    </p>
+                                    <div className="flex gap-2 mt-2">
+                                        <div className="relative flex-grow">
+                                            <input 
+                                                type="text" 
+                                                value={question} 
+                                                onChange={e => setQuestion(e.target.value)}
+                                                onKeyPress={e => e.key === 'Enter' && handleAskAI()}
+                                                placeholder="למשל: איך משיגים עוד נקודות?" 
+                                                className="w-full pl-4 pr-10 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                            />
+                                            <HelpCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        </div>
+                                        <button 
+                                            onClick={handleAskAI} 
+                                            disabled={isThinking || !question} 
+                                            className="bg-teal-500 text-white p-3 rounded-xl shadow-md hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isThinking ? <Loader2 className="animate-spin" /> : <Send size={20}/>}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed">
+                                    {currentStep.text}
+                                </p>
+                            )}
+
+                            {/* Controls */}
+                            <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                <button 
+                                    onClick={currentStepIndex === 0 ? onClose : handlePrev} 
+                                    className="text-gray-500 dark:text-gray-400 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center gap-2"
+                                >
+                                    {currentStepIndex === 0 ? <X size={18}/> : <ArrowRight size={18}/>}
+                                    {currentStepIndex === 0 ? 'דלג' : 'הקודם'}
+                                </button>
+
+                                <button 
+                                    onClick={handleNext} 
+                                    className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition flex items-center gap-2 hover:scale-105 transform"
+                                >
+                                    {currentStepIndex < steps.length - 1 ? 'הבא' : 'סיום'}
+                                    {currentStepIndex < steps.length - 1 && <ArrowLeft size={18}/>}
                                 </button>
                             </div>
                         </div>
-                    ) : (
-                        <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">
-                            {currentStep.text}
-                        </p>
-                    )}
-
-                    {/* Navigation Controls */}
-                    <div className="flex justify-between items-center mt-6 border-t pt-4 border-gray-100 dark:border-gray-700">
-                         <div className="flex gap-1">
-                             {steps.map((_, i) => (
-                                 <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentStepIndex ? 'bg-teal-500' : 'bg-gray-300'}`}></div>
-                             ))}
-                         </div>
-                         <div className="flex gap-3">
-                             <button onClick={currentStepIndex === 0 ? onClose : handlePrev} className="text-gray-500 dark:text-gray-400 px-3 py-2 rounded-xl font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm">
-                                 {currentStepIndex === 0 ? 'דלג' : 'הקודם'}
-                             </button>
-                             {currentStepIndex < steps.length - 1 ? (
-                                 <button onClick={handleNext} className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-xl font-bold shadow-md transition flex items-center gap-2">
-                                     הבא <ArrowLeft size={18} />
-                                 </button>
-                             ) : (
-                                 <button onClick={onClose} className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl font-bold shadow-md transition">
-                                     סיום
-                                 </button>
-                             )}
-                         </div>
                     </div>
                 </div>
-
-                {/* Mascot */}
-                <div className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl animate-bounce-subtle">
-                    <SlothMascot className="w-full h-full" outfit={currentStep.id === 'shop' ? 'glasses' : undefined} />
-                </div>
             </div>
-
-            {/* Quit Button */}
-            <button onClick={onClose} className="fixed top-4 left-4 z-[10002] bg-white/20 hover:bg-white/40 text-white p-2 rounded-full backdrop-blur-sm">
-                <X size={32} />
-            </button>
         </div>
     );
 };
