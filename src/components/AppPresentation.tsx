@@ -3,7 +3,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SlothMascot } from './SlothMascot';
 import { ArrowLeft, ArrowRight, X, Send, Loader2, HelpCircle } from 'lucide-react';
 import { generateContent } from '../lib/gemini';
@@ -101,8 +101,10 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
     const [aiAnswer, setAiAnswer] = useState('');
     const [isThinking, setIsThinking] = useState(false);
     const [highlightVisible, setHighlightVisible] = useState(false);
+    const [uiPosition, setUiPosition] = useState<'bottom' | 'top'>('bottom');
 
     const currentStep = steps[currentStepIndex];
+    const presentationRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setHighlightVisible(false);
@@ -115,13 +117,16 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             if (!currentStep.targetId) {
                 setSpotlightStyle({ opacity: 0, display: 'none' });
                 setHighlightVisible(true);
+                setUiPosition('bottom'); // Default for intro/outro
                 return;
             }
 
             const element = document.getElementById(currentStep.targetId);
             
             if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Scroll logic: 
+                // If we are in the top half of the list (index < length/2), prefer top scrolling
+                element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
                 
                 setTimeout(() => {
                     const rect = element.getBoundingClientRect();
@@ -136,6 +141,19 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                         display: 'block',
                         position: 'fixed' 
                     });
+
+                    // Smart Docking Logic
+                    // If element is in the lower 60% of the screen, move UI to top.
+                    // Otherwise move UI to bottom.
+                    const screenHeight = window.innerHeight;
+                    const elementCenterY = rect.top + (rect.height / 2);
+                    
+                    if (elementCenterY > screenHeight * 0.55) {
+                        setUiPosition('top');
+                    } else {
+                        setUiPosition('bottom');
+                    }
+
                     setHighlightVisible(true);
                 }, 600); // Wait for scroll
             } else {
@@ -180,7 +198,6 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
             You are Slothy, the mascot of the language learning app "Sloth".
             The user is asking a question about the app during the onboarding tour.
             Answer clearly, friendly, and strictly in Hebrew. Keep it short (max 2 sentences).
-            If asked about capabilities, mention: Learning Spanish/English/Arabic, AI Chat, Video Calls with real tutors, Minigames, and Leaderboards.
             User Question: "${question}"
             `;
 
@@ -201,10 +218,11 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
     // Prevent rendering flash before position is calculated
     if (!highlightVisible && currentStepIndex !== 0 && currentStepIndex !== steps.length - 1) return null;
 
+    const isTop = uiPosition === 'top';
+
     return (
-        <div className="fixed inset-0 z-[9999] font-sans" dir="rtl">
-            {/* 1. Dark Overlay with Cutout logic (Simulated by 4 divs or just transparency) */}
-            {/* Simplified approach: Full dark background, Spotlight sits on top with box-shadow hack for cutout effect */}
+        <div className="fixed inset-0 z-[9999] font-sans text-right" dir="rtl">
+            {/* 1. Dark Overlay */}
             <div className="absolute inset-0 bg-black/60 transition-opacity duration-500" />
 
             {/* 2. Spotlight Highlighting the Element */}
@@ -215,17 +233,20 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                 />
             )}
 
-            {/* 3. Fixed Bottom Controller (Tour Guide) */}
-            <div className="fixed bottom-0 left-0 right-0 z-[10001] p-4 flex flex-col items-center justify-end pointer-events-none">
+            {/* 3. Floating UI Controller */}
+            <div 
+                ref={presentationRef}
+                className={`fixed left-0 right-0 z-[10001] p-4 flex flex-col items-center pointer-events-none transition-all duration-500 ${isTop ? 'top-0 justify-start' : 'bottom-0 justify-end'}`}
+            >
                 <div className="w-full max-w-2xl pointer-events-auto animate-fade-in-up">
                     
-                    {/* Mascot positioning - sitting on top of the card */}
-                    <div className="flex justify-end -mb-6 mr-4 relative z-10">
-                        <SlothMascot className="w-28 h-28 drop-shadow-2xl animate-bounce-subtle" outfit={currentStep.id === 'shop' ? 'glasses' : undefined} />
+                    {/* Mascot positioning: Sits on the LEFT side of the card for RTL layout */}
+                    <div className={`flex justify-start ml-4 relative z-10 ${isTop ? '-mb-6 top-6' : '-mb-6'}`}>
+                        <SlothMascot className="w-28 h-28 drop-shadow-2xl animate-bounce-subtle transform scale-x-[-1]" outfit={currentStep.id === 'shop' ? 'glasses' : undefined} />
                     </div>
 
                     {/* Main Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div className={`bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 overflow-hidden ${isTop ? 'mt-4' : ''}`}>
                         
                         {/* Progress Bar */}
                         <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700">
@@ -235,7 +256,7 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                             />
                         </div>
 
-                        <div className="p-6">
+                        <div className="p-6 pl-4 relative"> 
                             {/* Step Title */}
                             <div className="flex items-center gap-2 mb-2 text-gray-400 text-xs font-bold uppercase tracking-widest">
                                 <span>שלב {currentStepIndex + 1} מתוך {steps.length}</span>
@@ -246,37 +267,40 @@ export const AppPresentation: React.FC<AppPresentationProps> = ({ onClose, setPa
                                 {currentStep.id === 'qa' ? 'יש שאלות?' : 'Slothy אומר:'}
                             </h3>
                             
-                            {currentStep.id === 'qa' ? (
-                                <div className="space-y-4">
-                                    <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed min-h-[40px]">
-                                        {aiAnswer || currentStep.text}
-                                    </p>
-                                    <div className="flex gap-2 mt-2">
-                                        <div className="relative flex-grow">
-                                            <input 
-                                                type="text" 
-                                                value={question} 
-                                                onChange={e => setQuestion(e.target.value)}
-                                                onKeyPress={e => e.key === 'Enter' && handleAskAI()}
-                                                placeholder="למשל: איך משיגים עוד נקודות?" 
-                                                className="w-full pl-4 pr-10 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
-                                            />
-                                            <HelpCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            {/* Text Content with Left Padding to clear mascot */}
+                            <div className="pl-24">
+                                {currentStep.id === 'qa' ? (
+                                    <div className="space-y-4">
+                                        <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed min-h-[40px]">
+                                            {aiAnswer || currentStep.text}
+                                        </p>
+                                        <div className="flex gap-2 mt-2">
+                                            <div className="relative flex-grow">
+                                                <input 
+                                                    type="text" 
+                                                    value={question} 
+                                                    onChange={e => setQuestion(e.target.value)}
+                                                    onKeyPress={e => e.key === 'Enter' && handleAskAI()}
+                                                    placeholder="למשל: איך משיגים עוד נקודות?" 
+                                                    className="w-full pl-4 pr-10 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                                />
+                                                <HelpCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                            </div>
+                                            <button 
+                                                onClick={handleAskAI} 
+                                                disabled={isThinking || !question} 
+                                                className="bg-teal-500 text-white p-3 rounded-xl shadow-md hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {isThinking ? <Loader2 className="animate-spin" /> : <Send size={20}/>}
+                                            </button>
                                         </div>
-                                        <button 
-                                            onClick={handleAskAI} 
-                                            disabled={isThinking || !question} 
-                                            className="bg-teal-500 text-white p-3 rounded-xl shadow-md hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            {isThinking ? <Loader2 className="animate-spin" /> : <Send size={20}/>}
-                                        </button>
                                     </div>
-                                </div>
-                            ) : (
-                                <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed">
-                                    {currentStep.text}
-                                </p>
-                            )}
+                                ) : (
+                                    <p className="text-gray-800 dark:text-gray-100 text-lg leading-relaxed">
+                                        {currentStep.text}
+                                    </p>
+                                )}
+                            </div>
 
                             {/* Controls */}
                             <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
