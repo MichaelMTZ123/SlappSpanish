@@ -406,10 +406,10 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-    language: 'en',
+    language: 'he', // Default to Hebrew
     setLanguage: (lang: string) => {},
     t: (key: string) => key,
-    dir: 'ltr',
+    dir: 'rtl',
 });
 
 export const useTranslation = () => useContext(LanguageContext);
@@ -419,7 +419,7 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState('he'); // Default to Hebrew
     
     const t = (key: string) => translations[language]?.[key] || key;
     const dir = language === 'he' ? 'rtl' : 'ltr';

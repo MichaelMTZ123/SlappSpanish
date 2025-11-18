@@ -31,12 +31,16 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
 
     const getSystemInstruction = () => {
         const langName = language === 'he' ? 'Hebrew' : 'English';
-        let baseInstruction = `You are Slappy, a friendly Spanish language tutor. User language: '${langName}'. Encourage Spanish usage.`;
+        let baseInstruction = `You are Slappy, a friendly Spanish language tutor. The user's native language is ${langName}. 
+        IMPORTANT: When explaining concepts, defining words, or giving feedback, USE ${langName}. 
+        However, encourage the user to practice Spanish.
+        If the user speaks in ${langName}, answer in ${langName} but suggest the Spanish translation.
+        If the user speaks in Spanish, reply in simple Spanish, but provide difficult words' translations in ${langName} in parentheses.`;
         
         if (activeScenario) {
-            baseInstruction += ` ROLEPLAY MODE: ${activeScenario.prompt}. Stay in character. Keep responses concise (under 2 sentences) to keep conversation flowing. Correct major mistakes gently at the end of your response.`;
+            baseInstruction += ` ROLEPLAY MODE: ${activeScenario.prompt}. Stay in character. Keep responses concise (under 2 sentences) to keep conversation flowing. Correct major mistakes gently at the end of your response (in ${langName}).`;
         } else {
-            baseInstruction += ` Start by asking what they want to practice. Explain concepts in '${langName}' but encourage them to reply in Spanish.`;
+            baseInstruction += ` Start by asking what they want to practice.`;
         }
         return baseInstruction;
     }
@@ -47,7 +51,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
         try {
             let prompt = "Introduce yourself.";
             if (scenario) {
-                prompt = `Start the roleplay: ${scenario.title}. Set the scene in Spanish.`;
+                prompt = `Start the roleplay: ${scenario.title}. Set the scene in Spanish, but explain the setting briefly in the user's language.`;
             }
 
             const response = await generateContent({
@@ -256,7 +260,7 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
                             type="text" value={message} onChange={(e) => setMessage(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && sendMessage(message)}
                             placeholder={t('typeYourMessage')}
-                            className="flex-grow p-4 rounded-xl focus:outline-none shadow-inner bg-white/80 dark:bg-gray-900/80 dark:text-white border border-transparent focus:border-blue-400 transition"
+                            className="flex-grow p-4 rounded-xl focus:outline-none shadow-inner bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white border border-transparent focus:border-blue-400 transition"
                             disabled={isLoading}
                         />
                     )}

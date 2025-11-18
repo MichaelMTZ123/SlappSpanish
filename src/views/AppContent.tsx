@@ -82,7 +82,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                 }
 
                 setUserProfile(profileToSet);
-                setLanguage(profileToSet.language || 'en');
+                setLanguage(profileToSet.language || 'he'); // Default to stored language or Hebrew
             } else {
                 const today = new Date().toISOString().split('T')[0];
                 const newProfile: UserProfile = { 
@@ -94,7 +94,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     streak: 1, 
                     completedLessons: [], 
                     lastLogin: today, 
-                    language: 'en', 
+                    language: 'he', // Default new users to Hebrew
                     hasCompletedTutorial: false, 
                     role: 'learner', 
                     isAvailableForCalls: false,
@@ -105,7 +105,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                 };
                 setDoc(userDocRef, newProfile);
                 setUserProfile(newProfile);
-                setLanguage('en');
+                setLanguage('he');
                 setShowTutorial(true); 
             }
         }, (error) => {

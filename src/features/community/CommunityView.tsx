@@ -91,12 +91,12 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
     return (
         <div className="p-4 sm:p-8 max-w-3xl mx-auto">
             <div className="flex justify-between items-center mb-4">
-                 <button onClick={onBack} className="bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition text-sm font-bold">
+                 <button onClick={onBack} className="bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition text-sm font-bold">
                     &larr; Back
                 </button>
                 <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full">
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <Heart key={i} className={`w-6 h-6 ${i < lives ? 'text-red-500 fill-current' : 'text-gray-300 dark:text-gray-600'}`} />
+                        <Heart key={i} className={`w-6 h-6 ${i < lives ? 'text-red-500 fill-current' : 'text-gray-400 dark:text-gray-600'}`} />
                     ))}
                 </div>
             </div>
@@ -109,10 +109,10 @@ const PlayQuizView = ({ quiz, onBack, onQuizComplete }: { quiz: CommunityQuiz, o
             </div>
 
             <div className="glass-panel p-8 rounded-3xl shadow-xl">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">{currentQuestion.question}</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">{currentQuestion.question}</h2>
                 <div className="flex flex-col space-y-3">
                     {currentQuestion.options.map(option => {
-                        let bgColor = 'bg-white/70 dark:bg-gray-700/70 hover:bg-white dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100';
+                        let bgColor = 'bg-white/70 dark:bg-gray-700/70 hover:bg-white dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100';
                         if (isAnswered) {
                             if (option === currentQuestion.correctAnswer) bgColor = 'bg-green-200 dark:bg-green-500/50 border-green-500 text-gray-900 dark:text-white';
                             else if (option === selectedAnswer) bgColor = 'bg-red-200 dark:bg-red-500/50 border-red-500 text-gray-900 dark:text-white';
@@ -243,13 +243,13 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
     return (
         <div className="dark:text-gray-200">
             <div className="mb-4">
-                <label className="block font-bold mb-1 text-gray-700 dark:text-gray-300">{t('quizTitle')}</label>
-                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none" />
+                <label className="block font-bold mb-1 text-gray-900 dark:text-gray-300">{t('quizTitle')}</label>
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 border rounded-xl bg-white dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none text-gray-900 dark:text-white" />
             </div>
             {questions.map((q, index) => (
                 <div key={index} className="mb-4 p-4 border dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50">
-                    <label className="block font-bold mb-1 text-gray-700 dark:text-gray-300">{t('question')} {index + 1}</label>
-                    <textarea value={q.question} onChange={(e) => handleQuestionChange(index, e.target.value)} className="w-full p-3 border rounded-xl mb-2 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none" rows={2}></textarea>
+                    <label className="block font-bold mb-1 text-gray-900 dark:text-gray-300">{t('question')} {index + 1}</label>
+                    <textarea value={q.question} onChange={(e) => handleQuestionChange(index, e.target.value)} className="w-full p-3 border rounded-xl mb-2 bg-white dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-teal-500 outline-none text-gray-900 dark:text-white" rows={2}></textarea>
                     {q.options.length === 0 ? (
                         <button onClick={() => generateAnswers(index)} disabled={!q.question || isLoading} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-lg disabled:bg-gray-200 disabled:text-gray-500 font-bold hover:bg-blue-200 transition">
                             {isLoading ? t('loading') : "✨ Generate Answers with AI"}
@@ -257,7 +257,7 @@ const CreateQuiz = ({ currentUser, onClose, setNotification }) => {
                     ) : (
                         <div className="grid grid-cols-2 gap-2 mt-2">
                            {q.options.map(opt => (
-                               <div key={opt} className={`p-2 rounded-lg text-sm font-medium ${opt === q.correctAnswer ? 'bg-green-200 text-green-800' : 'bg-gray-200 dark:bg-gray-600'}`}>{opt}</div>
+                               <div key={opt} className={`p-2 rounded-lg text-sm font-medium ${opt === q.correctAnswer ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200'}`}>{opt}</div>
                            ))}
                         </div>
                     )}
@@ -313,18 +313,18 @@ export default function CommunityView({ currentUser, onQuizComplete }: { current
 
             {quizzes.length === 0 ? (
                 <div className="text-center py-10 glass-panel rounded-3xl shadow-lg">
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">{t('noQuizzesYet')}</p>
+                    <p className="text-gray-900 dark:text-gray-300 font-medium">{t('noQuizzesYet')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {quizzes.map(quiz => (
                         <div key={quiz.id} className="glass-panel p-6 rounded-2xl shadow-lg flex flex-col hover:scale-[1.02] transition-transform cursor-default border-2 border-white/50">
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">{quiz.title}</h3>
-                            <div className="flex items-center gap-2 my-2 text-sm text-gray-600 dark:text-gray-300">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{quiz.title}</h3>
+                            <div className="flex items-center gap-2 my-2 text-sm text-gray-700 dark:text-gray-300">
                                 <img src={quiz.creatorPfp || `https://placehold.co/24x24`} alt={quiz.creatorName} className="w-6 h-6 rounded-full object-cover"/>
                                 <span>{t('createdBy')} {quiz.creatorName}</span>
                             </div>
-                            <p className="text-gray-500 dark:text-gray-400 flex-grow text-sm font-medium">{quiz.questions.length} Questions</p>
+                            <p className="text-gray-600 dark:text-gray-400 flex-grow text-sm font-medium">{quiz.questions.length} Questions</p>
                             <button onClick={() => setSelectedQuiz(quiz)} className="mt-4 w-full bg-blue-500 text-white font-bold py-2 rounded-xl hover:bg-blue-600 transition shadow-md">{t('playQuiz')}</button>
                         </div>
                     ))}
