@@ -37,27 +37,30 @@ export default function SelfPacedLessonsView({ onSelectLesson, completedLessons,
     return (
         <div className="p-4 sm:p-8 max-w-2xl mx-auto">
             {/* Header with Course Switcher */}
-            <div className="flex justify-between items-center mb-8 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md">
-                <button onClick={onBack} className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 transition">
-                    <ArrowLeft size={20} />
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-8 glass-panel p-4 rounded-2xl shadow-md gap-4">
+                <button onClick={onBack} className="flex items-center gap-2 text-gray-600 dark:text-gray-200 hover:text-teal-600 transition font-bold">
+                    <ArrowLeft size={20} /> {t('backToLessons')}
                 </button>
                 
-                <div className="flex items-center gap-4">
-                    <span className="text-gray-500 dark:text-gray-400 font-medium">Learning:</span>
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => onCourseChange('spanish')} 
-                            className={`px-3 py-1 rounded-full border-2 transition flex items-center gap-1 ${currentCourseId === 'spanish' ? 'border-teal-500 bg-teal-50 text-teal-700 font-bold' : 'border-gray-200 text-gray-500'}`}
-                        >
-                            <span>🇪🇸</span> Spanish
-                        </button>
-                        <button 
-                            onClick={() => onCourseChange('english')} 
-                            className={`px-3 py-1 rounded-full border-2 transition flex items-center gap-1 ${currentCourseId === 'english' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-bold' : 'border-gray-200 text-gray-500'}`}
-                        >
-                            <span>🇺🇸</span> English
-                        </button>
-                    </div>
+                <div className="flex gap-2 overflow-x-auto max-w-full pb-1 no-scrollbar">
+                    <button 
+                        onClick={() => onCourseChange('spanish')} 
+                        className={`px-4 py-2 rounded-xl border-2 transition flex items-center gap-2 font-bold shadow-sm whitespace-nowrap ${currentCourseId === 'spanish' ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-500 bg-white/50'}`}
+                    >
+                        <span>🇪🇸</span> Spanish
+                    </button>
+                    <button 
+                        onClick={() => onCourseChange('english')} 
+                        className={`px-4 py-2 rounded-xl border-2 transition flex items-center gap-2 font-bold shadow-sm whitespace-nowrap ${currentCourseId === 'english' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-500 bg-white/50'}`}
+                    >
+                        <span>🇺🇸</span> English
+                    </button>
+                    <button 
+                        onClick={() => onCourseChange('arabic')} 
+                        className={`px-4 py-2 rounded-xl border-2 transition flex items-center gap-2 font-bold shadow-sm whitespace-nowrap ${currentCourseId === 'arabic' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-200 text-gray-500 bg-white/50'}`}
+                    >
+                        <span>🇸🇦</span> Arabic
+                    </button>
                 </div>
             </div>
 
@@ -65,7 +68,7 @@ export default function SelfPacedLessonsView({ onSelectLesson, completedLessons,
                 {course.units.map((unit, unitIndex) => (
                     <div key={unit.id} className="relative">
                         {/* Unit Header */}
-                        <div className={`bg-${unit.color}-500 text-white p-4 rounded-xl mb-8 shadow-lg flex justify-between items-center`}>
+                        <div className={`bg-${unit.color}-500 text-white p-4 rounded-xl mb-8 shadow-lg flex justify-between items-center transform hover:scale-[1.02] transition`}>
                             <div>
                                 <h2 className="text-xl font-bold">{unit.title}</h2>
                                 <p className="text-sm opacity-80">Unit {unitIndex + 1}</p>
@@ -106,7 +109,7 @@ export default function SelfPacedLessonsView({ onSelectLesson, completedLessons,
                                         </button>
                                         
                                         {/* Lesson Title Bubble */}
-                                        <div className={`mt-2 px-3 py-1 rounded-lg text-xs font-bold text-center max-w-[120px] ${locked ? 'text-gray-400' : 'bg-white dark:bg-gray-700 shadow-sm text-gray-700 dark:text-gray-200'}`}>
+                                        <div className={`mt-2 px-3 py-1 rounded-lg text-xs font-bold text-center max-w-[120px] border border-gray-200 dark:border-gray-600 ${locked ? 'text-gray-400' : 'glass-panel shadow-sm text-gray-800 dark:text-white'}`}>
                                             {lesson.title}
                                         </div>
                                     </div>

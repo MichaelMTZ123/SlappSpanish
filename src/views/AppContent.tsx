@@ -27,7 +27,7 @@ import VideoCallView from '../features/learn/VideoCallView';
 import TeachingRequestsView from '../features/learn/TeachingRequestsView';
 import ShopView from './ShopView';
 
-export default function AppContent({ user, setNotification, showTutorial, setShowTutorial }) {
+export default function AppContent({ user, setNotification, showTutorial, setShowTutorial, setTheme }) {
     const { t, setLanguage } = useTranslation();
     const [page, setPage] = useState('home');
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
@@ -309,7 +309,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         if (!userProfile) return <div className="flex justify-center items-center h-full"><SlothMascot className="w-24 h-24 animate-pulse"/></div>;
         
         if (currentLesson) {
-            return <LessonPage lesson={currentLesson} onComplete={handleLessonComplete} onBack={() => setCurrentLesson(null)} targetLanguage={currentCourseId === 'english' ? 'English' : 'Spanish'} />;
+            return <LessonPage lesson={currentLesson} onComplete={handleLessonComplete} onBack={() => setCurrentLesson(null)} targetLanguage={currentCourseId === 'english' ? 'English' : currentCourseId === 'arabic' ? 'Arabic' : 'Spanish'} />;
         }
         
         switch (page) {
@@ -338,7 +338,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     return (
         <React.Fragment>
             <IncomingCallModal call={incomingCall} onAccept={handleAcceptCall} onDecline={handleDeclineCall} />
-            {showTutorial && <Onboarding onComplete={handleOnboardingComplete} setTargetCourse={setCurrentCourseId} />}
+            {showTutorial && <Onboarding onComplete={handleOnboardingComplete} setTargetCourse={setCurrentCourseId} setTheme={setTheme} />}
             <Layout page={page} setPage={setPage} setCurrentLesson={setCurrentLesson} userProfile={userProfile}>
                 {renderPage()}
             </Layout>

@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -14,6 +15,7 @@ export default function App() {
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [notification, setNotification] = useState('');
     const [showTutorial, setShowTutorial] = useState(false);
+    const [theme, setTheme] = useState('light'); // 'light' or 'dark'
     
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -29,6 +31,16 @@ export default function App() {
             return () => clearTimeout(timer);
         }
     }, [notification]);
+
+    // Handle Theme Change
+    useEffect(() => {
+        const html = document.documentElement;
+        if (theme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+    }, [theme]);
 
     if (!isAuthReady) {
         return (
@@ -53,7 +65,8 @@ export default function App() {
                     user={user} 
                     setNotification={setNotification} 
                     showTutorial={showTutorial} 
-                    setShowTutorial={setShowTutorial} 
+                    setShowTutorial={setShowTutorial}
+                    setTheme={setTheme} 
                 />
             ) : (
                 <LoginPage setNotification={setNotification} />

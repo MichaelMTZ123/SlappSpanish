@@ -37,6 +37,11 @@ const translations = {
         'tryAgain': 'Try Again',
         'results': 'Results',
         'notQuite': 'Not quite! Review your answers and try again.',
+        'setupProfile': 'Setup Profile',
+        'selectLanguage': 'Select Interface Language',
+        'selectTheme': 'Select App Theme',
+        'lightMode': 'Light Mode',
+        'darkMode': 'Dark Mode',
 
         // Home
         'goodMorning': 'Good morning',
@@ -100,6 +105,7 @@ const translations = {
         'noTeachingRequests': 'No one is calling right now. Great job keeping up!',
         'acceptCall': 'Accept Call',
         'refresh': 'Refresh',
+        'learning': 'Learning',
 
 
         // AI Chat
@@ -227,6 +233,11 @@ const translations = {
         'tryAgain': 'נסה שוב',
         'results': 'תוצאות',
         'notQuite': 'כמעט! בדוק את תשובותיך ונסה שוב.',
+        'setupProfile': 'הגדר פרופיל',
+        'selectLanguage': 'בחר שפת ממשק',
+        'selectTheme': 'בחר ערכת נושא',
+        'lightMode': 'מצב יום',
+        'darkMode': 'מצב לילה',
 
         // Home
         'goodMorning': 'בוקר טוב',
@@ -290,6 +301,7 @@ const translations = {
         'noTeachingRequests': 'אף אחד לא מתקשר כרגע. כל הכבוד על העבודה!',
         'acceptCall': 'קבל שיחה',
         'refresh': 'רענן',
+        'learning': 'לומד',
 
         // AI Chat
         'aiPracticeChat': 'צ\'אט אימון עם AI',

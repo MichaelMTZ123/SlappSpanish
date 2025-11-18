@@ -136,12 +136,38 @@ export const courses = {
                 ]
             }
         ]
+    },
+    arabic: {
+        id: 'arabic',
+        title: 'Arabic',
+        flag: '🇸🇦',
+        units: [
+             {
+                id: 'ar_unit1',
+                title: 'Letters & Greetings',
+                color: 'emerald',
+                lessons: [
+                    { id: 'a_u1_1', title: 'Greetings', content: 'Marhaban (Hello), Assalamu Alaykum (Peace be upon you), Shukran (Thank you).', vocab: ['Marhaban (Hello)', 'Shukran (Thank you)'] },
+                    { id: 'a_u1_2', title: 'Basics', content: 'Naam (Yes), Laa (No), Min Fadlak (Please).', vocab: ['Naam (Yes)', 'Laa (No)'] },
+                ]
+            },
+            {
+                id: 'ar_unit2',
+                title: 'Family & Home',
+                color: 'amber',
+                lessons: [
+                    { id: 'a_u2_1', title: 'Family', content: 'Ab (Father), Om (Mother), Akhi (My Brother).', vocab: ['Ab (Father)', 'Om (Mother)'] },
+                    { id: 'a_u2_2', title: 'In the House', content: 'Bayt (House), Bab (Door), Kursi (Chair).', vocab: ['Bayt (House)', 'Bab (Door)'] },
+                ]
+            }
+        ]
     }
 };
 
 export const allLessons = [
     ...courses.spanish.units.flatMap(u => u.lessons),
-    ...courses.english.units.flatMap(u => u.lessons)
+    ...courses.english.units.flatMap(u => u.lessons),
+    ...courses.arabic.units.flatMap(u => u.lessons)
 ];
 
 export const aiRoleplayScenarios = [
