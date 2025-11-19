@@ -101,7 +101,14 @@ export default function LoginPage({ setNotification }) {
                             <div className="flex flex-col items-center mb-4">
                                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden"/>
                                 <div className="relative cursor-pointer group" onClick={() => fileInputRef.current.click()}>
-                                    <img src={pfp || `https://placehold.co/96x96/F5DEB3/4A2E2C?text=${displayName?.[0] || '?'}`} alt="Profile Preview" className="w-24 h-24 rounded-full object-cover border-4 border-teal-100 dark:border-gray-600 shadow-md transition group-hover:scale-105" />
+                                    {/* Default to mascot preview if no pfp selected yet */}
+                                    {pfp ? (
+                                        <img src={pfp} alt="Profile Preview" className="w-24 h-24 rounded-full object-cover border-4 border-teal-100 dark:border-gray-600 shadow-md transition group-hover:scale-105" />
+                                    ) : (
+                                        <div className="w-24 h-24 rounded-full bg-blue-100 overflow-hidden border-4 border-teal-100 dark:border-gray-600 shadow-md">
+                                            <SlothMascot className="w-full h-full scale-110 translate-y-2" />
+                                        </div>
+                                    )}
                                      <div className="absolute bottom-0 right-0 bg-teal-500 p-2 rounded-full text-white shadow-sm">
                                         <Camera size={16} />
                                     </div>

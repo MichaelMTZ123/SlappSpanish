@@ -36,7 +36,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const [activeCall, setActiveCall] = useState<Call | null>(null);
     const [incomingCall, setIncomingCall] = useState<Call | null>(null);
     const [currentCourseId, setCurrentCourseId] = useState('spanish');
-    const [showPresentation, setShowPresentation] = useState(false); // Tour state lifted up
+    const [showPresentation, setShowPresentation] = useState(false); 
     
     const fetchUserProfile = useCallback(() => {
         if (!user) return;
@@ -77,14 +77,19 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     setCurrentCourseId(data.currentCourseId);
                 }
 
+                // Handle Tutorial State
                 if (data.hasCompletedTutorial === false || data.hasCompletedTutorial === undefined) {
                     setShowTutorial(true);
                 } else {
                     setShowTutorial(false);
                 }
+                
+                // Apply Persisted Language
+                if (data.language) {
+                    setLanguage(data.language);
+                }
 
                 setUserProfile(profileToSet);
-                setLanguage(profileToSet.language || 'he'); // Default to stored language or Hebrew
             } else {
                 const today = new Date().toISOString().split('T')[0];
                 const newProfile: UserProfile = { 
@@ -96,7 +101,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                     streak: 1, 
                     completedLessons: [], 
                     lastLogin: today, 
-                    language: 'he', // Default new users to Hebrew
+                    language: 'en', 
                     hasCompletedTutorial: false, 
                     role: 'learner', 
                     isAvailableForCalls: false,
@@ -107,7 +112,6 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
                 };
                 setDoc(userDocRef, newProfile);
                 setUserProfile(newProfile);
-                setLanguage('he');
                 setShowTutorial(true); 
             }
         }, (error) => {
@@ -161,9 +165,14 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
         }
     };
 
-    const handleOnboardingComplete = () => {
+    const handleOnboardingComplete = (selectedLanguage: string) => {
         if (!userProfile) return;
-        const updatedProfile = { ...userProfile, hasCompletedTutorial: true, currentCourseId: currentCourseId };
+        const updatedProfile = { 
+            ...userProfile, 
+            hasCompletedTutorial: true, 
+            currentCourseId: currentCourseId,
+            language: selectedLanguage // Save the selected language
+        };
         updateProfileOnDb(updatedProfile);
         setShowTutorial(false);
     }
@@ -344,7 +353,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
             {showTutorial && <Onboarding onComplete={handleOnboardingComplete} setTargetCourse={setCurrentCourseId} setTheme={setTheme} />}
             {showPresentation && <AppPresentation onClose={() => setShowPresentation(false)} setPage={setPage} />}
             
-            {/* Main Layout */}
+            {/* Main Layout - Transparent background to show animations */}
             <Layout page={page} setPage={setPage} setCurrentLesson={setCurrentLesson} userProfile={userProfile}>
                 {renderPage()}
             </Layout>

@@ -24,9 +24,14 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
         setSelectedTheme(theme);
         setTheme(theme);
     }
+    
+    const handleFinish = () => {
+        // Pass the selected language back to AppContent to save to DB
+        onComplete(language); 
+    }
 
     return (
-        <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col items-center justify-center p-6 animate-fade-in-down overflow-y-auto">
+        <div className="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg z-50 flex flex-col items-center justify-center p-6 animate-fade-in-down overflow-y-auto">
             <div className="max-w-md w-full text-center">
                 
                 {/* Step 0: Setup (Language & Theme) */}
@@ -145,7 +150,7 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                              </div>
                         </div>
 
-                        <button onClick={onComplete} className="w-full py-4 bg-green-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-green-600 hover:scale-105 transition transform flex items-center justify-center gap-2">
+                        <button onClick={handleFinish} className="w-full py-4 bg-green-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-green-600 hover:scale-105 transition transform flex items-center justify-center gap-2">
                             {t('start')} <ArrowRight />
                         </button>
                     </div>

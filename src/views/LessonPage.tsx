@@ -53,13 +53,24 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
         const generateQuiz = async () => {
             setIsLoading(true);
             try {
-                const lang = targetLanguage || 'Spanish';
-                // If the user's UI language is Hebrew, ask AI to explain in Hebrew.
-                const explanationLang = language === 'he' ? 'Hebrew' : 'English';
+                const targetLangName = targetLanguage || 'Spanish';
+                const nativeLangName = language === 'he' ? 'Hebrew' : 'English';
                 
-                const prompt = `Create a 5-question multiple-choice quiz for ${lang}. Topic: "${lesson.title}". Content: "${lesson.content}". 
-                IMPORTANT: The 'explanation' field MUST be written in ${explanationLang}. It should explain why the correct answer is right or common mistakes.
-                Return JSON: { quiz: [{ question: string, options: string[], correctAnswer: string, explanation: string }] }`;
+                // Explicit instruction to prevent English questions when Hebrew is active
+                const prompt = `Create a 5-question multiple-choice quiz for learning ${targetLangName}. 
+                Topic: "${lesson.title}". 
+                Lesson Content to test: "${lesson.content}". 
+
+                CRITICAL INSTRUCTIONS FOR LANGUAGE:
+                1. The user speaks ${nativeLangName}.
+                2. The *Question Text* must be in ${nativeLangName} asking to translate to ${targetLangName}, OR in ${targetLangName} asking for the ${nativeLangName} meaning.
+                3. The *Explanation* field MUST be written in ${nativeLangName}.
+                
+                Example format if user speaks Hebrew:
+                Question: "איך אומרים 'תפוח' בספרדית?" (How do you say 'apple' in Spanish?)
+                Options: ["Manzana", "Perro", "Gato"]
+                
+                Return valid JSON: { quiz: [{ question: string, options: string[], correctAnswer: string, explanation: string }] }`;
                 
                 const response = await generateContent({
                     model: "gemini-2.5-flash",
@@ -127,7 +138,7 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
             
             {/* Quiz Card */}
             <div className="glass-panel flex-grow p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-center animate-fade-in-up">
-                <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white leading-tight">{currentQuestion.question}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white leading-tight" dir="auto">{currentQuestion.question}</h1>
                 
                 <div className="grid grid-cols-1 gap-4">
                     {currentQuestion.options.map((option: string) => {
@@ -145,7 +156,7 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
                     })}
                 </div>
 
-                {/* Feedback Area - Redesigned */}
+                {/* Feedback Area */}
                 {isAnswered && (
                      <div className={`mt-6 animate-fade-in-up ${!isCorrect && shake ? 'animate-shake' : ''}`}>
                         <div className={`relative p-6 rounded-2xl mb-4 flex flex-col sm:flex-row items-center gap-4 shadow-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200 dark:bg-green-900/40 dark:border-green-700' : 'bg-red-50 border-red-200 dark:bg-red-900/40 dark:border-red-700'}`}>
@@ -170,7 +181,7 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
                                    </div>
                                )}
 
-                               <div className="relative bg-white/70 dark:bg-black/20 p-3 rounded-xl text-sm leading-relaxed text-gray-800 dark:text-gray-100 flex items-start gap-2">
+                               <div className="relative bg-white/70 dark:bg-black/20 p-3 rounded-xl text-sm leading-relaxed text-gray-800 dark:text-gray-100 flex items-start gap-2" dir="auto">
                                    <Info className="w-5 h-5 flex-shrink-0 text-blue-500 mt-0.5" />
                                    <p>{currentQuestion.explanation}</p>
                                </div>
