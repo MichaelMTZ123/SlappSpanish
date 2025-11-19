@@ -297,12 +297,13 @@ export default function MinigamesView({ onGameComplete }) {
     const { t } = useTranslation();
     const [activeGame, setActiveGame] = useState(null);
 
-    const games = [
+    // useMemo to ensure translations are reactive
+    const games = useMemo(() => [
         { id: 'flashcard', name: t('flashcardFrenzy'), description: t('flashcardDesc'), component: FlashcardFrenzy, color: 'bg-teal-500' },
         { id: 'scramble', name: t('sentenceScramble'), description: t('sentenceDesc'), component: SentenceScramble, color: 'bg-indigo-500' },
         { id: 'memory', name: t('memoryMatch'), description: t('memoryDesc'), component: MemoryMatch, color: 'bg-pink-500' },
         { id: 'speed', name: t('speedListen'), description: t('speedListenDesc'), component: SpeedListen, color: 'bg-orange-500' },
-    ];
+    ], [t]);
     
     const handleGameEnd = (score) => {
         if(score > 0) onGameComplete(score);

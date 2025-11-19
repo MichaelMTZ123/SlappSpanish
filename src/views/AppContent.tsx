@@ -27,6 +27,7 @@ import CommunityView from '../features/community/CommunityView';
 import VideoCallView from '../features/learn/VideoCallView';
 import TeachingRequestsView from '../features/learn/TeachingRequestsView';
 import ShopView from './ShopView';
+import DuelArena from '../features/duels/DuelArena';
 
 export default function AppContent({ user, setNotification, showTutorial, setShowTutorial, setTheme }) {
     const { t, setLanguage } = useTranslation();
@@ -36,7 +37,8 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const [activeCall, setActiveCall] = useState<Call | null>(null);
     const [incomingCall, setIncomingCall] = useState<Call | null>(null);
     const [currentCourseId, setCurrentCourseId] = useState('spanish');
-    const [showPresentation, setShowPresentation] = useState(false); 
+    const [showPresentation, setShowPresentation] = useState(false);
+    const [activeDuelId, setActiveDuelId] = useState<string | null>(null);
     
     const fetchUserProfile = useCallback(() => {
         if (!user) return;
@@ -241,7 +243,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const handleBuyItem = (cost: number, itemId: string) => {
         if (!userProfile) return;
         if (userProfile.coins < cost) {
-            setNotification("Not enough coins!");
+            setNotification(t('notEnoughCoins'));
             return;
         }
         const updatedProfile = {
@@ -250,14 +252,14 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
             inventory: [...(userProfile.inventory || []), itemId]
         };
         updateProfileOnDb(updatedProfile);
-        setNotification("Item purchased!");
+        setNotification(t('itemPurchased'));
     }
     
     const handleEquipItem = (itemId: string) => {
          if (!userProfile) return;
          const newOutfit = userProfile.equippedOutfit === itemId ? undefined : itemId;
          updateProfileOnDb({ ...userProfile, equippedOutfit: newOutfit });
-         setNotification(newOutfit ? "Item equipped!" : "Item unequipped!");
+         setNotification(newOutfit ? t('equipped') : "Item unequipped!");
     }
 
     const handleDeleteAccount = async () => {
@@ -315,9 +317,17 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
     const handleHangup = useCallback(() => {
         setActiveCall(null);
     }, []);
+    
+    const handleStartDuel = (duelId: string) => {
+        setActiveDuelId(duelId);
+    }
 
     const renderPage = () => {
         if (!userProfile) return <div className="flex justify-center items-center h-full"><SlothMascot className="w-24 h-24 animate-pulse"/></div>;
+        
+        if (activeDuelId) {
+            return <DuelArena duelId={activeDuelId} currentUser={userProfile} onExit={() => setActiveDuelId(null)} />
+        }
         
         if (currentLesson) {
             return <LessonPage lesson={currentLesson} onComplete={handleLessonComplete} onBack={() => setCurrentLesson(null)} targetLanguage={currentCourseId === 'english' ? 'English' : currentCourseId === 'arabic' ? 'Arabic' : 'Spanish'} />;
@@ -330,7 +340,7 @@ export default function AppContent({ user, setNotification, showTutorial, setSho
             case 'leaderboard': return <LeaderboardView />;
             case 'profile': return <ProfileView user={user} userProfile={userProfile} onUpdateProfile={updateProfileOnDb} onSignOut={() => auth.signOut()} onDeleteAccount={handleDeleteAccount} />;
             case 'minigames': return <MinigamesView onGameComplete={(score) => handlePointsUpdate(score, 'minigame')} />;
-            case 'friends': return <FriendsView currentUser={userProfile} />;
+            case 'friends': return <FriendsView currentUser={userProfile} onStartDuel={handleStartDuel} />;
             case 'community': return <CommunityView currentUser={userProfile} onQuizComplete={(score) => handlePointsUpdate(score, 'minigame')} />;
             case 'shop': return <ShopView userProfile={userProfile} onBuy={handleBuyItem} onEquip={handleEquipItem} />;
             case 'teaching-requests': return <TeachingRequestsView currentUser={userProfile} onAcceptCall={handleAcceptCall} />;

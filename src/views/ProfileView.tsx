@@ -9,7 +9,7 @@ import { getUserRank, getNextRank, shopItems } from '../lib/data';
 import { RankLogo } from '../components/RankLogo';
 import { Modal } from '../components/Modal';
 import { SlothMascot } from '../components/SlothMascot';
-import { Shirt, UserCircle } from 'lucide-react';
+import { Shirt, UserCircle, Download } from 'lucide-react';
 
 export default function ProfileView({ user, userProfile, onUpdateProfile, onSignOut, onDeleteAccount }) {
     const { t, language, setLanguage } = useTranslation();
@@ -45,6 +45,40 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
         setDeleteModalOpen(false);
     };
 
+    const handleDownloadMascot = () => {
+        const svgElement = document.querySelector('#profile-avatar svg');
+        if (!svgElement) return;
+
+        // Serialize the SVG to a string
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svgElement);
+        const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            // High Quality Resolution
+            canvas.width = 1024;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+            if(ctx) {
+                ctx.drawImage(img, 0, 0, 1024, 1024);
+                const pngUrl = canvas.toDataURL('image/png');
+                
+                // Trigger Download
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pngUrl;
+                downloadLink.download = `sloth_mascot_${userProfile.equippedOutfit || 'default'}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    };
+
     return (
         <div className="p-4 sm:p-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('myProfile')}</h1>
@@ -62,7 +96,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                         onClick={() => setActiveTab('wardrobe')} 
                         className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition ${activeTab === 'wardrobe' ? 'bg-white dark:bg-gray-700 shadow-md text-purple-600 dark:text-purple-400' : 'bg-white/40 dark:bg-gray-800/40 text-gray-500 hover:bg-white/60'}`}
                     >
-                        <Shirt size={20} /> Wardrobe
+                        <Shirt size={20} /> {t('wardrobe')}
                     </button>
                 </div>
 
@@ -70,7 +104,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                     <div className="flex flex-col items-center">
                         
                         {/* Current Avatar Display */}
-                        <div id="profile-avatar" className="relative mb-6">
+                        <div id="profile-avatar" className="relative mb-6 group">
                             <div className="w-40 h-40 rounded-full bg-gradient-to-b from-blue-200 to-blue-50 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center shadow-inner overflow-hidden border-4 border-white dark:border-gray-600">
                                 {userProfile.equippedOutfit || !userProfile.pfp ? (
                                     <SlothMascot className="w-32 h-32 mt-4 drop-shadow-md transition-transform hover:scale-110" outfit={userProfile.equippedOutfit} />
@@ -78,7 +112,17 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                                     <img src={userProfile.pfp} alt="User" className="w-full h-full object-cover" />
                                 )}
                             </div>
-                            {activeTab === 'wardrobe' && <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Current Look</div>}
+                            
+                            {/* Download Button */}
+                            <button 
+                                onClick={handleDownloadMascot}
+                                className="absolute bottom-0 right-0 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 p-2 rounded-full shadow-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition"
+                                title="Download HQ PNG"
+                            >
+                                <Download size={16} />
+                            </button>
+
+                            {activeTab === 'wardrobe' && <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">{t('currentLook')}</div>}
                         </div>
 
                         {/* Wardrobe Content */}
@@ -94,7 +138,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                                         <div className="w-16 h-16 overflow-hidden">
                                             <SlothMascot className="w-full h-full" />
                                         </div>
-                                        <span className="text-xs font-bold mt-1">Default</span>
+                                        <span className="text-xs font-bold mt-1">{t('default')}</span>
                                     </button>
 
                                     {/* Owned Outfits */}
@@ -112,7 +156,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                                     ))}
                                 </div>
                                 {ownedOutfits.length === 0 && (
-                                    <p className="text-center text-sm text-gray-500 mt-4">Visit the Shop to buy more outfits!</p>
+                                    <p className="text-center text-sm text-gray-500 mt-4">{t('visitShop')}</p>
                                 )}
                             </div>
                         )}

@@ -120,6 +120,11 @@ const translations = {
         'unit': 'Unit',
         'outOfLives': 'Out of Lives!',
         'dontWorry': "Don't worry, practice makes perfect. Try again.",
+        'speakThis': 'Read this out loud:',
+        'pronunciationCoach': 'Pronunciation Coach',
+        'perfectPronunciation': 'Perfect! You sounded like a local.',
+        'tryPronunciationAgain': 'Good try, but not quite. Try again!',
+        'clickToSpeak': 'Click mic to speak',
 
 
         // AI Chat
@@ -142,6 +147,9 @@ const translations = {
 
         // Leaderboard
         'anonymousUser': 'Anonymous User',
+        'userColumn': 'User',
+        'scoreColumn': 'Score',
+        'rankColumn': '#',
 
         // Profile
         'myProfile': 'My Profile',
@@ -153,6 +161,10 @@ const translations = {
         'learner': 'Learner',
         'availability': 'Availability',
         'availableForCalls': 'Available for calls',
+        'wardrobe': 'Wardrobe',
+        'currentLook': 'Current Look',
+        'default': 'Default',
+        'visitShop': 'Visit the Shop to buy more outfits!',
 
         // Ranks
         'novato': 'Novato',
@@ -168,6 +180,8 @@ const translations = {
         'equip': 'Equip',
         'owned': 'Owned',
         'coins': 'Coins',
+        'notEnoughCoins': 'Not enough coins!',
+        'itemPurchased': 'Item purchased!',
 
         // Friends
         'findFriends': 'Find Friends',
@@ -185,6 +199,10 @@ const translations = {
         'alreadyFriends': 'Already Friends',
         'accept': 'Accept',
         'decline': 'Decline',
+        'challenge': 'Challenge',
+        'acceptDuel': 'Accept Duel',
+        'duelRequestReceived': 'Duel Request Received',
+        'duelRequestSent': 'Duel Request Sent',
 
 
         // Community
@@ -237,6 +255,23 @@ const translations = {
         'commitMessage': 'Can you commit to 5 minutes a day?',
         'slowIsSmooth': 'Slow is smooth.',
         'smoothIsFast': 'Smooth is fast.',
+
+        // Dictionary
+        'dictionary': 'Contextual Dictionary',
+        'tapWord': 'Tap any word to translate',
+        'saveWord': 'Save to My Words',
+        'wordSaved': 'Word saved to your list!',
+        'definition': 'Definition',
+
+        // Duel
+        'duelArena': 'Duel Arena',
+        'waitingForOpponent': 'Waiting for opponent...',
+        'vs': 'VS',
+        'youWon': 'You Won!',
+        'youLost': 'You Lost...',
+        'draw': 'It\'s a Draw!',
+        'opponentProgress': 'Opponent Progress',
+        'startDuel': 'Start Duel',
     },
     he: {
         // General
@@ -352,6 +387,11 @@ const translations = {
         'unit': 'יחידה',
         'outOfLives': 'נגמרו החיים!',
         'dontWorry': 'אל דאגה, תרגול מביא לשלמות. נסה שוב.',
+        'speakThis': 'קרא את זה בקול:',
+        'pronunciationCoach': 'מאמן הגייה',
+        'perfectPronunciation': 'מושלם! נשמע כמו מקומי.',
+        'tryPronunciationAgain': 'נסיון יפה, אבל לא מדויק. נסה שוב!',
+        'clickToSpeak': 'לחץ על המיקרופון כדי לדבר',
 
         // AI Chat
         'aiPracticeChat': 'צ\'אט אימון עם AI',
@@ -373,6 +413,9 @@ const translations = {
 
         // Leaderboard
         'anonymousUser': 'משתמש אנונימי',
+        'userColumn': 'משתמש',
+        'scoreColumn': 'ניקוד',
+        'rankColumn': '#',
 
         // Profile
         'myProfile': 'הפרופיל שלי',
@@ -384,6 +427,10 @@ const translations = {
         'learner': 'תלמיד',
         'availability': 'זמינות',
         'availableForCalls': 'זמין/ה לשיחות',
+        'wardrobe': 'ארון בגדים',
+        'currentLook': 'לוק נוכחי',
+        'default': 'ברירת מחדל',
+        'visitShop': 'בקר בחנות כדי לקנות עוד תלבושות!',
 
         // Ranks
         'novato': 'טירון',
@@ -399,6 +446,8 @@ const translations = {
         'equip': 'צייד',
         'owned': 'בבעלות',
         'coins': 'מטבעות',
+        'notEnoughCoins': 'אין מספיק מטבעות!',
+        'itemPurchased': 'פריט נרכש!',
 
         // Friends
         'findFriends': 'מצא חברים',
@@ -416,6 +465,10 @@ const translations = {
         'alreadyFriends': 'כבר חברים',
         'accept': 'אשר',
         'decline': 'דחה',
+        'challenge': 'אתגר',
+        'acceptDuel': 'קבל דו-קרב',
+        'duelRequestReceived': 'התקבלה הזמנה לדו-קרב',
+        'duelRequestSent': 'הזמנה לדו-קרב נשלחה',
 
         // Community
         'communityQuizzes': 'בחני קהילה',
@@ -466,6 +519,23 @@ const translations = {
         'commitMessage': 'האם תוכל להקדיש 5 דקות ביום?',
         'slowIsSmooth': 'לאט זה חלק.',
         'smoothIsFast': 'חלק זה מהיר.',
+        
+        // Dictionary
+        'dictionary': 'מילון הקשרי',
+        'tapWord': 'לחץ על מילה לתרגום',
+        'saveWord': 'שמור למילים שלי',
+        'wordSaved': 'המילה נשמרה!',
+        'definition': 'הגדרה',
+
+        // Duel
+        'duelArena': 'זירת הדו-קרב',
+        'waitingForOpponent': 'ממתין ליריב...',
+        'vs': 'נגד',
+        'youWon': 'ניצחת!',
+        'youLost': 'הפסדת...',
+        'draw': 'תיקו!',
+        'opponentProgress': 'התקדמות יריב',
+        'startDuel': 'התחל קרב',
     },
 };
 

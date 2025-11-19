@@ -12,6 +12,7 @@ import { aiRoleplayScenarios } from '../lib/data';
 import { SlothMascot } from '../components/SlothMascot';
 import { Mic, Send, Volume2, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { Modal } from '../components/Modal';
+import { WordClickWrapper } from '../components/WordClickWrapper';
 
 export default function AiChatView({ userId, setNotification, onMessageSent }) {
     const { t, language } = useTranslation();
@@ -284,7 +285,9 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
                         <div key={chat.id || chat.timestamp.toString()} className={`flex items-end gap-3 ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {chat.role === 'ai' && <SlothMascot className="w-10 h-10 flex-shrink-0 drop-shadow-md" />}
                             <div className={`max-w-xs md:max-w-md p-4 rounded-2xl shadow-md ${chat.role === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'}`}>
-                                <p className="text-sm sm:text-base">{chat.text}</p>
+                                <div className="text-sm sm:text-base">
+                                     <WordClickWrapper text={chat.text} />
+                                </div>
                                 {chat.role === 'ai' && (
                                     <button onClick={() => speak(chat.text, null)} disabled={isGeneratingAudio} className="text-teal-600 dark:text-teal-400 hover:text-teal-800 mt-2 block">
                                         {isGeneratingAudio && chat.id === lastSpokenMessageRef.current ? <Loader2 className="animate-spin w-4 h-4"/> : <Volume2 size={16}/>}

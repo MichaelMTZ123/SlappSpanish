@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, query, where, getDocs, doc, setDoc, onSnapshot, addDoc, serverTimestamp, orderBy, deleteDoc, getDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, onSnapshot, addDoc, serverTimestamp, orderBy, deleteDoc, getDoc, writeBatch, updateDoc } from 'firebase/firestore';
 import { db, appId } from '../../lib/firebase';
 import { useTranslation } from '../../lib/i18n';
 import type { UserProfile } from '../../types';
-import { Search, Send, Mic, UserPlus, Check, X } from 'lucide-react';
+import { Search, Send, Mic, UserPlus, Check, X, Swords } from 'lucide-react';
 import { SlothMascot } from '../../components/SlothMascot';
 
 const ChatWindow = ({ currentUser, friend, onBack }) => {
@@ -110,13 +110,14 @@ const ChatWindow = ({ currentUser, friend, onBack }) => {
     )
 }
 
-export default function FriendsView({ currentUser }: { currentUser: UserProfile }) {
+export default function FriendsView({ currentUser, onStartDuel }: { currentUser: UserProfile, onStartDuel: (duelId: string) => void }) {
     const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [incomingRequests, setIncomingRequests] = useState([]);
     const [friends, setFriends] = useState([]);
     const [activeChatFriend, setActiveChatFriend] = useState(null);
+    const [incomingDuels, setIncomingDuels] = useState([]);
 
     // New state for quick lookups
     const [friendUids, setFriendUids] = useState(new Set());
@@ -149,6 +150,21 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
         });
         return unsubscribe;
     }, [currentUser.uid]);
+    
+    // Fetch incoming Duels
+    useEffect(() => {
+        if (!currentUser.uid) return;
+        const duelsRef = collection(db, `artifacts/${appId}/duels`);
+        // Simple approach: check for duels where I am player 2 and status is 'waiting'
+        const q = query(duelsRef, where('player2Id', '==', currentUser.uid), where('status', '==', 'waiting'));
+        
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const duels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setIncomingDuels(duels);
+        });
+        return unsubscribe;
+    }, [currentUser.uid]);
+
 
     // Fetch outgoing friend requests
     useEffect(() => {
@@ -200,32 +216,48 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
     
     const handleRequest = async (sender, accept) => {
         const senderId = sender.id;
-
-        // Use a batch to ensure all operations succeed or fail together.
         const batch = writeBatch(db);
 
-        // 1. Reference to my incoming request from sender
         const incomingRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/incomingFriendRequests`, senderId);
         batch.delete(incomingRef);
         
-        // 2. Reference to sender's outgoing request to me
         const outgoingRef = doc(db, `artifacts/${appId}/users/${senderId}/outgoingFriendRequests`, currentUser.uid);
         batch.delete(outgoingRef);
 
         if (accept) {
             const timestamp = serverTimestamp();
-            // 3. Add sender to my friends list
             const myFriendRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/friends`, senderId);
             batch.set(myFriendRef, { since: timestamp });
             
-            // 4. Add me to sender's friends list
             const theirFriendRef = doc(db, `artifacts/${appId}/users/${senderId}/friends`, currentUser.uid);
             batch.set(theirFriendRef, { since: timestamp });
         }
 
-        // Commit the batch
         await batch.commit();
     };
+    
+    const challengeFriend = async (friend) => {
+         const duelRef = collection(db, `artifacts/${appId}/duels`);
+         const newDuel = await addDoc(duelRef, {
+             player1Id: currentUser.uid,
+             player1Name: currentUser.name,
+             player1Score: 0,
+             player1Progress: 0,
+             player2Id: friend.uid,
+             player2Name: friend.name,
+             player2Score: 0,
+             player2Progress: 0,
+             status: 'waiting',
+             createdAt: serverTimestamp()
+         });
+         onStartDuel(newDuel.id);
+    };
+    
+    const acceptDuel = async (duel) => {
+        const duelRef = doc(db, `artifacts/${appId}/duels`, duel.id);
+        await updateDoc(duelRef, { status: 'active' });
+        onStartDuel(duel.id);
+    }
     
     const getFriendStatus = (targetUid) => {
         if (friendUids.has(targetUid)) return 'FRIENDS';
@@ -241,6 +273,22 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
     return (
         <div className="p-4 sm:p-8 max-w-6xl mx-auto">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-sm mb-6">{t('friends')}</h1>
+            
+            {/* Incoming Duel Requests Banner */}
+            {incomingDuels.length > 0 && (
+                <div className="mb-6 space-y-2">
+                     {incomingDuels.map(duel => (
+                         <div key={duel.id} className="bg-indigo-100 dark:bg-indigo-900 border border-indigo-300 dark:border-indigo-700 p-4 rounded-xl flex justify-between items-center animate-bounce-subtle">
+                             <div>
+                                 <p className="font-bold text-indigo-900 dark:text-indigo-100">{t('duelRequestReceived')}</p>
+                                 <p className="text-sm">{duel.player1Name} wants to duel!</p>
+                             </div>
+                             <button onClick={() => acceptDuel(duel)} className="bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-indigo-600">{t('acceptDuel')}</button>
+                         </div>
+                     ))}
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column */}
                 <div>
@@ -309,18 +357,23 @@ export default function FriendsView({ currentUser }: { currentUser: UserProfile 
                     {friends.length === 0 ? <p className="text-gray-500 dark:text-gray-400">{t('noFriendsYet')}</p> : (
                         <ul className="space-y-3">
                             {friends.map(friend => (
-                                <li key={friend.id} onClick={() => setActiveChatFriend(friend)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/60 dark:hover:bg-gray-700/60 cursor-pointer transition border border-transparent hover:border-teal-200">
-                                    <div className="w-12 h-12 rounded-full bg-blue-100 overflow-hidden border border-blue-200 flex-shrink-0 relative">
-                                         {friend.equippedOutfit ? (
-                                             <SlothMascot className="w-full h-full transform scale-125 translate-y-1" outfit={friend.equippedOutfit} />
-                                         ) : (
-                                             <img src={friend.pfp || `https://placehold.co/48x48`} alt={friend.name} className="w-full h-full object-cover" />
-                                         )}
+                                <li key={friend.id} className="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-white/60 dark:hover:bg-gray-700/60 transition border border-transparent hover:border-teal-200">
+                                    <div className="flex items-center gap-4 cursor-pointer" onClick={() => setActiveChatFriend(friend)}>
+                                        <div className="w-12 h-12 rounded-full bg-blue-100 overflow-hidden border border-blue-200 flex-shrink-0 relative">
+                                             {friend.equippedOutfit ? (
+                                                 <SlothMascot className="w-full h-full transform scale-125 translate-y-1" outfit={friend.equippedOutfit} />
+                                             ) : (
+                                                 <img src={friend.pfp || `https://placehold.co/48x48`} alt={friend.name} className="w-full h-full object-cover" />
+                                             )}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900 dark:text-gray-100">{friend.name}</h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{t('startTyping')}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-gray-100">{friend.name}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('startTyping')}</p>
-                                    </div>
+                                    <button onClick={() => challengeFriend(friend)} className="p-2 bg-yellow-100 text-yellow-700 rounded-full hover:bg-yellow-200 transition" title={t('challenge')}>
+                                        <Swords size={20} />
+                                    </button>
                                 </li>
                             ))}
                         </ul>
