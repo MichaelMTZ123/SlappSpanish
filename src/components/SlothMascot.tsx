@@ -153,16 +153,16 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                     {/* Hat Shine */}
                     <path d="M120,20 Q125,30 120,40" fill="none" stroke="#FFF" strokeWidth="2" opacity="0.3" />
 
-                    {/* Wand - Positioned to side to avoid clipping */}
-                    <g transform="translate(120, 80) rotate(-45)">
-                         <rect x="0" y="0" width="60" height="8" fill="#333" rx="2" stroke="#000" strokeWidth="0.5"/>
-                         <rect x="0" y="0" width="12" height="8" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
-                         <rect x="48" y="0" width="12" height="8" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
+                    {/* Wand - Positioned down and bigger */}
+                    <g transform="translate(135, 130) rotate(-20) scale(1.5)">
+                         <rect x="0" y="0" width="50" height="7" fill="#333" rx="2" stroke="#000" strokeWidth="0.5"/>
+                         <rect x="0" y="0" width="10" height="7" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
+                         <rect x="40" y="0" width="10" height="7" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
                     </g>
                     
                     {/* Stars */}
                     <text x="150" y="50" fontSize="20" fill="gold">✨</text>
-                    <text x="40" y="80" fontSize="15" fill="gold">✨</text>
+                    <text x="155" y="120" fontSize="20" fill="gold">✨</text>
                 </g>
             )}
 
