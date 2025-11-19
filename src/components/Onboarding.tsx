@@ -145,4 +145,17 @@ export const Onboarding = ({ onComplete, setTargetCourse, setTheme }) => {
                              </div>
                              <div className="w-0.5 h-4 bg-gray-300 mx-5 my-1"></div>
                              <div className="flex items-center gap-3">
-                               
+                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">2</div>
+                                <p className="text-left text-sm text-gray-600 dark:text-gray-300">{t('smoothIsFast')}</p>
+                             </div>
+                        </div>
+
+                        <button onClick={handleFinish} className="w-full py-4 bg-gradient-to-r from-teal-500 to-green-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:scale-105 transition transform flex items-center justify-center gap-2">
+                            {t('startLesson')} <ArrowRight />
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
