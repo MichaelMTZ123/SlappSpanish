@@ -153,14 +153,15 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                     {/* Hat Shine */}
                     <path d="M120,20 Q125,30 120,40" fill="none" stroke="#FFF" strokeWidth="2" opacity="0.3" />
 
-                    {/* Wand - Positioned to side */}
-                    <g transform="translate(60, 60) rotate(-45)">
-                         <rect x="0" y="0" width="60" height="6" fill="#333" rx="2"/>
-                         <rect x="0" y="0" width="10" height="6" fill="#FFF" rx="2"/>
-                         <rect x="50" y="0" width="10" height="6" fill="#FFF" rx="2"/>
+                    {/* Wand - Positioned to side to avoid clipping */}
+                    <g transform="translate(120, 80) rotate(-45)">
+                         <rect x="0" y="0" width="60" height="8" fill="#333" rx="2" stroke="#000" strokeWidth="0.5"/>
+                         <rect x="0" y="0" width="12" height="8" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
+                         <rect x="48" y="0" width="12" height="8" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
                     </g>
                     
                     {/* Stars */}
+                    <text x="150" y="50" fontSize="20" fill="gold">✨</text>
                     <text x="40" y="80" fontSize="15" fill="gold">✨</text>
                 </g>
             )}
@@ -171,9 +172,9 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                      {/* Mask Face with Gradient for 3D effect */}
                      <path d="M55,60 C45,80 45,150 100,165 C155,150 155,80 145,60 C125,40 75,40 55,60 Z" fill={`url(#${maskGradientId})`} stroke="#CCCCCC" strokeWidth="1" />
                      
-                     {/* Squinting Eyes */}
-                     <path d="M70,90 Q85,80 100,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
-                     <path d="M100,90 Q115,80 130,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
+                     {/* Squinting Eyes - Separated */}
+                     <path d="M65,90 Q80,80 95,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
+                     <path d="M105,90 Q120,80 135,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
                      
                      {/* Wide Smile */}
                      <path d="M75,120 Q100,150 125,120" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
