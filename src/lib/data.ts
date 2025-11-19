@@ -15,6 +15,8 @@ export const shopItems = [
     { id: 'glasses', name: 'Cool Shades', price: 100, type: 'outfit', icon: '🕶️' },
     { id: 'hat_cowboy', name: 'Cowboy Hat', price: 200, type: 'outfit', icon: '🤠' },
     { id: 'crown', name: 'Royal Crown', price: 1000, type: 'outfit', icon: '👑' },
+    { id: 'magician', name: 'Magic Hat', price: 500, type: 'outfit', icon: '🎩' },
+    { id: 'mask', name: 'Smiley Mask', price: 800, type: 'outfit', icon: '🎭' },
     { id: 'freeze', name: 'Streak Freeze', price: 50, type: 'powerup', icon: '🧊' },
 ];
 
@@ -58,9 +60,9 @@ export const courses = {
                 title: 'Intro & Basics',
                 color: 'teal',
                 lessons: [
-                    { id: 's_u1_1', title: 'Greetings', content: 'Hola (Hello), Adiós (Goodbye), Gracias (Thank you), Buenos días (Good morning).', vocab: ['Hola (Hello)', 'Adiós (Goodbye)', 'Gracias (Thank you)'] },
-                    { id: 's_u1_2', title: 'Introductions', content: 'Me llamo (My name is), Soy de (I am from), Mucho gusto (Nice to meet you).', vocab: ['Me llamo (My name is)', 'Soy de (I am from)'] },
-                    { id: 's_u1_3', title: 'Common Phrases', content: 'Por favor (Please), De nada (You are welcome), Lo siento (I am sorry).', vocab: ['Por favor (Please)', 'De nada (Youre welcome)'] },
+                    { id: 's_u1_1', title: 'Greetings', content: 'Hola (Hello), Adiós (Goodbye), Gracias (Thank you), Buenos días (Good morning).', vocab: [{ term: 'Hola', en: 'Hello', he: 'שלום' }, { term: 'Adiós', en: 'Goodbye', he: 'להתראות' }, { term: 'Gracias', en: 'Thank you', he: 'תודה' }] },
+                    { id: 's_u1_2', title: 'Introductions', content: 'Me llamo (My name is), Soy de (I am from), Mucho gusto (Nice to meet you).', vocab: [{ term: 'Me llamo', en: 'My name is', he: 'שמי' }, { term: 'Soy de', en: 'I am from', he: 'אני מ' }] },
+                    { id: 's_u1_3', title: 'Common Phrases', content: 'Por favor (Please), De nada (You are welcome), Lo siento (I am sorry).', vocab: [{ term: 'Por favor', en: 'Please', he: 'בבקשה' }, { term: 'De nada', en: 'You are welcome', he: 'על לא דבר' }] },
                     { id: 's_u1_4', title: 'Review: Basics', content: 'Review greetings and phrases from the unit.', vocab: [] },
                 ]
             },
@@ -69,9 +71,9 @@ export const courses = {
                 title: 'Food & Drink',
                 color: 'green',
                 lessons: [
-                    { id: 's_u2_1', title: 'Ordering', content: 'Quiero (I want), La cuenta (The check), El menú (The menu).', vocab: ['Quiero (I want)', 'La cuenta (The check)'] },
-                    { id: 's_u2_2', title: 'Fruits', content: 'Manzana (Apple), Banana (Banana), Naranja (Orange).', vocab: ['Manzana (Apple)', 'Naranja (Orange)'] },
-                    { id: 's_u2_3', title: 'Drinks', content: 'Agua (Water), Cerveza (Beer), Vino (Wine), Café (Coffee).', vocab: ['Agua (Water)', 'Café (Coffee)'] },
+                    { id: 's_u2_1', title: 'Ordering', content: 'Quiero (I want), La cuenta (The check), El menú (The menu).', vocab: [{ term: 'Quiero', en: 'I want', he: 'אני רוצה' }, { term: 'La cuenta', en: 'The check', he: 'החשבון' }] },
+                    { id: 's_u2_2', title: 'Fruits', content: 'Manzana (Apple), Banana (Banana), Naranja (Orange).', vocab: [{ term: 'Manzana', en: 'Apple', he: 'תפוח' }, { term: 'Naranja', en: 'Orange', he: 'תפוז' }] },
+                    { id: 's_u2_3', title: 'Drinks', content: 'Agua (Water), Cerveza (Beer), Vino (Wine), Café (Coffee).', vocab: [{ term: 'Agua', en: 'Water', he: 'מים' }, { term: 'Café', en: 'Coffee', he: 'קפה' }] },
                 ]
             },
             {
@@ -79,8 +81,8 @@ export const courses = {
                 title: 'Travel',
                 color: 'blue',
                 lessons: [
-                    { id: 's_u3_1', title: 'Directions', content: '¿Dónde está? (Where is?), Izquierda (Left), Derecha (Right).', vocab: ['¿Dónde está? (Where is?)', 'Izquierda (Left)'] },
-                    { id: 's_u3_2', title: 'Places', content: 'El hotel (The hotel), El aeropuerto (The airport), La estación (The station).', vocab: ['Hotel (Hotel)', 'Aeropuerto (Airport)'] },
+                    { id: 's_u3_1', title: 'Directions', content: '¿Dónde está? (Where is?), Izquierda (Left), Derecha (Right).', vocab: [{ term: '¿Dónde está?', en: 'Where is?', he: 'איפה זה?' }, { term: 'Izquierda', en: 'Left', he: 'שמאל' }] },
+                    { id: 's_u3_2', title: 'Places', content: 'El hotel (The hotel), El aeropuerto (The airport), La estación (The station).', vocab: [{ term: 'Hotel', en: 'Hotel', he: 'מלון' }, { term: 'Aeropuerto', en: 'Airport', he: 'שדה תעופה' }] },
                 ]
             },
             {
@@ -88,8 +90,8 @@ export const courses = {
                 title: 'Family',
                 color: 'purple',
                 lessons: [
-                    { id: 's_u4_1', title: 'Close Family', content: 'Madre (Mother), Padre (Father), Hermano (Brother).', vocab: ['Madre (Mother)', 'Padre (Father)'] },
-                    { id: 's_u4_2', title: 'Extended', content: 'Abuelo (Grandfather), Tío (Uncle), Primo (Cousin).', vocab: ['Abuelo (Grandpa)', 'Primo (Cousin)'] },
+                    { id: 's_u4_1', title: 'Close Family', content: 'Madre (Mother), Padre (Father), Hermano (Brother).', vocab: [{ term: 'Madre', en: 'Mother', he: 'אמא' }, { term: 'Padre', en: 'Father', he: 'אבא' }] },
+                    { id: 's_u4_2', title: 'Extended', content: 'Abuelo (Grandfather), Tío (Uncle), Primo (Cousin).', vocab: [{ term: 'Abuelo', en: 'Grandpa', he: 'סבא' }, { term: 'Primo', en: 'Cousin', he: 'בן דוד' }] },
                 ]
             },
             {
@@ -97,8 +99,8 @@ export const courses = {
                 title: 'Activities',
                 color: 'orange',
                 lessons: [
-                    { id: 's_u5_1', title: 'Verbs', content: 'Comer (To eat), Dormir (To sleep), Correr (To run).', vocab: ['Comer (To eat)', 'Dormir (To sleep)'] },
-                    { id: 's_u5_2', title: 'Hobbies', content: 'Leer (To read), Nadar (To swim), Bailar (To dance).', vocab: ['Leer (To read)', 'Bailar (To dance)'] },
+                    { id: 's_u5_1', title: 'Verbs', content: 'Comer (To eat), Dormir (To sleep), Correr (To run).', vocab: [{ term: 'Comer', en: 'To eat', he: 'לאכול' }, { term: 'Dormir', en: 'To sleep', he: 'לישון' }] },
+                    { id: 's_u5_2', title: 'Hobbies', content: 'Leer (To read), Nadar (To swim), Bailar (To dance).', vocab: [{ term: 'Leer', en: 'To read', he: 'לקרוא' }, { term: 'Bailar', en: 'To dance', he: 'לרקוד' }] },
                 ]
             }
         ]
@@ -113,8 +115,8 @@ export const courses = {
                 title: 'Basics',
                 color: 'indigo',
                 lessons: [
-                    { id: 'e_u1_1', title: 'Greetings', content: 'Hello, Goodbye, Thank you.', vocab: ['Hello', 'Goodbye'] },
-                    { id: 'e_u1_2', title: 'Verb To Be', content: 'I am, You are, He is.', vocab: ['I am', 'You are'] },
+                    { id: 'e_u1_1', title: 'Greetings', content: 'Hello, Goodbye, Thank you.', vocab: [{ term: 'Hello', en: 'Hello', he: 'שלום' }, { term: 'Goodbye', en: 'Goodbye', he: 'להתראות' }] },
+                    { id: 'e_u1_2', title: 'Verb To Be', content: 'I am, You are, He is.', vocab: [{ term: 'I am', en: 'I am', he: 'אני' }, { term: 'You are', en: 'You are', he: 'אתה' }] },
                 ]
             },
             {
@@ -122,8 +124,8 @@ export const courses = {
                 title: 'Daily Life',
                 color: 'pink',
                 lessons: [
-                    { id: 'e_u2_1', title: 'Morning Routine', content: 'Wake up, Brush teeth, Eat breakfast.', vocab: ['Wake up', 'Breakfast'] },
-                    { id: 'e_u2_2', title: 'Work', content: 'Office, Computer, Meeting.', vocab: ['Office', 'Meeting'] },
+                    { id: 'e_u2_1', title: 'Morning Routine', content: 'Wake up, Brush teeth, Eat breakfast.', vocab: [{ term: 'Wake up', en: 'Wake up', he: 'להתעורר' }, { term: 'Breakfast', en: 'Breakfast', he: 'ארוחת בוקר' }] },
+                    { id: 'e_u2_2', title: 'Work', content: 'Office, Computer, Meeting.', vocab: [{ term: 'Office', en: 'Office', he: 'משרד' }, { term: 'Meeting', en: 'Meeting', he: 'פגישה' }] },
                 ]
             },
              {
@@ -131,8 +133,8 @@ export const courses = {
                 title: 'Shopping',
                 color: 'yellow',
                 lessons: [
-                    { id: 'e_u3_1', title: 'Clothing', content: 'Shirt, Pants, Shoes.', vocab: ['Shirt', 'Shoes'] },
-                    { id: 'e_u3_2', title: 'Transactions', content: 'How much?, Cash, Credit Card.', vocab: ['Cash', 'How much?'] },
+                    { id: 'e_u3_1', title: 'Clothing', content: 'Shirt, Pants, Shoes.', vocab: [{ term: 'Shirt', en: 'Shirt', he: 'חולצה' }, { term: 'Shoes', en: 'Shoes', he: 'נעליים' }] },
+                    { id: 'e_u3_2', title: 'Transactions', content: 'How much?, Cash, Credit Card.', vocab: [{ term: 'Cash', en: 'Cash', he: 'מזומן' }, { term: 'How much?', en: 'How much?', he: 'כמה זה?' }] },
                 ]
             }
         ]
@@ -147,8 +149,8 @@ export const courses = {
                 title: 'Letters & Greetings',
                 color: 'emerald',
                 lessons: [
-                    { id: 'a_u1_1', title: 'Greetings', content: 'Marhaban (Hello), Assalamu Alaykum (Peace be upon you), Shukran (Thank you).', vocab: ['Marhaban (Hello)', 'Shukran (Thank you)'] },
-                    { id: 'a_u1_2', title: 'Basics', content: 'Naam (Yes), Laa (No), Min Fadlak (Please).', vocab: ['Naam (Yes)', 'Laa (No)'] },
+                    { id: 'a_u1_1', title: 'Greetings', content: 'Marhaban (Hello), Assalamu Alaykum (Peace be upon you), Shukran (Thank you).', vocab: [{ term: 'Marhaban', en: 'Hello', he: 'שלום' }, { term: 'Shukran', en: 'Thank you', he: 'תודה' }] },
+                    { id: 'a_u1_2', title: 'Basics', content: 'Naam (Yes), Laa (No), Min Fadlak (Please).', vocab: [{ term: 'Naam', en: 'Yes', he: 'כן' }, { term: 'Laa', en: 'No', he: 'לא' }] },
                 ]
             },
             {
@@ -156,8 +158,8 @@ export const courses = {
                 title: 'Family & Home',
                 color: 'amber',
                 lessons: [
-                    { id: 'a_u2_1', title: 'Family', content: 'Ab (Father), Om (Mother), Akhi (My Brother).', vocab: ['Ab (Father)', 'Om (Mother)'] },
-                    { id: 'a_u2_2', title: 'In the House', content: 'Bayt (House), Bab (Door), Kursi (Chair).', vocab: ['Bayt (House)', 'Bab (Door)'] },
+                    { id: 'a_u2_1', title: 'Family', content: 'Ab (Father), Om (Mother), Akhi (My Brother).', vocab: [{ term: 'Ab', en: 'Father', he: 'אבא' }, { term: 'Om', en: 'Mother', he: 'אמא' }] },
+                    { id: 'a_u2_2', title: 'In the House', content: 'Bayt (House), Bab (Door), Kursi (Chair).', vocab: [{ term: 'Bayt', en: 'House', he: 'בית' }, { term: 'Bab', en: 'Door', he: 'דלת' }] },
                 ]
             }
         ]

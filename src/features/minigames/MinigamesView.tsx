@@ -8,24 +8,22 @@ import { useTranslation } from '../../lib/i18n';
 import { courses } from '../../lib/data';
 import { Clock, RefreshCw, Volume2 } from 'lucide-react';
 
-// Helper to extract clean vocab words from "Word (Translation)" format
-const extractVocab = (courseId) => {
+// Helper to extract clean vocab words and localize them
+const extractVocab = (courseId, language) => {
     const course = courses[courseId];
     if (!course) return [];
     
     return course.units.flatMap(unit => 
-        unit.lessons.flatMap(l => l.vocab.map(v => {
-            // Assumes format "Foreign (Native)"
-            const match = v.match(/(.+)\s\((.+)\)/);
-            if (match) return { target: match[1], native: match[2] };
-            return { target: v, native: v }; // Fallback
-        }))
+        unit.lessons.flatMap(l => l.vocab.map(v => ({
+            target: v.term,
+            native: language === 'he' ? v.he : v.en
+        })))
     );
 };
 
 // --- Flashcard Frenzy ---
 const FlashcardFrenzy = ({ onGameEnd, targetLanguage }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [cards, setCards] = useState([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -33,7 +31,7 @@ const FlashcardFrenzy = ({ onGameEnd, targetLanguage }) => {
     const [isFinished, setIsFinished] = useState(false);
 
     useEffect(() => {
-        const allVocab = extractVocab(targetLanguage);
+        const allVocab = extractVocab(targetLanguage, language);
         if (allVocab.length < 4) {
              // Fallback mock data if course is empty
              setCards([{target: 'Error', native: 'Not enough vocab', options: ['Not enough vocab']}]);
@@ -52,7 +50,7 @@ const FlashcardFrenzy = ({ onGameEnd, targetLanguage }) => {
             return { ...card, options: options.sort(() => 0.5 - Math.random()) };
         });
         setCards(gameCards);
-    }, [targetLanguage]);
+    }, [targetLanguage, language]);
 
     useEffect(() => {
         if (timeLeft > 0 && !isFinished) {
@@ -104,7 +102,7 @@ const FlashcardFrenzy = ({ onGameEnd, targetLanguage }) => {
 
 // --- Sentence Scramble ---
 const SentenceScramble = ({ onGameEnd, targetLanguage }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     
     // Basic sentences for different languages
     const sentencesMap = {
@@ -172,7 +170,7 @@ const SentenceScramble = ({ onGameEnd, targetLanguage }) => {
 
 // --- Memory Match ---
 const MemoryMatch = ({ onGameEnd, targetLanguage }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [cards, setCards] = useState([]);
     const [flipped, setFlipped] = useState([]);
     const [matched, setMatched] = useState([]);
@@ -180,7 +178,7 @@ const MemoryMatch = ({ onGameEnd, targetLanguage }) => {
 
     useEffect(() => {
         // Get 6 random words
-        const allVocab = extractVocab(targetLanguage);
+        const allVocab = extractVocab(targetLanguage, language);
         const shuffled = allVocab.sort(() => 0.5 - Math.random()).slice(0, 6);
         
         const deck = [];
@@ -193,7 +191,7 @@ const MemoryMatch = ({ onGameEnd, targetLanguage }) => {
 
         const finalDeck = deck.sort(() => Math.random() - 0.5).map((c, i) => ({ ...c, uniqueId: i }));
         setCards(finalDeck);
-    }, [targetLanguage]);
+    }, [targetLanguage, language]);
 
     useEffect(() => {
         if (flipped.length === 2) {
@@ -240,14 +238,14 @@ const MemoryMatch = ({ onGameEnd, targetLanguage }) => {
 
 // --- Speed Listen ---
 const SpeedListen = ({ onGameEnd, targetLanguage }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [round, setRound] = useState(0);
     const [score, setScore] = useState(0);
     const [options, setOptions] = useState([]);
     const [targetWord, setTargetWord] = useState(null);
     const [status, setStatus] = useState('playing'); // playing, correct, wrong
 
-    const allVocab = useMemo(() => extractVocab(targetLanguage), [targetLanguage]);
+    const allVocab = useMemo(() => extractVocab(targetLanguage, language), [targetLanguage, language]);
 
     const startRound = () => {
         if (round >= 5) {

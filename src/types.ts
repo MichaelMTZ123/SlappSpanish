@@ -48,11 +48,17 @@ export interface Call {
     createdAt?: any;
 }
 
+export interface VocabItem {
+    term: string;
+    en: string;
+    he: string;
+}
+
 export interface Lesson {
     id: string;
     title: string;
     content: string;
-    vocab: string[];
+    vocab: VocabItem[];
     quiz?: QuizQuestion[];
 }
 

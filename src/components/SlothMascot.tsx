@@ -12,10 +12,12 @@ interface SlothMascotProps {
 
 export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit }) => {
     // Generate a unique ID for this instance to prevent ID collisions in the DOM
-    // which causes the "missing face" bug on mobile (browser tries to use a hidden gradient ID).
     const uniqueId = useId().replace(/:/g, ''); 
     const faceGradientId = `faceGradient-${uniqueId}`;
     const dropShadowId = `dropShadow-${uniqueId}`;
+    const leatherGradientId = `leatherGradient-${uniqueId}`;
+    const hatGradientId = `hatGradient-${uniqueId}`;
+    const maskGradientId = `maskGradient-${uniqueId}`;
 
     return (
         <svg viewBox="0 0 200 200" className={className} xmlns="http://www.w3.org/2000/svg">
@@ -24,6 +26,27 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                     <stop offset="0%" stopColor="#F5EFE6" />
                     <stop offset="100%" stopColor="#E8DCCA" />
                 </radialGradient>
+                
+                {/* Leather Gradient for Cowboy Hat */}
+                <linearGradient id={leatherGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#8B4513" />
+                    <stop offset="40%" stopColor="#A0522D" />
+                    <stop offset="100%" stopColor="#5D4037" />
+                </linearGradient>
+
+                 {/* Magician Hat Gradient */}
+                 <linearGradient id={hatGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#333" />
+                    <stop offset="50%" stopColor="#555" />
+                    <stop offset="100%" stopColor="#222" />
+                </linearGradient>
+
+                {/* Mask Gradient for 3D effect */}
+                <radialGradient id={maskGradientId} cx="30%" cy="30%" r="80%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="100%" stopColor="#DDDDDD" />
+                </radialGradient>
+
                 <filter id={dropShadowId} x="-20%" y="-20%" width="140%" height="140%">
                     <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
                     <feOffset dx="1" dy="2" result="offsetblur"/>
@@ -70,9 +93,9 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
 
             {/* --- OUTFITS --- */}
             
-            {/* Glasses */}
+            {/* Glasses - Scaled up slightly */}
             {outfit === 'glasses' && (
-                <g filter={`url(#${dropShadowId})`}>
+                <g filter={`url(#${dropShadowId})`} transform="scale(1.15)" transform-origin="100 110">
                     <path d="M45,110 Q45,95 65,95 T85,110 Q85,125 65,125 T45,110 Z" fill="#222" fillOpacity="0.8" stroke="#000" strokeWidth="2"/>
                     <path d="M115,110 Q115,95 135,95 T155,110 Q155,125 135,125 T115,110 Z" fill="#222" fillOpacity="0.8" stroke="#000" strokeWidth="2"/>
                     <line x1="85" y1="110" x2="115" y2="110" stroke="#000" strokeWidth="3" />
@@ -81,55 +104,87 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                 </g>
             )}
 
-            {/* Cowboy Hat */}
+            {/* Cowboy Hat - Improved Texture & Size */}
             {outfit === 'hat_cowboy' && (
-                <g transform="translate(0, -15)" filter={`url(#${dropShadowId})`}>
-                    <ellipse cx="100" cy="55" rx="75" ry="20" fill="#654321" />
-                    <path d="M60,55 L65,25 Q100,15 135,25 L140,55 Z" fill="#543210" />
-                    <path d="M65,25 Q100,15 135,25" fill="none" stroke="#3e270c" strokeWidth="2" />
-                    <path d="M60,50 Q100,60 140,50" fill="none" stroke="#8B4513" strokeWidth="5" />
+                <g transform="translate(0, -20) scale(1.1)" transform-origin="100 55" filter={`url(#${dropShadowId})`}>
+                    {/* Back Brim */}
+                    <path d="M20,55 Q100,85 180,55" fill="none" stroke={`url(#${leatherGradientId})`} strokeWidth="0" />
+                    
+                    {/* Main Brim with Leather Texture */}
+                    <ellipse cx="100" cy="55" rx="80" ry="20" fill={`url(#${leatherGradientId})`} />
+                    {/* Stitching Details on Brim */}
+                    <ellipse cx="100" cy="55" rx="75" ry="16" fill="none" stroke="#D2B48C" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.8" />
+                    
+                    {/* Hat Crown Top */}
+                    <path d="M55,55 L60,15 Q100,5 140,15 L145,55 Z" fill={`url(#${leatherGradientId})`} />
+                    
+                    {/* Hat Band */}
+                    <path d="M55,50 Q100,60 145,50 L145,42 Q100,52 55,42 Z" fill="#3E2723" />
+                    {/* Buckle on Band */}
+                    <rect x="120" y="44" width="10" height="8" rx="1" fill="#FFD700" />
+                    
+                    {/* Crown Indent shading */}
+                    <path d="M100,10 Q80,20 100,35 Q120,20 100,10" fill="#000" fillOpacity="0.1" />
                 </g>
             )}
 
-            {/* Crown */}
+            {/* Crown - Scaled up */}
             {outfit === 'crown' && (
-                 <g transform="translate(0, -25)" filter={`url(#${dropShadowId})`}>
+                 <g transform="translate(0, -30) scale(1.2)" transform-origin="100 50" filter={`url(#${dropShadowId})`}>
                      <path d="M60,60 L70,20 L100,50 L130,20 L140,60 Z" fill="#FFD700" stroke="#DAA520" strokeWidth="2" strokeLinejoin="round"/>
                      <circle cx="70" cy="20" r="4" fill="#FF4500" />
                      <circle cx="130" cy="20" r="4" fill="#FF4500" />
                      <circle cx="100" cy="50" r="3" fill="#00BFFF" />
                      <circle cx="100" cy="25" r="5" fill="#FF4500" />
+                     {/* Base Gem */}
+                     <rect x="95" y="55" width="10" height="5" fill="#00BFFF" />
                  </g>
             )}
 
-            {/* Magician (Top Hat & Wand) */}
+            {/* Magician (Top Hat & Wand) - Improved */}
             {outfit === 'magician' && (
-                <g filter={`url(#${dropShadowId})`}>
-                    {/* Hat */}
-                    <rect x="55" y="50" width="90" height="10" rx="2" fill="#222" stroke="#000" />
-                    <rect x="70" y="15" width="60" height="35" fill="#222" stroke="#000" />
-                    <rect x="70" y="40" width="60" height="5" fill="#D32F2F" />
-                    {/* Wand */}
-                    <path d="M160,140 L180,120" stroke="#3E2723" strokeWidth="4" strokeLinecap="round" />
-                    <path d="M178,122 L182,118" stroke="#FFF" strokeWidth="4" strokeLinecap="round" />
+                <g filter={`url(#${dropShadowId})`} transform="translate(0, -25) scale(1.2)" transform-origin="100 50">
+                    {/* Hat Brim */}
+                    <ellipse cx="100" cy="55" rx="45" ry="8" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
+                    {/* Hat Body */}
+                    <path d="M70,55 L70,15 Q100,10 130,15 L130,55 Z" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
+                     {/* Hat Band */}
+                    <path d="M70,50 Q100,55 130,50 L130,45 Q100,50 70,45 Z" fill="#D32F2F" />
+                    {/* Hat Shine */}
+                    <path d="M120,20 Q125,30 120,40" fill="none" stroke="#FFF" strokeWidth="2" opacity="0.3" />
+
+                    {/* Wand - Positioned to side */}
+                    <g transform="translate(60, 60) rotate(-45)">
+                         <rect x="0" y="0" width="60" height="6" fill="#333" rx="2"/>
+                         <rect x="0" y="0" width="10" height="6" fill="#FFF" rx="2"/>
+                         <rect x="50" y="0" width="10" height="6" fill="#FFF" rx="2"/>
+                    </g>
+                    
                     {/* Stars */}
-                    <path d="M175,110 L176,112 L178,112 L176,114 L177,116 L175,114 L173,116 L174,114 L172,112 L174,112 Z" fill="yellow" />
+                    <text x="40" y="80" fontSize="15" fill="gold">✨</text>
                 </g>
             )}
 
-            {/* Mask (White Smile) */}
+            {/* Mask (White Smile) - Improved */}
             {outfit === 'mask' && (
-                 <g filter={`url(#${dropShadowId})`}>
-                     {/* Mask Face */}
-                     <path d="M60,60 C50,80 50,150 100,165 C150,150 150,80 140,60 C120,40 80,40 60,60 Z" fill="#FFFFFF" stroke="#DDDDDD" strokeWidth="1" />
+                 <g filter={`url(#${dropShadowId})`} transform="scale(1.1)" transform-origin="100 100">
+                     {/* Mask Face with Gradient for 3D effect */}
+                     <path d="M55,60 C45,80 45,150 100,165 C155,150 155,80 145,60 C125,40 75,40 55,60 Z" fill={`url(#${maskGradientId})`} stroke="#CCCCCC" strokeWidth="1" />
+                     
                      {/* Squinting Eyes */}
-                     <path d="M70,95 Q80,85 90,95" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
-                     <path d="M110,95 Q120,85 130,95" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+                     <path d="M70,90 Q85,80 100,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
+                     <path d="M100,90 Q115,80 130,90" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
+                     
                      {/* Wide Smile */}
-                     <path d="M75,125 Q100,155 125,125" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+                     <path d="M75,120 Q100,150 125,120" fill="none" stroke="#222" strokeWidth="5" strokeLinecap="round" />
+                     
+                     {/* Cheek shading */}
+                     <ellipse cx="65" cy="110" rx="5" ry="3" fill="#000" opacity="0.1" />
+                     <ellipse cx="135" cy="110" rx="5" ry="3" fill="#000" opacity="0.1" />
+
                      {/* Strap */}
-                     <path d="M55,100 L45,95" stroke="#333" strokeWidth="2" opacity="0.5" />
-                     <path d="M145,100 L155,95" stroke="#333" strokeWidth="2" opacity="0.5" />
+                     <path d="M55,85 L40,80" stroke="#333" strokeWidth="3" opacity="0.6" />
+                     <path d="M145,85 L160,80" stroke="#333" strokeWidth="3" opacity="0.6" />
                  </g>
             )}
         </svg>

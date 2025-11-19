@@ -83,7 +83,8 @@ export default function LessonPage({ lesson, onComplete, onBack, targetLanguage 
                 });
                 const result = JSON.parse(response.text) as GeneratedQuizResponse;
                 setQuestions(result.quiz);
-                setSpeakingPhrase(result.speakingPhrase || lesson.vocab[0]);
+                // Use the first vocab term if API doesn't return a phrase, handle object structure safely
+                setSpeakingPhrase(result.speakingPhrase || (lesson.vocab.length > 0 ? lesson.vocab[0].term : 'Hola'));
             } catch (e) {
                 console.error(e);
                 setQuestions([{ question: `What relates to ${lesson.title}?`, options: ["Wrong", "Incorrect", "Right Answer"], correctAnswer: "Right Answer", explanation: "Review the lesson content." }]);
