@@ -7,7 +7,7 @@ import React, { useId } from 'react';
 
 interface SlothMascotProps {
     className?: string;
-    outfit?: string; // 'glasses', 'hat_cowboy', 'crown'
+    outfit?: string; // 'glasses', 'hat_cowboy', 'crown', 'magician', 'mask'
 }
 
 export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit }) => {
@@ -99,6 +99,37 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                      <circle cx="130" cy="20" r="4" fill="#FF4500" />
                      <circle cx="100" cy="50" r="3" fill="#00BFFF" />
                      <circle cx="100" cy="25" r="5" fill="#FF4500" />
+                 </g>
+            )}
+
+            {/* Magician (Top Hat & Wand) */}
+            {outfit === 'magician' && (
+                <g filter={`url(#${dropShadowId})`}>
+                    {/* Hat */}
+                    <rect x="55" y="50" width="90" height="10" rx="2" fill="#222" stroke="#000" />
+                    <rect x="70" y="15" width="60" height="35" fill="#222" stroke="#000" />
+                    <rect x="70" y="40" width="60" height="5" fill="#D32F2F" />
+                    {/* Wand */}
+                    <path d="M160,140 L180,120" stroke="#3E2723" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M178,122 L182,118" stroke="#FFF" strokeWidth="4" strokeLinecap="round" />
+                    {/* Stars */}
+                    <path d="M175,110 L176,112 L178,112 L176,114 L177,116 L175,114 L173,116 L174,114 L172,112 L174,112 Z" fill="yellow" />
+                </g>
+            )}
+
+            {/* Mask (White Smile) */}
+            {outfit === 'mask' && (
+                 <g filter={`url(#${dropShadowId})`}>
+                     {/* Mask Face */}
+                     <path d="M60,60 C50,80 50,150 100,165 C150,150 150,80 140,60 C120,40 80,40 60,60 Z" fill="#FFFFFF" stroke="#DDDDDD" strokeWidth="1" />
+                     {/* Squinting Eyes */}
+                     <path d="M70,95 Q80,85 90,95" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+                     <path d="M110,95 Q120,85 130,95" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+                     {/* Wide Smile */}
+                     <path d="M75,125 Q100,155 125,125" fill="none" stroke="#222" strokeWidth="4" strokeLinecap="round" />
+                     {/* Strap */}
+                     <path d="M55,100 L45,95" stroke="#333" strokeWidth="2" opacity="0.5" />
+                     <path d="M145,100 L155,95" stroke="#333" strokeWidth="2" opacity="0.5" />
                  </g>
             )}
         </svg>

@@ -33,16 +33,18 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
 
     const getSystemInstruction = () => {
         const langName = language === 'he' ? 'Hebrew' : 'English';
-        let baseInstruction = `You are Slothy, a friendly Spanish language tutor. The user's native language is ${langName}. 
-        IMPORTANT: When explaining concepts, defining words, or giving feedback, USE ${langName}. 
-        However, encourage the user to practice Spanish.
-        If the user speaks in ${langName}, answer in ${langName} but suggest the Spanish translation.
-        If the user speaks in Spanish, reply in simple Spanish, but provide difficult words' translations in ${langName} in parentheses.`;
+        let baseInstruction = `You are Slothy, a friendly language tutor. The user's native language is ${langName}. 
+        
+        IMPORTANT RULES:
+        1. You do not know which language the user wants to learn yet, unless they told you.
+        2. If the user says a language, adapt to teaching that language.
+        3. When explaining concepts, defining words, or giving feedback, USE ${langName} (The user's native language). 
+        4. Encourage the user to practice the target language.
+        5. If the user speaks in ${langName}, answer in ${langName} but suggest the translation in the target language.
+        6. If the user speaks in the target language, reply in simple target language, but provide difficult words' translations in ${langName} in parentheses.`;
         
         if (activeScenario) {
             baseInstruction += ` ROLEPLAY MODE: ${activeScenario.prompt}. Stay in character. Keep responses concise (under 2 sentences) to keep conversation flowing. Correct major mistakes gently at the end of your response (in ${langName}).`;
-        } else {
-            baseInstruction += ` Start by asking what they want to practice.`;
         }
         return baseInstruction;
     }
@@ -50,10 +52,13 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
     const initiateConversation = useCallback(async (scenario = null) => {
         setIsLoading(true);
         initialMessageSent.current = true;
+        const langName = language === 'he' ? 'Hebrew' : 'English';
+
         try {
-            let prompt = "Introduce yourself.";
+            let prompt = `Ask the user in ${langName}: "What language would you like to practice today? (Spanish, English, or Arabic)"`;
+            
             if (scenario) {
-                prompt = `Start the roleplay: ${scenario.title}. Set the scene in Spanish, but explain the setting briefly in the user's language.`;
+                prompt = `Start the roleplay: ${scenario.title}. Set the scene in the target language, but explain the setting briefly in ${langName}. Assume Spanish if not specified, or ask first.`;
             }
 
             const response = await generateContent({
@@ -157,7 +162,8 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
             
             // Fallback to Browser TTS
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-ES';
+            // Default to Spanish but can be improved with lang detection
+            utterance.lang = 'es-ES'; 
             utterance.onstart = () => setIsSpeaking(true);
             utterance.onend = () => { setIsSpeaking(false); if(onEndCallback) onEndCallback(); };
             window.speechSynthesis.speak(utterance);
@@ -172,7 +178,10 @@ export default function AiChatView({ userId, setNotification, onMessageSent }) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'es-ES';
+        // For general chat, maybe detect lang or default to Spanish?
+        // Let's use 'es-ES' as default since it's a Spanish app primarily, 
+        // but ideally we swap based on user choice.
+        recognition.lang = 'es-ES'; 
         recognitionRef.current = recognition;
 
         recognition.onstart = () => setIsListening(true);

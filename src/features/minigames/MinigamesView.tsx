@@ -8,8 +8,23 @@ import { useTranslation } from '../../lib/i18n';
 import { courses } from '../../lib/data';
 import { Clock, RefreshCw, Volume2 } from 'lucide-react';
 
+// Helper to extract clean vocab words from "Word (Translation)" format
+const extractVocab = (courseId) => {
+    const course = courses[courseId];
+    if (!course) return [];
+    
+    return course.units.flatMap(unit => 
+        unit.lessons.flatMap(l => l.vocab.map(v => {
+            // Assumes format "Foreign (Native)"
+            const match = v.match(/(.+)\s\((.+)\)/);
+            if (match) return { target: match[1], native: match[2] };
+            return { target: v, native: v }; // Fallback
+        }))
+    );
+};
+
 // --- Flashcard Frenzy ---
-const FlashcardFrenzy = ({ onGameEnd }) => {
+const FlashcardFrenzy = ({ onGameEnd, targetLanguage }) => {
     const { t } = useTranslation();
     const [cards, setCards] = useState([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -18,27 +33,26 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
     const [isFinished, setIsFinished] = useState(false);
 
     useEffect(() => {
-        const allVocab = courses.spanish.units.flatMap(unit => 
-            unit.lessons.flatMap(l => l.vocab.map(v => {
-                const match = v.match(/(.+)\s\((.+)\)/);
-                if (match) return { spanish: match[1], english: match[2] };
-                return { spanish: v, english: `Translation for ${v}` };
-            }))
-        );
-        
+        const allVocab = extractVocab(targetLanguage);
+        if (allVocab.length < 4) {
+             // Fallback mock data if course is empty
+             setCards([{target: 'Error', native: 'Not enough vocab', options: ['Not enough vocab']}]);
+             return;
+        }
+
         const shuffled = [...allVocab].sort(() => 0.5 - Math.random());
         const gameCards = shuffled.slice(0, 10).map(card => {
-            const options = [card.english];
+            const options = [card.native];
             while (options.length < 4) {
                 const randomCard = shuffled[Math.floor(Math.random() * shuffled.length)];
-                if (!options.includes(randomCard.english)) {
-                    options.push(randomCard.english);
+                if (!options.includes(randomCard.native)) {
+                    options.push(randomCard.native);
                 }
             }
             return { ...card, options: options.sort(() => 0.5 - Math.random()) };
         });
         setCards(gameCards);
-    }, []);
+    }, [targetLanguage]);
 
     useEffect(() => {
         if (timeLeft > 0 && !isFinished) {
@@ -52,7 +66,7 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
 
     const handleAnswer = (option) => {
         if (isFinished) return;
-        if (option === cards[currentCardIndex].english) {
+        if (option === cards[currentCardIndex].native) {
             setScore(score + 10);
         }
         if (currentCardIndex < cards.length - 1) {
@@ -75,7 +89,7 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
                 <span className="text-red-500 flex items-center gap-1"><Clock size={16}/> {timeLeft}s</span>
             </div>
             <div className="glass-panel bg-white/50 dark:bg-gray-700/50 p-8 rounded-3xl shadow-inner text-center mb-6">
-                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 drop-shadow-sm">{currentCard.spanish}</p>
+                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 drop-shadow-sm">{currentCard.target}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
                 {currentCard.options.map(opt => (
@@ -89,11 +103,17 @@ const FlashcardFrenzy = ({ onGameEnd }) => {
 };
 
 // --- Sentence Scramble ---
-const SentenceScramble = ({ onGameEnd }) => {
+const SentenceScramble = ({ onGameEnd, targetLanguage }) => {
     const { t } = useTranslation();
-    const sentences = useMemo(() => [
-        "Me gusta aprender español", "El perro corre en el parque", "La casa es muy grande", "Yo como una manzana roja"
-    ], []);
+    
+    // Basic sentences for different languages
+    const sentencesMap = {
+        spanish: ["Me gusta aprender español", "El perro corre en el parque", "La casa es muy grande", "Yo como una manzana roja"],
+        english: ["I like learning English", "The dog runs in the park", "The house is very big", "I eat a red apple"],
+        arabic: ["أنا أحب تعلم اللغة العربية", "الكلب يركض في الحديقة", "البيت كبير جدا", "أنا آكل تفاحة حمراء"]
+    };
+
+    const sentences = useMemo(() => sentencesMap[targetLanguage] || sentencesMap.spanish, [targetLanguage]);
     
     const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
     const [scrambled, setScrambled] = useState([]);
@@ -151,7 +171,7 @@ const SentenceScramble = ({ onGameEnd }) => {
 };
 
 // --- Memory Match ---
-const MemoryMatch = ({ onGameEnd }) => {
+const MemoryMatch = ({ onGameEnd, targetLanguage }) => {
     const { t } = useTranslation();
     const [cards, setCards] = useState([]);
     const [flipped, setFlipped] = useState([]);
@@ -159,19 +179,21 @@ const MemoryMatch = ({ onGameEnd }) => {
     const [score, setScore] = useState(0);
 
     useEffect(() => {
-        const pairs = [
-            { id: 1, text: 'Gato', pair: 'Cat' },
-            { id: 2, text: 'Perro', pair: 'Dog' },
-            { id: 3, text: 'Casa', pair: 'House' },
-            { id: 4, text: 'Agua', pair: 'Water' },
-            { id: 5, text: 'Hola', pair: 'Hello' },
-            { id: 6, text: 'Adiós', pair: 'Bye' },
-        ];
-        const deck = [...pairs.map(p => ({ id: p.id, content: p.text, type: 'es' })), ...pairs.map(p => ({ id: p.id, content: p.pair, type: 'en' }))]
-            .sort(() => Math.random() - 0.5)
-            .map((c, i) => ({ ...c, uniqueId: i }));
-        setCards(deck);
-    }, []);
+        // Get 6 random words
+        const allVocab = extractVocab(targetLanguage);
+        const shuffled = allVocab.sort(() => 0.5 - Math.random()).slice(0, 6);
+        
+        const deck = [];
+        shuffled.forEach((wordObj, index) => {
+            // Card 1: Target Language
+            deck.push({ id: index, content: wordObj.target, type: 'target' });
+            // Card 2: Native Language
+            deck.push({ id: index, content: wordObj.native, type: 'native' });
+        });
+
+        const finalDeck = deck.sort(() => Math.random() - 0.5).map((c, i) => ({ ...c, uniqueId: i }));
+        setCards(finalDeck);
+    }, [targetLanguage]);
 
     useEffect(() => {
         if (flipped.length === 2) {
@@ -187,7 +209,7 @@ const MemoryMatch = ({ onGameEnd }) => {
     }, [flipped, cards, matched]);
 
     useEffect(() => {
-        if (matched.length === 6) {
+        if (matched.length === 6 && matched.length > 0) {
             setTimeout(() => onGameEnd(score + 20), 1000); // Bonus for finishing
         }
     }, [matched, score, onGameEnd]);
@@ -205,7 +227,7 @@ const MemoryMatch = ({ onGameEnd }) => {
                 return (
                     <div key={card.uniqueId} onClick={() => handleCardClick(index)} className={`aspect-square rounded-xl flex items-center justify-center cursor-pointer transition-all duration-500 transform ${isFlipped ? 'bg-white dark:bg-gray-700 rotate-y-180' : 'bg-teal-500'}`}>
                         {isFlipped ? (
-                            <span className="font-bold text-gray-800 dark:text-white text-sm sm:text-lg">{card.content}</span>
+                            <span className="font-bold text-gray-800 dark:text-white text-sm sm:text-lg p-1 text-center break-words leading-tight">{card.content}</span>
                         ) : (
                             <span className="text-white text-2xl">?</span>
                         )}
@@ -217,7 +239,7 @@ const MemoryMatch = ({ onGameEnd }) => {
 }
 
 // --- Speed Listen ---
-const SpeedListen = ({ onGameEnd }) => {
+const SpeedListen = ({ onGameEnd, targetLanguage }) => {
     const { t } = useTranslation();
     const [round, setRound] = useState(0);
     const [score, setScore] = useState(0);
@@ -225,44 +247,44 @@ const SpeedListen = ({ onGameEnd }) => {
     const [targetWord, setTargetWord] = useState(null);
     const [status, setStatus] = useState('playing'); // playing, correct, wrong
 
-    const vocab = useMemo(() => [
-        { es: 'Manzana', en: 'Apple' }, { es: 'Coche', en: 'Car' }, { es: 'Libro', en: 'Book' },
-        { es: 'Sol', en: 'Sun' }, { es: 'Luna', en: 'Moon' }, { es: 'Árbol', en: 'Tree' },
-        { es: 'Flor', en: 'Flower' }, { es: 'Playa', en: 'Beach' }
-    ], []);
+    const allVocab = useMemo(() => extractVocab(targetLanguage), [targetLanguage]);
 
     const startRound = () => {
         if (round >= 5) {
             onGameEnd(score);
             return;
         }
-        const target = vocab[Math.floor(Math.random() * vocab.length)];
+        if (allVocab.length < 4) return;
+
+        const target = allVocab[Math.floor(Math.random() * allVocab.length)];
         setTargetWord(target);
         
         // Generate distractors
         let opts = [target];
         while(opts.length < 4) {
-            const r = vocab[Math.floor(Math.random() * vocab.length)];
-            if(!opts.find(o => o.es === r.es)) opts.push(r);
+            const r = allVocab[Math.floor(Math.random() * allVocab.length)];
+            if(!opts.find(o => o.target === r.target)) opts.push(r);
         }
         setOptions(opts.sort(() => Math.random() - 0.5));
         setStatus('playing');
         
         // Play audio
-        setTimeout(() => playAudio(target.es), 500);
+        setTimeout(() => playAudio(target.target), 500);
     };
 
-    useEffect(() => { startRound(); }, [round]);
+    useEffect(() => { startRound(); }, [round, allVocab]);
 
     const playAudio = (text) => {
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'es-ES';
+        if (targetLanguage === 'spanish') u.lang = 'es-ES';
+        if (targetLanguage === 'english') u.lang = 'en-US';
+        if (targetLanguage === 'arabic') u.lang = 'ar-SA';
         window.speechSynthesis.speak(u);
     };
 
     const handleOptionClick = (word) => {
         if(status !== 'playing') return;
-        if (word.es === targetWord.es) {
+        if (word.target === targetWord.target) {
             setScore(s => s + 15);
             setStatus('correct');
             setTimeout(() => setRound(r => r + 1), 1000);
@@ -273,18 +295,19 @@ const SpeedListen = ({ onGameEnd }) => {
     };
 
     if (round >= 5) return <div>{t('finished')}</div>;
+    if (!targetWord) return <div>Loading...</div>;
 
     return (
         <div className="text-center">
              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t('score')}: {score}</h2>
-             <button onClick={() => playAudio(targetWord.es)} className="bg-indigo-500 hover:bg-indigo-600 text-white p-8 rounded-full shadow-lg mb-8 animate-pulse">
+             <button onClick={() => playAudio(targetWord.target)} className="bg-indigo-500 hover:bg-indigo-600 text-white p-8 rounded-full shadow-lg mb-8 animate-pulse">
                 <Volume2 size={48} />
              </button>
              <p className="mb-4 text-gray-800 dark:text-white font-medium">{t('listenAndSelect')}</p>
              <div className="grid grid-cols-2 gap-4">
                  {options.map((opt, i) => (
-                     <button key={i} onClick={() => handleOptionClick(opt)} className={`p-4 rounded-xl font-bold text-lg transition-all ${status === 'playing' ? 'bg-white text-gray-800 hover:bg-gray-100' : status === 'correct' && opt.es === targetWord.es ? 'bg-green-500 text-white' : 'bg-red-400 text-white opacity-50'}`}>
-                         {opt.en}
+                     <button key={i} onClick={() => handleOptionClick(opt)} className={`p-4 rounded-xl font-bold text-lg transition-all ${status === 'playing' ? 'bg-white text-gray-800 hover:bg-gray-100' : status === 'correct' && opt.target === targetWord.target ? 'bg-green-500 text-white' : 'bg-red-400 text-white opacity-50'}`}>
+                         {opt.native}
                      </button>
                  ))}
              </div>
@@ -296,6 +319,7 @@ const SpeedListen = ({ onGameEnd }) => {
 export default function MinigamesView({ onGameComplete }) {
     const { t } = useTranslation();
     const [activeGame, setActiveGame] = useState(null);
+    const [targetLanguage, setTargetLanguage] = useState('spanish');
 
     // useMemo to ensure translations are reactive
     const games = useMemo(() => [
@@ -314,8 +338,9 @@ export default function MinigamesView({ onGameComplete }) {
         return (
             <div className="p-4 sm:p-8 max-w-3xl mx-auto">
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white drop-shadow-md mb-6">{activeGame.name}</h1>
+                <div className="mb-4 text-center text-gray-500 font-bold uppercase">{targetLanguage}</div>
                  <div className="glass-panel p-8 rounded-3xl shadow-2xl">
-                    <GameComponent onGameEnd={handleGameEnd} />
+                    <GameComponent onGameEnd={handleGameEnd} targetLanguage={targetLanguage} />
                     <button onClick={() => setActiveGame(null)} className="w-full mt-8 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                         {t('quitGame')}
                     </button>
@@ -331,6 +356,23 @@ export default function MinigamesView({ onGameComplete }) {
     return (
         <div className="p-4 sm:p-8 max-w-5xl mx-auto">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-md mb-2">{t('minigames')}</h1>
+            
+            {/* Language Selector */}
+            <div className="mb-8 flex flex-col items-start">
+                <label className="font-bold text-gray-700 dark:text-gray-300 mb-2">{t('selectGameLanguage')}</label>
+                <div className="flex gap-2">
+                    {['spanish', 'english', 'arabic'].map(lang => (
+                        <button 
+                            key={lang} 
+                            onClick={() => setTargetLanguage(lang)}
+                            className={`px-4 py-2 rounded-xl font-bold border-2 transition capitalize ${targetLanguage === lang ? 'bg-teal-500 border-teal-500 text-white' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}
+                        >
+                            {lang}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <p className="text-gray-700 dark:text-gray-200 text-lg mb-8 font-bold">{t('selectAGame')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {games.map((game, index) => (

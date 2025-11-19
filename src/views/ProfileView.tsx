@@ -45,8 +45,8 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
         setDeleteModalOpen(false);
     };
 
-    const handleDownloadMascot = () => {
-        const svgElement = document.querySelector('#profile-avatar svg');
+    const downloadMascot = (selector: string, filename: string) => {
+        const svgElement = document.querySelector(selector);
         if (!svgElement) return;
 
         // Serialize the SVG to a string
@@ -69,7 +69,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                 // Trigger Download
                 const downloadLink = document.createElement('a');
                 downloadLink.href = pngUrl;
-                downloadLink.download = `sloth_mascot_${userProfile.equippedOutfit || 'default'}.png`;
+                downloadLink.download = filename;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
@@ -107,7 +107,9 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                         <div id="profile-avatar" className="relative mb-6 group">
                             <div className="w-40 h-40 rounded-full bg-gradient-to-b from-blue-200 to-blue-50 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center shadow-inner overflow-hidden border-4 border-white dark:border-gray-600">
                                 {userProfile.equippedOutfit || !userProfile.pfp ? (
-                                    <SlothMascot className="w-32 h-32 mt-4 drop-shadow-md transition-transform hover:scale-110" outfit={userProfile.equippedOutfit} />
+                                    <div className="w-full h-full flex items-center justify-center">
+                                         <SlothMascot className="w-32 h-32 mt-4 drop-shadow-md transition-transform hover:scale-110" outfit={userProfile.equippedOutfit} />
+                                    </div>
                                 ) : (
                                     <img src={userProfile.pfp} alt="User" className="w-full h-full object-cover" />
                                 )}
@@ -115,7 +117,7 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                             
                             {/* Download Button */}
                             <button 
-                                onClick={handleDownloadMascot}
+                                onClick={() => downloadMascot('#profile-avatar svg', `sloth_mascot_${userProfile.equippedOutfit || 'default'}.png`)}
                                 className="absolute bottom-0 right-0 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 p-2 rounded-full shadow-md border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition"
                                 title="Download HQ PNG"
                             >
@@ -211,6 +213,40 @@ export default function ProfileView({ user, userProfile, onUpdateProfile, onSign
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Credits Section */}
+                <div className="mt-12 mb-8 text-center">
+                    <h3 className="text-xl font-bold text-gray-600 dark:text-gray-400 mb-6">{t('specialThanks')} / {t('credits')}</h3>
+                    <div className="flex justify-center gap-8">
+                        {/* Avraham Menachem */}
+                        <div className="flex flex-col items-center group relative">
+                             <div id="credit-avraham" className="w-24 h-24 bg-gray-100 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-2 border-2 border-gray-300 shadow-sm">
+                                <SlothMascot className="w-20 h-20 mt-2" outfit="mask" />
+                             </div>
+                             <button 
+                                onClick={() => downloadMascot('#credit-avraham svg', 'avraham_mask.png')}
+                                className="absolute top-0 right-0 p-1.5 bg-white dark:bg-gray-700 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                             >
+                                 <Download size={14} className="text-gray-600 dark:text-gray-200"/>
+                             </button>
+                             <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">אברהם מנחם</span>
+                        </div>
+
+                        {/* Michael Tzahbari */}
+                        <div className="flex flex-col items-center group relative">
+                             <div id="credit-michael" className="w-24 h-24 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-2 border-2 border-purple-300 shadow-sm">
+                                <SlothMascot className="w-20 h-20 mt-2" outfit="magician" />
+                             </div>
+                              <button 
+                                onClick={() => downloadMascot('#credit-michael svg', 'michael_magician.png')}
+                                className="absolute top-0 right-0 p-1.5 bg-white dark:bg-gray-700 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                             >
+                                 <Download size={14} className="text-gray-600 dark:text-gray-200"/>
+                             </button>
+                             <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">מיכאל צברי</span>
+                        </div>
                     </div>
                 </div>
             </div>

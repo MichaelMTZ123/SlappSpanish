@@ -165,6 +165,8 @@ const translations = {
         'currentLook': 'Current Look',
         'default': 'Default',
         'visitShop': 'Visit the Shop to buy more outfits!',
+        'credits': 'Credits',
+        'specialThanks': 'Special Thanks',
 
         // Ranks
         'novato': 'Novato',
@@ -248,6 +250,7 @@ const translations = {
         'check': 'Check',
         'listenAndSelect': 'Listen and select the correct meaning:',
         'finished': 'Finished',
+        'selectGameLanguage': 'Select Target Language',
         
         // Onboarding
         'whatToLearn': 'What to learn?',
@@ -272,6 +275,11 @@ const translations = {
         'draw': 'It\'s a Draw!',
         'opponentProgress': 'Opponent Progress',
         'startDuel': 'Start Duel',
+
+        // Quests
+        'q1_desc': 'Complete 1 Lesson',
+        'q2_desc': 'Send 5 AI Messages',
+        'q3_desc': 'Play a Minigame',
     },
     he: {
         // General
@@ -431,6 +439,8 @@ const translations = {
         'currentLook': 'לוק נוכחי',
         'default': 'ברירת מחדל',
         'visitShop': 'בקר בחנות כדי לקנות עוד תלבושות!',
+        'credits': 'קרדיטים',
+        'specialThanks': 'תודה מיוחדת',
 
         // Ranks
         'novato': 'טירון',
@@ -512,6 +522,7 @@ const translations = {
         'check': 'בדוק',
         'listenAndSelect': 'הקשב ובחר את המשמעות הנכונה:',
         'finished': 'סיום',
+        'selectGameLanguage': 'בחר שפת יעד',
 
         // Onboarding
         'whatToLearn': 'מה תרצה ללמוד?',
@@ -536,6 +547,11 @@ const translations = {
         'draw': 'תיקו!',
         'opponentProgress': 'התקדמות יריב',
         'startDuel': 'התחל קרב',
+
+        // Quests
+        'q1_desc': 'השלם שיעור 1',
+        'q2_desc': 'שלח 5 הודעות ל-AI',
+        'q3_desc': 'שחק במיני-משחק',
     },
 };
 
