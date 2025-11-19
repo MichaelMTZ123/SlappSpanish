@@ -93,9 +93,9 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
 
             {/* --- OUTFITS --- */}
             
-            {/* Glasses - Scaled up slightly */}
+            {/* Glasses - Fit within bounds */}
             {outfit === 'glasses' && (
-                <g filter={`url(#${dropShadowId})`} transform="scale(1.15)" transform-origin="100 110">
+                <g filter={`url(#${dropShadowId})`} transform="translate(0, 5) scale(1.05)" transform-origin="100 110">
                     <path d="M45,110 Q45,95 65,95 T85,110 Q85,125 65,125 T45,110 Z" fill="#222" fillOpacity="0.8" stroke="#000" strokeWidth="2"/>
                     <path d="M115,110 Q115,95 135,95 T155,110 Q155,125 135,125 T115,110 Z" fill="#222" fillOpacity="0.8" stroke="#000" strokeWidth="2"/>
                     <line x1="85" y1="110" x2="115" y2="110" stroke="#000" strokeWidth="3" />
@@ -104,15 +104,14 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                 </g>
             )}
 
-            {/* Cowboy Hat - Improved Texture & Size */}
+            {/* Cowboy Hat - Lowered to not clip top */}
             {outfit === 'hat_cowboy' && (
-                <g transform="translate(0, -20) scale(1.1)" transform-origin="100 55" filter={`url(#${dropShadowId})`}>
+                <g transform="translate(0, -5) scale(0.95)" transform-origin="100 55" filter={`url(#${dropShadowId})`}>
                     {/* Back Brim */}
                     <path d="M20,55 Q100,85 180,55" fill="none" stroke={`url(#${leatherGradientId})`} strokeWidth="0" />
                     
-                    {/* Main Brim with Leather Texture */}
+                    {/* Main Brim */}
                     <ellipse cx="100" cy="55" rx="80" ry="20" fill={`url(#${leatherGradientId})`} />
-                    {/* Stitching Details on Brim */}
                     <ellipse cx="100" cy="55" rx="75" ry="16" fill="none" stroke="#D2B48C" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.8" />
                     
                     {/* Hat Crown Top */}
@@ -128,9 +127,9 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                 </g>
             )}
 
-            {/* Crown - Scaled up */}
+            {/* Crown - Lowered and scaled to fit */}
             {outfit === 'crown' && (
-                 <g transform="translate(0, -30) scale(1.2)" transform-origin="100 50" filter={`url(#${dropShadowId})`}>
+                 <g transform="translate(0, -10) scale(1.05)" transform-origin="100 50" filter={`url(#${dropShadowId})`}>
                      <path d="M60,60 L70,20 L100,50 L130,20 L140,60 Z" fill="#FFD700" stroke="#DAA520" strokeWidth="2" strokeLinejoin="round"/>
                      <circle cx="70" cy="20" r="4" fill="#FF4500" />
                      <circle cx="130" cy="20" r="4" fill="#FF4500" />
@@ -141,35 +140,39 @@ export const SlothMascot: React.FC<SlothMascotProps> = ({ className = '', outfit
                  </g>
             )}
 
-            {/* Magician (Top Hat & Wand) - Improved */}
+            {/* Magician (Top Hat & Wand) - Fix Clipping & Remove Emojis */}
             {outfit === 'magician' && (
-                <g filter={`url(#${dropShadowId})`} transform="translate(0, -25) scale(1.2)" transform-origin="100 50">
-                    {/* Hat Brim */}
-                    <ellipse cx="100" cy="55" rx="45" ry="8" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
-                    {/* Hat Body */}
-                    <path d="M70,55 L70,15 Q100,10 130,15 L130,55 Z" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
-                     {/* Hat Band */}
-                    <path d="M70,50 Q100,55 130,50 L130,45 Q100,50 70,45 Z" fill="#D32F2F" />
-                    {/* Hat Shine */}
-                    <path d="M120,20 Q125,30 120,40" fill="none" stroke="#FFF" strokeWidth="2" opacity="0.3" />
+                <g filter={`url(#${dropShadowId})`}>
+                    {/* Hat Group - Adjusted transform to fit in box */}
+                    <g transform="translate(0, -5) scale(0.95)" transform-origin="100 50">
+                        {/* Hat Brim */}
+                        <ellipse cx="100" cy="55" rx="45" ry="8" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
+                        {/* Hat Body */}
+                        <path d="M70,55 L70,15 Q100,10 130,15 L130,55 Z" fill={`url(#${hatGradientId})`} stroke="#000" strokeWidth="1"/>
+                         {/* Hat Band */}
+                        <path d="M70,50 Q100,55 130,50 L130,45 Q100,50 70,45 Z" fill="#D32F2F" />
+                        {/* Hat Shine */}
+                        <path d="M120,20 Q125,30 120,40" fill="none" stroke="#FFF" strokeWidth="2" opacity="0.3" />
+                    </g>
 
-                    {/* Wand - Positioned down and bigger */}
-                    <g transform="translate(135, 130) rotate(-20) scale(1.5)">
+                    {/* Wand - Pulled left slightly to avoid right clip */}
+                    <g transform="translate(120, 135) rotate(-20) scale(1.4)">
                          <rect x="0" y="0" width="50" height="7" fill="#333" rx="2" stroke="#000" strokeWidth="0.5"/>
                          <rect x="0" y="0" width="10" height="7" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
                          <rect x="40" y="0" width="10" height="7" fill="#FFF" rx="2" stroke="#000" strokeWidth="0.5"/>
                     </g>
                     
-                    {/* Stars */}
-                    <text x="150" y="50" fontSize="20" fill="gold">✨</text>
-                    <text x="155" y="120" fontSize="20" fill="gold">✨</text>
+                    {/* Vector Stars (Replacing Emojis) */}
+                    <path fill="#FFD700" d="M160,40 L163,48 L171,51 L163,54 L160,62 L157,54 L149,51 L157,48 Z" />
+                    <path fill="#FFD700" d="M150,110 L152,115 L157,117 L152,119 L150,124 L148,119 L143,117 L148,115 Z" />
+                    <path fill="#FFD700" d="M30,50 L32,55 L37,57 L32,59 L30,64 L28,59 L23,57 L28,55 Z" opacity="0.8"/>
                 </g>
             )}
 
-            {/* Mask (White Smile) - Improved */}
+            {/* Mask (White Smile) */}
             {outfit === 'mask' && (
-                 <g filter={`url(#${dropShadowId})`} transform="scale(1.1)" transform-origin="100 100">
-                     {/* Mask Face with Gradient for 3D effect */}
+                 <g filter={`url(#${dropShadowId})`} transform="scale(1.05)" transform-origin="100 100">
+                     {/* Mask Face */}
                      <path d="M55,60 C45,80 45,150 100,165 C155,150 155,80 145,60 C125,40 75,40 55,60 Z" fill={`url(#${maskGradientId})`} stroke="#CCCCCC" strokeWidth="1" />
                      
                      {/* Squinting Eyes - Separated */}
